@@ -97,7 +97,7 @@ export default function HomePage() {
         </div>
       </main>
       <footer className="text-center p-4 text-sm text-muted-foreground border-t border-border/50 mt-auto bg-background/80 backdrop-blur-sm">
-        ToolWise &copy; {currentYear !== null ? currentYear : 'Loading...'} - Empowering Your Tool Selection.
+        Beacon &copy; {currentYear !== null ? currentYear : 'Loading...'} - Empowering Your Tool Selection.
       </footer>
     </div>
   );

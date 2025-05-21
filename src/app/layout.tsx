@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'ToolWise - Automatic Tool Picker',
-  description: 'Find the best test automation tools tailored to your needs.',
+  title: 'Beacon - Automatic Tool Picker',
+  description: 'Beacon: Find the best test automation tools tailored to your needs.',
 };
 
 export default function RootLayout({

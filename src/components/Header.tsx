@@ -8,7 +8,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 md:px-8 py-4 flex items-center">
         <Sigma className="h-8 w-8 mr-3 text-accent" />
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-          ToolWise
+          Beacon
         </h1>
       </div>
     </header>
