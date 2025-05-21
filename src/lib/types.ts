@@ -28,8 +28,9 @@ export interface Tool {
   reportingAnalytics: ReportingAnalytics[];
   strengths: string[];
   weaknesses: string[];
-  pdfLink: string;
-  roiProjection: RoiTimePoint[]; // Changed from single roi to an array of time points
+  pdfLink: string; // Link to a detailed guide/PDF
+  websiteUrl: string; // Link to the tool's homepage
+  roiProjection: RoiTimePoint[];
 }
 
 export interface Filters {
@@ -43,7 +44,7 @@ export interface Filters {
 }
 
 export interface FilterOption {
-  value: string; 
+  value: string;
   label: string;
 }
 

@@ -7,7 +7,7 @@ import type { Tool } from '@/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, FileText, Star, Users, TrendingUp, Brain, Briefcase, ArrowRightCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, Star, ExternalLink } from 'lucide-react';
 
 interface ToolResultsProps {
   tools: Tool[];
@@ -47,9 +47,9 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-4 bg-muted/50 p-1 rounded-md">
             {tools.map((tool) => (
-              <TabsTrigger 
-                key={tool.id} 
-                value={tool.id} 
+              <TabsTrigger
+                key={tool.id}
+                value={tool.id}
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-sm transition-all duration-150 ease-in-out hover:bg-primary/10"
               >
                 {tool.name} – Score: {tool.score}/10
@@ -61,13 +61,13 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
               <Card className="border-primary/20 bg-background shadow-inner rounded-md">
                 <CardHeader className="flex flex-col sm:flex-row items-start gap-4 p-4">
                   {tool.logoUrl && (
-                     <Image 
-                        src={tool.logoUrl} 
-                        alt={`${tool.name} logo`} 
-                        width={60} 
-                        height={60} 
+                     <Image
+                        src={tool.logoUrl}
+                        alt={`${tool.name} logo`}
+                        width={60}
+                        height={60}
                         className="rounded-md border-2 border-accent p-0.5 shadow-md object-contain bg-white"
-                        data-ai-hint="logo tech"
+                        data-ai-hint="logo tech futuristic"
                       />
                   )}
                   <div className="flex-grow">
@@ -102,9 +102,8 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
                 </CardContent>
                 <CardFooter className="p-4">
                   <Button asChild variant="default" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-md shadow-md hover:shadow-lg transition-shadow">
-                    <a href={tool.pdfLink} target="_blank" rel="noopener noreferrer">
-                      <FileText className="mr-2 h-4 w-4" /> Open Guide (PDF)
-                      <ArrowRightCircle className="ml-2 h-4 w-4" />
+                    <a href={tool.websiteUrl} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="mr-2 h-4 w-4" /> Visit Website
                     </a>
                   </Button>
                 </CardFooter>

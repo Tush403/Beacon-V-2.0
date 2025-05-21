@@ -50,6 +50,7 @@ export const mockToolsData: Tool[] = [
     strengths: ["Highly flexible and extensible", "Large community support", "Supports multiple languages"],
     weaknesses: ["Steep learning curve", "Requires coding knowledge", "Setup can be complex"],
     pdfLink: "/pdfs/selenium-guide.pdf",
+    websiteUrl: "https://www.selenium.dev/",
     roiProjection: [
       { month: 1, roi: 50 }, { month: 2, roi: 55 }, { month: 3, roi: 62 },
       { month: 4, roi: 70 }, { month: 5, roi: 75 }, { month: 6, roi: 78 }
@@ -70,6 +71,7 @@ export const mockToolsData: Tool[] = [
     strengths: ["Modern architecture", "Auto-waits and rich selectors", "Cross-browser and cross-language"],
     weaknesses: ["Younger community than Selenium", "Can be resource-intensive"],
     pdfLink: "/pdfs/playwright-guide.pdf",
+    websiteUrl: "https://playwright.dev/",
     roiProjection: [
       { month: 1, roi: 60 }, { month: 2, roi: 68 }, { month: 3, roi: 75 },
       { month: 4, roi: 82 }, { month: 5, roi: 88 }, { month: 6, roi: 90 }
@@ -90,6 +92,7 @@ export const mockToolsData: Tool[] = [
     strengths: ["Fast and reliable test execution", "Excellent debugging tools", "Easy to set up"],
     weaknesses: ["Only supports JavaScript", "Limited cross-origin support in some cases"],
     pdfLink: "/pdfs/cypress-guide.pdf",
+    websiteUrl: "https://www.cypress.io/",
     roiProjection: [
       { month: 1, roi: 55 }, { month: 2, roi: 65 }, { month: 3, roi: 72 },
       { month: 4, roi: 78 }, { month: 5, roi: 83 }, { month: 6, roi: 85 }
@@ -110,6 +113,7 @@ export const mockToolsData: Tool[] = [
     strengths: ["AI-powered locators for stability", "Fast authoring with record & playback", "Good for agile teams"],
     weaknesses: ["Can be expensive for large teams", "Some advanced scenarios may still require code"],
     pdfLink: "/pdfs/testim-guide.pdf",
+    websiteUrl: "https://www.testim.io/",
     roiProjection: [
       { month: 1, roi: 65 }, { month: 2, roi: 72 }, { month: 3, roi: 78 },
       { month: 4, roi: 85 }, { month: 5, roi: 90 }, { month: 6, roi: 92 }
@@ -130,6 +134,7 @@ export const mockToolsData: Tool[] = [
     strengths: ["User-friendly interface for API development and testing", "Collaboration features", "Extensive integrations"],
     weaknesses: ["Performance testing capabilities are basic", "Can become slow with large collections"],
     pdfLink: "/pdfs/postman-guide.pdf",
+    websiteUrl: "https://www.postman.com/",
     roiProjection: [
       { month: 1, roi: 70 }, { month: 2, roi: 73 }, { month: 3, roi: 76 },
       { month: 4, roi: 78 }, { month: 5, roi: 80 }, { month: 6, roi: 81 }
@@ -150,6 +155,7 @@ export const mockToolsData: Tool[] = [
     strengths: ["Powerful and versatile for load testing", "Supports various protocols", "Extensible with plugins"],
     weaknesses: ["UI can be intimidating for beginners", "Requires significant resources for large tests"],
     pdfLink: "/pdfs/jmeter-guide.pdf",
+    websiteUrl: "https://jmeter.apache.org/",
     roiProjection: [
       { month: 1, roi: 40 }, { month: 2, roi: 48 }, { month: 3, roi: 55 },
       { month: 4, roi: 60 }, { month: 5, roi: 65 }, { month: 6, roi: 70 }
@@ -170,6 +176,7 @@ export const mockToolsData: Tool[] = [
     strengths: ["Comprehensive feature set", "Supports multiple application types", "Good for beginners and experienced testers"],
     weaknesses: ["Can be slower than some specialized tools", "Enterprise features are paid"],
     pdfLink: "/pdfs/katalon-guide.pdf",
+    websiteUrl: "https://katalon.com/",
     roiProjection: [
       { month: 1, roi: 58 }, { month: 2, roi: 63 }, { month: 3, roi: 68 },
       { month: 4, roi: 72 }, { month: 5, roi: 76 }, { month: 6, roi: 78 }
@@ -190,6 +197,7 @@ export const mockToolsData: Tool[] = [
     strengths: ["Cross-platform mobile testing", "Supports native, hybrid, and mobile web apps", "Large community"],
     weaknesses: ["Setup can be challenging", "Execution speed can vary"],
     pdfLink: "/pdfs/appium-guide.pdf",
+    websiteUrl: "https://appium.io/",
     roiProjection: [
       { month: 1, roi: 52 }, { month: 2, roi: 60 }, { month: 3, roi: 67 },
       { month: 4, roi: 73 }, { month: 5, roi: 78 }, { month: 6, roi: 82 }
@@ -222,7 +230,7 @@ export const trendDataPerTestType: TrendData = {
     aiPoweredTool: "Neoload",
     enterpriseReadyTool: "LoadRunner",
   },
-  "Default": { 
+  "Default": {
     testType: "General Testing",
     mostWidelyUsedTool: "Selenium",
     trendingTool: "Playwright",
