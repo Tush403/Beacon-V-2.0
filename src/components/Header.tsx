@@ -10,7 +10,7 @@ const Header: React.FC = () => {
         <div className="flex items-center">
           <Cog className="h-9 w-9 mr-3 text-accent animate-spin-slow" /> {/* TAO Digital representative icon */}
           <div>
-            <h2 className="text-lg sm:text-xl font-semibold text-primary-foreground">TAO DIGITAL™</h2>
+            <h2 className="text-lg sm:text-xl font-semibold text-primary-foreground">TAO DIGITAL</h2>
             <p className="text-xs text-primary-foreground/80 hidden sm:block">Transformation Made Simple</p>
           </div>
         </div>
