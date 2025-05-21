@@ -66,7 +66,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
                         alt={`${tool.name} logo`}
                         width={60}
                         height={60}
-                        className="rounded-md border-2 border-accent p-0.5 shadow-md object-contain bg-white"
+                        className="rounded-md border-2 border-accent p-0.5 shadow-md object-contain bg-secondary"
                         data-ai-hint="logo tech futuristic"
                       />
                   )}
