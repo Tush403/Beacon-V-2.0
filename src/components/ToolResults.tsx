@@ -26,7 +26,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
 
   if (tools.length === 0) {
     return (
-      <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm">
+      <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out">
         <CardHeader>
           <CardTitle className="text-xl text-primary">No Tools Found</CardTitle>
         </CardHeader>
@@ -38,7 +38,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
   }
 
   return (
-    <Card className="shadow-xl rounded-lg border-border/50 bg-card text-card-foreground">
+    <Card className="shadow-xl rounded-lg border-border/50 bg-card text-card-foreground animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out">
       <CardHeader>
         <CardTitle className="text-xl text-primary flex items-center"><Star className="mr-2 h-6 w-6 text-accent" />Top Recommended Tools</CardTitle>
         <CardDescription>Click on a tool to see more details. Results are sorted by overall score.</CardDescription>
@@ -58,7 +58,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
           </TabsList>
           {tools.map((tool) => (
             <TabsContent key={tool.id} value={tool.id}>
-              <Card className="border-primary/20 bg-background shadow-inner rounded-md">
+              <Card className="border-primary/20 bg-background shadow-inner rounded-md animate-in fade-in-50 duration-500">
                 <CardHeader className="flex flex-col sm:flex-row items-start gap-4 p-4">
                   {tool.logoUrl && (
                      <Image

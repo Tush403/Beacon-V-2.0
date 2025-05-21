@@ -56,7 +56,7 @@ const ToolFilters: React.FC<ToolFiltersProps> = ({ filters, filterOptions, onFil
   );
 
   return (
-    <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm">
+    <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm animate-in fade-in-0 slide-in-from-left-12 duration-700 ease-out">
       <CardHeader className="pb-4">
         <CardTitle className="text-xl flex items-center text-primary">
           <Filter className="mr-2 h-6 w-6 text-accent" />

@@ -25,15 +25,20 @@ const lineColors = [
 ];
 
 const RoiChart: React.FC<RoiChartProps> = ({ tools }) => {
-  const [tooltipStyleRadius, setTooltipStyleRadius] = useState<string>('0.375rem');
+  const [tooltipStyleRadius, setTooltipStyleRadius] = useState<string>('0.375rem'); // Default based on globals.css --radius
 
   useEffect(() => {
-    try {
-      const rootStyle = getComputedStyle(document.documentElement);
-      const radiusCssVar = rootStyle.getPropertyValue('--radius').trim();
-      setTooltipStyleRadius(radiusCssVar);
-    } catch (error) {
-      console.warn("Could not calculate dynamic styles for chart tooltip:", error);
+    // This effect runs only on the client side
+    if (typeof window !== 'undefined') {
+      try {
+        const rootStyle = getComputedStyle(document.documentElement);
+        const radiusCssVar = rootStyle.getPropertyValue('--radius').trim();
+        if (radiusCssVar) {
+          setTooltipStyleRadius(radiusCssVar);
+        }
+      } catch (error) {
+        console.warn("Could not calculate dynamic styles for chart tooltip:", error);
+      }
     }
   }, []);
 
@@ -62,7 +67,7 @@ const RoiChart: React.FC<RoiChartProps> = ({ tools }) => {
 
   if (tools.length === 0 || chartData.length === 0) {
     return (
-      <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm">
+      <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-200">
         <CardHeader>
           <CardTitle className="text-xl text-primary flex items-center"><TrendingUp className="mr-2 h-6 w-6 text-accent"/>ROI Projection Comparison</CardTitle>
           <CardDescription>Select tools and apply filters to see ROI projection data.</CardDescription>
@@ -75,7 +80,7 @@ const RoiChart: React.FC<RoiChartProps> = ({ tools }) => {
   }
 
   return (
-    <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm">
+    <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-200">
       <CardHeader>
         <CardTitle className="text-xl text-primary flex items-center"><TrendingUp className="mr-2 h-6 w-6 text-accent"/>ROI Projection Comparison</CardTitle>
         <CardDescription>Projected Return on Investment (ROI) for the selected tools over 6 months.</CardDescription>
