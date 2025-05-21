@@ -8,58 +8,60 @@ body {
 
 @layer base {
   :root {
-    /* Futuristic Dark Theme */
-    --background: 220 20% 12%; /* Dark Slate Blue */
-    --foreground: 210 20% 90%; /* Light Grayish Blue */
+    /* ToolWise Light Theme (PRD Based) */
+    --background: 225 27% 97%; /* Light Blue-Gray #F5F6FA */
+    --foreground: 225 10% 20%; /* Dark Gray for text */
     
-    --card: 220 20% 18%; /* Slightly Lighter Dark Slate Blue */
-    --card-foreground: 210 20% 85%;
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 225 10% 20%;
     
-    --popover: 220 20% 18%;
-    --popover-foreground: 210 20% 85%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 225 10% 20%;
     
-    --primary: 200 80% 55%; /* Bright Cyan-Blue */
-    --primary-foreground: 220 20% 10%; /* Dark for contrast on primary */
+    --primary: 231 48% 48%; /* Deep Blue #3F51B5 */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
     
-    --secondary: 220 15% 30%; /* Muted Blue-Gray */
-    --secondary-foreground: 210 20% 80%;
+    --secondary: 225 25% 92%; /* Lighter Blue-Gray #E8EBF3 */
+    --secondary-foreground: 231 48% 48%; /* Primary color for text on secondary */
     
-    --muted: 220 15% 25%;
-    --muted-foreground: 210 15% 65%; /* Lighter gray for muted text */
+    --muted: 225 25% 88%; /* Muted Blue-Gray #DDE1EB */
+    --muted-foreground: 225 10% 40%; /* Grayer text */
     
-    --accent: 180 100% 45%; /* Vibrant Cyan/Teal */
-    --accent-foreground: 0 0% 100%; /* White for contrast on accent */
+    --accent: 291 64% 42%; /* Purple #9C27B0 */
+    --accent-foreground: 0 0% 100%; /* White text on accent */
     
-    --destructive: 0 70% 55%; /* Vivid Red */
+    --destructive: 0 72% 51%; /* Standard Red (e.g., Tailwind red-600) */
     --destructive-foreground: 0 0% 100%;
-    
-    --border: 220 15% 28%; /* Subtle border */
-    --input: 220 15% 22%; /* Darker input fields */
-    --ring: 200 80% 55%; /* Matches primary */
-    
-    /* Chart Colors for a Dark, Futuristic Theme */
-    --chart-1: 150 70% 50%; /* Vibrant Green */
-    --chart-2: 45 80% 55%;  /* Bright Yellow/Orange */
-    --chart-3: 0 70% 55%;   /* Vivid Red (can match destructive) */
-    --chart-4: 210 70% 60%; /* Bright Blue */
-    --chart-5: 270 70% 65%; /* Bright Purple */
-    
-    --radius: 0.375rem; /* Sharper corners */
 
-    /* Sidebar variables - themed for dark mode */
-    --sidebar-background: 220 20% 15%; 
-    --sidebar-foreground: 210 20% 88%;
-    --sidebar-primary: 200 80% 55%;
-    --sidebar-primary-foreground: 220 20% 10%;
-    --sidebar-accent: 180 100% 45%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 220 15% 25%;
-    --sidebar-ring: 200 80% 55%;
+    --positive: 145 58% 40%; /* Professional Green (e.g., Tailwind green-600) */
+    --positive-foreground: 0 0% 100%; /* White text on positive (if bg) */
+    
+    --border: 225 20% 85%; /* Subtle Border #D2D8E8 */
+    --input: 225 20% 80%; /* Input Border #C8CCD9 */
+    --ring: 231 48% 48%; /* Ring matches primary */
+    
+    /* Chart Colors for Light Theme */
+    --chart-1: 150 60% 35%;  /* Darker Vibrant Green */
+    --chart-2: 45 70% 40%;   /* Darker Bright Yellow/Orange */
+    --chart-3: 0 60% 40%;    /* Darker Vivid Red */
+    --chart-4: 210 60% 45%;  /* Darker Bright Blue */
+    --chart-5: 270 60% 50%;  /* Darker Bright Purple */
+    
+    --radius: 0.375rem; /* Sharper corners (6px) */
+
+    /* Sidebar variables - themed for light mode consistency with main theme */
+    --sidebar-background: 225 26% 95%; /* Slightly off main background */
+    --sidebar-foreground: var(--foreground);
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
+    --sidebar-accent: var(--accent);
+    --sidebar-accent-foreground: var(--accent-foreground);
+    --sidebar-border: 225 20% 88%;
+    --sidebar-ring: var(--ring);
   }
 
   .dark {
-    /* Ensure dark mode specific overrides are also futuristic if used,
-       but the primary focus is now the default (which is dark) */
+    /* Futuristic Dark Theme (Kept from previous state as an alternative) */
     --background: 220 20% 10%; 
     --foreground: 210 20% 92%;
     --card: 220 20% 15%;
@@ -72,14 +74,18 @@ body {
     --secondary-foreground: 210 20% 85%;
     --muted: 220 15% 22%;
     --muted-foreground: 210 15% 60%;
-    --accent: 180 100% 50%;
+    --accent: 180 100% 50%; /* Cyan/Teal for dark mode accent */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 75% 60%;
     --destructive-foreground: 0 0% 100%;
+    --positive: 145 60% 45%; /* Brighter Green for dark mode */
+    --positive-foreground: 0 0% 100%;
+
     --border: 220 15% 26%;
     --input: 220 15% 20%;
     --ring: 200 80% 60%;
 
+    /* Chart Colors for Dark Theme */
     --chart-1: 150 70% 55%;
     --chart-2: 45 80% 60%;
     --chart-3: 0 75% 60%;
@@ -103,7 +109,7 @@ body {
   }
   body {
     @apply bg-background text-foreground;
-    /* Apply a subtle gradient to the background for a futuristic feel */
-    background-image: linear-gradient(to bottom right, hsl(var(--background)), hsl(var(--secondary) / 0.5));
+    /* Apply a subtle gradient to the background for a professional feel */
+    background-image: linear-gradient(to bottom right, hsl(var(--background)), hsl(var(--secondary)/0.6));
   }
 }

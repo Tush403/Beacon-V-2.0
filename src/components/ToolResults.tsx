@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import type { Tool } from '@/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -15,6 +15,14 @@ interface ToolResultsProps {
 
 const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(tools.length > 0 ? tools[0].id : undefined);
+
+  useEffect(() => {
+    if (tools.length > 0 && !tools.find(tool => tool.id === activeTab)) {
+      setActiveTab(tools[0].id);
+    } else if (tools.length === 0) {
+      setActiveTab(undefined);
+    }
+  }, [tools, activeTab]);
 
   if (tools.length === 0) {
     return (
@@ -30,7 +38,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
   }
 
   return (
-    <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm">
+    <Card className="shadow-xl rounded-lg border-border/50 bg-card text-card-foreground">
       <CardHeader>
         <CardTitle className="text-xl text-primary flex items-center"><Star className="mr-2 h-6 w-6 text-accent" />Top Recommended Tools</CardTitle>
         <CardDescription>Click on a tool to see more details. Results are sorted by overall score.</CardDescription>
@@ -50,7 +58,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
           </TabsList>
           {tools.map((tool) => (
             <TabsContent key={tool.id} value={tool.id}>
-              <Card className="border-primary/50 bg-background/70 shadow-inner rounded-md">
+              <Card className="border-primary/20 bg-background shadow-inner rounded-md">
                 <CardHeader className="flex flex-col sm:flex-row items-start gap-4 p-4">
                   {tool.logoUrl && (
                      <Image 
@@ -58,8 +66,8 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
                         alt={`${tool.name} logo`} 
                         width={60} 
                         height={60} 
-                        className="rounded-md border-2 border-accent p-0.5 shadow-md object-contain"
-                        data-ai-hint="logo tech futuristic"
+                        className="rounded-md border-2 border-accent p-0.5 shadow-md object-contain bg-white"
+                        data-ai-hint="logo tech"
                       />
                   )}
                   <div className="flex-grow">
@@ -70,13 +78,13 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
                 <CardContent className="space-y-4 p-4">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <h4 className="font-semibold text-md mb-2 flex items-center text-green-400"><CheckCircle2 className="h-5 w-5 mr-2" />Strengths:</h4>
+                      <h4 className="font-semibold text-md mb-2 flex items-center text-positive"><CheckCircle2 className="h-5 w-5 mr-2" />Strengths:</h4>
                       <ul className="list-disc list-inside pl-4 space-y-1 text-sm text-muted-foreground">
                         {tool.strengths.map((strength, index) => <li key={index}>{strength}</li>)}
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-md mb-2 flex items-center text-red-400"><XCircle className="h-5 w-5 mr-2" />Weaknesses:</h4>
+                      <h4 className="font-semibold text-md mb-2 flex items-center text-destructive"><XCircle className="h-5 w-5 mr-2" />Weaknesses:</h4>
                       <ul className="list-disc list-inside pl-4 space-y-1 text-sm text-muted-foreground">
                         {tool.weaknesses.map((weakness, index) => <li key={index}>{weakness}</li>)}
                       </ul>
