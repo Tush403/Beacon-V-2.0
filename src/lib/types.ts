@@ -9,6 +9,11 @@ export type CodingLanguage = "JavaScript" | "Python" | "Java" | "C#" | "Ruby" | 
 export type PricingModel = "Free" | "Freemium" | "Subscription" | "One-time Purchase" | "Open Source";
 export type ReportingAnalytics = "Basic" | "Advanced" | "Customizable" | "Integration-friendly" | "Real-time";
 
+export interface RoiTimePoint {
+  month: number; // Representing the period, e.g., 1 for Month 1
+  roi: number;   // The ROI value for that period
+}
+
 export interface Tool {
   id: string;
   name: string;
@@ -24,7 +29,7 @@ export interface Tool {
   strengths: string[];
   weaknesses: string[];
   pdfLink: string;
-  roi: number; // percentage, e.g., 85
+  roiProjection: RoiTimePoint[]; // Changed from single roi to an array of time points
 }
 
 export interface Filters {
@@ -38,7 +43,7 @@ export interface Filters {
 }
 
 export interface FilterOption {
-  value: string; // Changed from generic with TValue | ""
+  value: string; 
   label: string;
 }
 

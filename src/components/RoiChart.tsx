@@ -1,9 +1,9 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import type { Tool } from '@/lib/types';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList, Cell } from 'recharts';
+import React, { useEffect, useState, useMemo } from 'react';
+import type { Tool, RoiTimePoint } from '@/lib/types';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { TrendingUp } from 'lucide-react';
 
@@ -11,127 +11,134 @@ interface RoiChartProps {
   tools: Tool[];
 }
 
+interface ChartDataPoint {
+  month: number;
+  [toolName: string]: number | undefined;
+}
+
+const lineColors = [
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
+];
+
 const RoiChart: React.FC<RoiChartProps> = ({ tools }) => {
-  // Default radius for SSR and initial client render.
-  // Assumes --radius is "0.375rem", parseFloat("0.375rem") * 4 = 1.5
-  const [barRadiusConfig, setBarRadiusConfig] = useState<[number, number, number, number]>([0, 1.5, 1.5, 0]);
-  const [tooltipStyleRadius, setTooltipStyleRadius] = useState<string>('0.375rem'); // Default to CSS var string
+  const [tooltipStyleRadius, setTooltipStyleRadius] = useState<string>('0.375rem');
 
   useEffect(() => {
-    // This code runs only on the client, after the component mounts
     try {
       const rootStyle = getComputedStyle(document.documentElement);
-      const radiusCssVar = rootStyle.getPropertyValue('--radius').trim(); // e.g., "0.375rem"
-      
-      const numericRadius = parseFloat(radiusCssVar); // e.g., 0.375
-      if (!isNaN(numericRadius)) {
-        setBarRadiusConfig([0, numericRadius * 4, numericRadius * 4, 0]);
-      }
-      
-      setTooltipStyleRadius(radiusCssVar); // e.g., "0.375rem"
+      const radiusCssVar = rootStyle.getPropertyValue('--radius').trim();
+      setTooltipStyleRadius(radiusCssVar);
     } catch (error) {
-      console.warn("Could not calculate dynamic styles for chart:", error);
-      // Defaults will be used if an error occurs
+      console.warn("Could not calculate dynamic styles for chart tooltip:", error);
     }
   }, []);
 
+  const chartData: ChartDataPoint[] = useMemo(() => {
+    if (!tools || tools.length === 0) {
+      return [];
+    }
 
-  if (tools.length === 0) {
+    const monthSet = new Set<number>();
+    tools.forEach(tool => {
+      tool.roiProjection?.forEach(p => monthSet.add(p.month));
+    });
+    const sortedMonths = Array.from(monthSet).sort((a, b) => a - b);
+
+    if (sortedMonths.length === 0) return [];
+
+    return sortedMonths.map(month => {
+      const dataPoint: ChartDataPoint = { month };
+      tools.forEach(tool => {
+        const projectionPoint = tool.roiProjection?.find(p => p.month === month);
+        dataPoint[tool.name] = projectionPoint?.roi;
+      });
+      return dataPoint;
+    });
+  }, [tools]);
+
+  if (tools.length === 0 || chartData.length === 0) {
     return (
       <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-xl text-primary flex items-center"><TrendingUp className="mr-2 h-6 w-6 text-accent"/>ROI Comparison</CardTitle>
-          <CardDescription>Select tools and apply filters to see ROI data.</CardDescription>
+          <CardTitle className="text-xl text-primary flex items-center"><TrendingUp className="mr-2 h-6 w-6 text-accent"/>ROI Projection Comparison</CardTitle>
+          <CardDescription>Select tools and apply filters to see ROI projection data.</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-center py-8">No ROI data to display. Please refine your selection.</p>
+          <p className="text-muted-foreground text-center py-8">No ROI projection data to display. Please refine your selection.</p>
         </CardContent>
       </Card>
     );
   }
 
-  const chartData = tools.map(tool => ({
-    name: tool.name,
-    roi: tool.roi,
-    fill: tool.roi >= 80 ? 'hsl(var(--chart-1))' : tool.roi >= 70 ? 'hsl(var(--chart-2))' : 'hsl(var(--chart-3))', 
-  }));
-
   return (
     <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="text-xl text-primary flex items-center"><TrendingUp className="mr-2 h-6 w-6 text-accent"/>ROI Comparison</CardTitle>
-        <CardDescription>Estimated Return on Investment (ROI) for the selected tools.</CardDescription>
+        <CardTitle className="text-xl text-primary flex items-center"><TrendingUp className="mr-2 h-6 w-6 text-accent"/>ROI Projection Comparison</CardTitle>
+        <CardDescription>Projected Return on Investment (ROI) for the selected tools over 6 months.</CardDescription>
       </CardHeader>
       <CardContent>
-        <div style={{ width: '100%', height: 150 + tools.length * 40 }}>
+        <div style={{ width: '100%', height: 300 + tools.length * 20 }}>
           <ResponsiveContainer>
-            <BarChart
+            <LineChart
               data={chartData}
-              layout="vertical"
               margin={{
                 top: 5,
-                right: 40, 
+                right: 30,
                 left: 20,
-                bottom: 20, 
+                bottom: 20,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border)/0.5)" />
-              <XAxis 
-                type="number" 
-                domain={[0, 100]} 
-                stroke="hsl(var(--foreground)/0.8)" 
+              <XAxis
+                dataKey="month"
+                stroke="hsl(var(--foreground)/0.8)"
                 tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                label={{ value: 'ROI (%)', position: 'insideBottom', offset: -10, fill: 'hsl(var(--muted-foreground))' }} 
+                label={{ value: 'Month', position: 'insideBottom', offset: -10, fill: 'hsl(var(--muted-foreground))' }}
+                type="number"
+                domain={['dataMin', 'dataMax']}
+                tickFormatter={(tick) => `M${tick}`}
               />
-              <YAxis 
-                dataKey="name" 
-                type="category" 
-                stroke="hsl(var(--foreground)/0.8)" 
-                width={120} 
-                tick={{ fill: 'hsl(var(--muted-foreground))' }} 
-                interval={0} 
+              <YAxis
+                stroke="hsl(var(--foreground)/0.8)"
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                label={{ value: 'ROI (%)', angle: -90, position: 'insideLeft', fill: 'hsl(var(--muted-foreground))' }}
+                domain={[0, 100]}
               />
               <Tooltip
-                cursor={{ fill: 'hsl(var(--accent)/0.1)' }}
-                contentStyle={{ 
-                  backgroundColor: 'hsl(var(--popover))', 
-                  color: 'hsl(var(--popover-foreground))', 
+                cursor={{ strokeDasharray: '3 3', stroke: 'hsl(var(--accent)/0.5)' }}
+                contentStyle={{
+                  backgroundColor: 'hsl(var(--popover))',
+                  color: 'hsl(var(--popover-foreground))',
                   borderRadius: tooltipStyleRadius,
                   borderColor: 'hsl(var(--border))',
                   boxShadow: '0 4px 12px hsl(var(--primary)/0.2)',
                 }}
-                formatter={(value: number) => [`${value}%`, 'ROI']}
+                formatter={(value: number, name: string) => [`${value}%`, name]}
+                labelFormatter={(label: number) => `Month ${label}`}
               />
-              <Legend 
+              <Legend
                 wrapperStyle={{ color: 'hsl(var(--muted-foreground))', paddingTop: '10px' }}
                 formatter={(value) => <span style={{ color: 'hsl(var(--muted-foreground))' }}>{value}</span>}
               />
-              <Bar dataKey="roi" name="ROI" barSize={25} radius={barRadiusConfig}>
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
-                ))}
-                <LabelList 
-                  dataKey="roi" 
-                  position="right" 
-                  formatter={(value: number) => `${value}%`} 
-                  fill="hsl(var(--foreground))"
-                  style={{ fontWeight: 'bold' }}
+              {tools.map((tool, index) => (
+                <Line
+                  key={tool.id}
+                  type="monotone"
+                  dataKey={tool.name}
+                  stroke={lineColors[index % lineColors.length]}
+                  strokeWidth={2.5}
+                  activeDot={{ r: 7, strokeWidth: 2, fill: lineColors[index % lineColors.length] }}
+                  dot={{ r: 4, strokeWidth: 1}}
+                  connectNulls // Optional: to connect points even if there are nulls in data
                 />
-              </Bar>
-            </BarChart>
+              ))}
+            </LineChart>
           </ResponsiveContainer>
         </div>
-         <div className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
-            <div className="flex items-center">
-              <span className="h-3 w-3 rounded-sm mr-1.5" style={{ backgroundColor: 'hsl(var(--chart-1))' }}></span> High ROI (80-100%)
-            </div>
-            <div className="flex items-center">
-              <span className="h-3 w-3 rounded-sm mr-1.5" style={{ backgroundColor: 'hsl(var(--chart-2))' }}></span> Medium ROI (70-79%)
-            </div>
-            <div className="flex items-center">
-              <span className="h-3 w-3 rounded-sm mr-1.5" style={{ backgroundColor: 'hsl(var(--chart-3))' }}></span> Low ROI (&lt;70%)
-            </div>
-          </div>
       </CardContent>
     </Card>
   );
