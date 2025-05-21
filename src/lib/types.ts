@@ -19,6 +19,7 @@ export interface Tool {
   name: string;
   score: number; // e.g., 8.9
   logoUrl?: string; // URL for the tool's logo
+  dataAiHint?: string; // Specific hint for AI image generation/search
   applicationTypes: ApplicationType[];
   testTypes: TestType[];
   operatingSystems: OperatingSystem[];

@@ -67,7 +67,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
                         width={60}
                         height={60}
                         className="rounded-md border-2 border-accent p-0.5 shadow-md object-contain bg-secondary"
-                        data-ai-hint="logo tech futuristic"
+                        data-ai-hint={tool.dataAiHint || "logo tech"}
                       />
                   )}
                   <div className="flex-grow">
