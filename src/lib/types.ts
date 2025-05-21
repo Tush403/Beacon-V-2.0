@@ -28,7 +28,7 @@ export interface Tool {
   reportingAnalytics: ReportingAnalytics[];
   strengths: string[];
   weaknesses: string[];
-  pdfLink: string; // Link to a detailed guide/PDF
+  pdfLink: string; // Link to a detailed guide/PDF - Kept for potential future use
   websiteUrl: string; // Link to the tool's homepage
   roiProjection: RoiTimePoint[];
 }
