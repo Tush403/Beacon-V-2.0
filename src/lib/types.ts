@@ -37,19 +37,19 @@ export interface Filters {
   reportingAnalytics: ReportingAnalytics | "";
 }
 
-export interface FilterOption<TValue extends string> {
-  value: TValue | "";
+export interface FilterOption {
+  value: string; // Changed from generic with TValue | ""
   label: string;
 }
 
 export interface FilterOptions {
-  applicationTypes: FilterOption<ApplicationType>[];
-  testTypes: FilterOption<TestType>[];
-  operatingSystems: FilterOption<OperatingSystem>[];
-  codingRequirements: FilterOption<CodingRequirement>[];
-  codingLanguages: FilterOption<CodingLanguage>[];
-  pricingModels: FilterOption<PricingModel>[];
-  reportingAnalytics: FilterOption<ReportingAnalytics>[];
+  applicationTypes: FilterOption[];
+  testTypes: FilterOption[];
+  operatingSystems: FilterOption[];
+  codingRequirements: FilterOption[];
+  codingLanguages: FilterOption[];
+  pricingModels: FilterOption[];
+  reportingAnalytics: FilterOption[];
 }
 
 export type TrendSummaryInput = AiTrendSummaryInput;

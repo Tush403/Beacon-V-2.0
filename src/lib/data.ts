@@ -1,5 +1,6 @@
 
 import type { Tool, FilterOptions, TrendData, ApplicationType, TestType, OperatingSystem, CodingRequirement, CodingLanguage, PricingModel, ReportingAnalytics } from './types';
+import { ALL_FILTER_VALUE } from '../lib/constants';
 
 export const ALL_APPLICATION_TYPES: ApplicationType[] = ["Web", "Mobile", "API", "Desktop", "Backend"];
 export const ALL_TEST_TYPES: TestType[] = ["UI Testing", "API Testing", "Performance Testing", "Security Testing", "Unit Testing", "E2E Testing"];
@@ -11,13 +12,13 @@ export const ALL_REPORTING_ANALYTICS: ReportingAnalytics[] = ["Basic", "Advanced
 
 
 export const filterOptionsData: FilterOptions = {
-  applicationTypes: [{ value: "", label: "All Applications" }, ...ALL_APPLICATION_TYPES.map(val => ({ value: val, label: val }))],
-  testTypes: [{ value: "", label: "All Test Types" }, ...ALL_TEST_TYPES.map(val => ({ value: val, label: val }))],
-  operatingSystems: [{ value: "", label: "All OS" }, ...ALL_OPERATING_SYSTEMS.map(val => ({ value: val, label: val }))],
-  codingRequirements: [{ value: "", label: "Any Requirement" }, ...ALL_CODING_REQUIREMENTS.map(val => ({ value: val, label: val }))],
-  codingLanguages: [{ value: "", label: "Any Language" }, ...ALL_CODING_LANGUAGES.map(val => ({ value: val, label: val }))],
-  pricingModels: [{ value: "", label: "Any Model" }, ...ALL_PRICING_MODELS.map(val => ({ value: val, label: val }))],
-  reportingAnalytics: [{ value: "", label: "Any Analytics" }, ...ALL_REPORTING_ANALYTICS.map(val => ({ value: val, label: val }))],
+  applicationTypes: [{ value: ALL_FILTER_VALUE, label: "All Applications" }, ...ALL_APPLICATION_TYPES.map(val => ({ value: val, label: val }))],
+  testTypes: [{ value: ALL_FILTER_VALUE, label: "All Test Types" }, ...ALL_TEST_TYPES.map(val => ({ value: val, label: val }))],
+  operatingSystems: [{ value: ALL_FILTER_VALUE, label: "All OS" }, ...ALL_OPERATING_SYSTEMS.map(val => ({ value: val, label: val }))],
+  codingRequirements: [{ value: ALL_FILTER_VALUE, label: "Any Requirement" }, ...ALL_CODING_REQUIREMENTS.map(val => ({ value: val, label: val }))],
+  codingLanguages: [{ value: ALL_FILTER_VALUE, label: "Any Language" }, ...ALL_CODING_LANGUAGES.map(val => ({ value: val, label: val }))],
+  pricingModels: [{ value: ALL_FILTER_VALUE, label: "Any Model" }, ...ALL_PRICING_MODELS.map(val => ({ value: val, label: val }))],
+  reportingAnalytics: [{ value: ALL_FILTER_VALUE, label: "Any Analytics" }, ...ALL_REPORTING_ANALYTICS.map(val => ({ value: val, label: val }))],
 };
 
 export const mockToolsData: Tool[] = [

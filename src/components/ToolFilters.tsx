@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Filter, RotateCcw } from 'lucide-react';
+import { ALL_FILTER_VALUE } from '@/lib/constants';
 
 interface ToolFiltersProps {
   filters: Filters;
@@ -20,22 +21,25 @@ const ToolFilters: React.FC<ToolFiltersProps> = ({ filters, filterOptions, onFil
   const renderSelect = <K extends keyof Filters>(
     filterKey: K,
     label: string,
-    options: FilterOption<Filters[K] extends "" ? never : Filters[K]>[]
+    options: FilterOption[] // Changed type here
   ) => (
     <div className="space-y-1">
       <label htmlFor={filterKey} className="block text-sm font-medium text-foreground">
         {label}
       </label>
       <Select
-        value={filters[filterKey]}
-        onValueChange={(value) => onFilterChange(filterKey, value as Filters[K])}
+        value={filters[filterKey] === "" ? ALL_FILTER_VALUE : filters[filterKey]}
+        onValueChange={(valueFromSelect) => {
+          const actualValue = valueFromSelect === ALL_FILTER_VALUE ? "" : valueFromSelect;
+          onFilterChange(filterKey, actualValue as Filters[K]);
+        }}
       >
         <SelectTrigger id={filterKey} className="w-full bg-background text-foreground">
           <SelectValue placeholder={`Select ${label}`} />
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
-            <SelectItem key={option.value} value={option.value || ""}>
+            <SelectItem key={option.value} value={option.value}>
               {option.label}
             </SelectItem>
           ))}
