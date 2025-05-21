@@ -10,6 +10,8 @@ import TrendSummaryPanel from '@/components/TrendSummaryPanel';
 import type { Filters, Tool } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType } from '@/lib/data';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ALL_FILTER_VALUE } from '@/lib/constants';
+
 
 const initialFilters: Filters = {
   applicationType: "",
@@ -44,25 +46,25 @@ export default function HomePage() {
   const filteredTools = useMemo(() => {
     let tools = mockToolsData;
 
-    if (filters.applicationType) {
+    if (filters.applicationType && filters.applicationType !== ALL_FILTER_VALUE) {
       tools = tools.filter(tool => tool.applicationTypes.includes(filters.applicationType!));
     }
-    if (filters.testType) {
+    if (filters.testType && filters.testType !== ALL_FILTER_VALUE) {
       tools = tools.filter(tool => tool.testTypes.includes(filters.testType!));
     }
-    if (filters.operatingSystem) {
+    if (filters.operatingSystem && filters.operatingSystem !== ALL_FILTER_VALUE) {
       tools = tools.filter(tool => tool.operatingSystems.includes(filters.operatingSystem!));
     }
-    if (filters.codingRequirement) {
+    if (filters.codingRequirement && filters.codingRequirement !== ALL_FILTER_VALUE) {
       tools = tools.filter(tool => tool.codingRequirements.includes(filters.codingRequirement!));
     }
-    if (filters.codingLanguage) {
+    if (filters.codingLanguage && filters.codingLanguage !== ALL_FILTER_VALUE) {
       tools = tools.filter(tool => tool.codingLanguages.includes(filters.codingLanguage!) || filters.codingLanguage === "N/A" && tool.codingLanguages.includes("N/A"));
     }
-    if (filters.pricingModel) {
+    if (filters.pricingModel && filters.pricingModel !== ALL_FILTER_VALUE) {
       tools = tools.filter(tool => tool.pricingModels.includes(filters.pricingModel!));
     }
-    if (filters.reportingAnalytics) {
+    if (filters.reportingAnalytics && filters.reportingAnalytics !== ALL_FILTER_VALUE) {
       tools = tools.filter(tool => tool.reportingAnalytics.includes(filters.reportingAnalytics!));
     }
     
@@ -96,9 +98,11 @@ export default function HomePage() {
           </div>
         </div>
       </main>
-      <footer className="text-center p-4 text-sm text-muted-foreground border-t border-border/50 mt-auto bg-background/80 backdrop-blur-sm">
-        Beacon &copy; {currentYear !== null ? currentYear : 'Loading...'} - Empowering Your Tool Selection.
+      <footer className="flex items-center justify-between p-4 text-sm text-muted-foreground border-t border-border/50 mt-auto bg-background/80 backdrop-blur-sm">
+        <span>V.1.0</span>
+        <span>Copyright© {currentYear !== null ? currentYear : 'Loading...'} Tao Digital Solutions Inc. All rights reserved</span>
       </footer>
     </div>
   );
 }
+

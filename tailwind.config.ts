@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -66,9 +67,9 @@ export default {
   			}
   		},
   		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
+  			lg: 'var(--radius)', // 6px
+  			md: 'calc(var(--radius) - 2px)', // 4px
+  			sm: 'calc(var(--radius) - 4px)' // 2px
   		},
   		keyframes: {
   			'accordion-down': {
@@ -86,13 +87,18 @@ export default {
   				to: {
   					height: '0'
   				}
-  			}
+  			},
+        'spin-slow': {
+          'to': { transform: 'rotate(360deg)' },
+        }
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+        'spin-slow': 'spin 3s linear infinite',
   		}
   	}
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
