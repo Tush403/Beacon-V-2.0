@@ -6,7 +6,7 @@ import { generateTestTypeSummary } from '@/actions/aiActions';
 import type { TrendSummaryInput, TrendData } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Lightbulb } from 'lucide-react';
+import { AlertCircle, Lightbulb, Zap } from 'lucide-react'; // Changed Lightbulb to Zap for a more "insightful" feel
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface TrendSummaryPanelProps {
@@ -56,33 +56,35 @@ const TrendSummaryPanel: React.FC<TrendSummaryPanelProps> = ({ selectedTestType,
   }, [currentTestTypeForSummary, trendData]);
 
   return (
-    <Card className="shadow-lg rounded-xl">
+    <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="text-xl flex items-center">
-          <Lightbulb className="mr-2 h-6 w-6 text-primary" />
+        <CardTitle className="text-xl flex items-center text-primary">
+          <Zap className="mr-2 h-6 w-6 text-accent animate-pulse" /> {/* Using Zap and added pulse */}
           AI-Powered Trend Summary
         </CardTitle>
         <CardDescription>
-          Insights for {currentTestTypeForSummary}
+          Key insights for {currentTestTypeForSummary}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading && (
           <div className="space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-full bg-muted/50" />
+            <Skeleton className="h-4 w-full bg-muted/50" />
+            <Skeleton className="h-4 w-3/4 bg-muted/50" />
           </div>
         )}
         {error && !isLoading && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="bg-destructive/20 border-destructive/50 text-destructive-foreground rounded-md">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
+            <AlertTitle>Error Fetching Summary</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
         {summary && !isLoading && !error && (
-          <p className="text-sm text-foreground leading-relaxed">{summary}</p>
+          <p className="text-sm text-foreground/90 leading-relaxed glassmorphism-text p-3 rounded-md bg-background/30">
+            {summary}
+          </p>
         )}
       </CardContent>
     </Card>

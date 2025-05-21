@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import Header from '@/components/Header';
 import ToolFilters from '@/components/ToolFilters';
 import ToolResults from '@/components/ToolResults';
@@ -23,6 +23,12 @@ const initialFilters: Filters = {
 
 export default function HomePage() {
   const [filters, setFilters] = useState<Filters>(initialFilters);
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
 
   const handleFilterChange = useCallback(<K extends keyof Filters>(filterType: K, value: Filters[K]) => {
     setFilters(prevFilters => ({
@@ -90,8 +96,8 @@ export default function HomePage() {
           </div>
         </div>
       </main>
-      <footer className="text-center p-4 text-sm text-muted-foreground border-t border-border mt-auto">
-        ToolWise &copy; {new Date().getFullYear()} - Empowering Your Tool Selection.
+      <footer className="text-center p-4 text-sm text-muted-foreground border-t border-border/50 mt-auto bg-background/80 backdrop-blur-sm">
+        ToolWise &copy; {currentYear !== null ? currentYear : 'Loading...'} - Empowering Your Tool Selection.
       </footer>
     </div>
   );

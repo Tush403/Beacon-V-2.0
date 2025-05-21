@@ -3,84 +3,97 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
 @layer base {
   :root {
-    --background: 225 27% 97%; /* Light Blue-Gray */
-    --foreground: 220 9% 25%; /* Darker Gray for text */
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 220 9% 25%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 9% 25%;
-    --primary: 231 48% 48%; /* Deep Blue */
-    --primary-foreground: 0 0% 100%; /* White */
-    --secondary: 225 15% 90%; /* Lighter shade of background for secondary elements */
-    --secondary-foreground: 231 48% 28%; /* Darker shade of primary */
-    --muted: 225 15% 85%; /* Muted shade for less emphasis */
-    --muted-foreground: 220 9% 45%;
-    --accent: 291 64% 42%; /* Purple */
-    --accent-foreground: 0 0% 100%; /* White */
-    --destructive: 0 74% 52%; /* Brighter Red for destructive actions */
-    --destructive-foreground: 0 0% 100%; /* White */
-    --border: 225 10% 85%; /* Border color derived from background */
-    --input: 225 10% 90%; /* Input background */
-    --ring: 231 48% 48%; /* Ring color (primary) */
+    /* Futuristic Dark Theme */
+    --background: 220 20% 12%; /* Dark Slate Blue */
+    --foreground: 210 20% 90%; /* Light Grayish Blue */
     
-    --chart-1: 120 60% 50%; /* Green for High ROI */
-    --chart-2: 45 100% 50%; /* Yellow for Medium ROI */
-    --chart-3: 0 70% 50%;   /* Red for Low ROI (can also use --destructive) */
-    --chart-4: 210 70% 55%; /* A general blue for charts if needed */
-    --chart-5: 270 65% 60%; /* A general purple for charts if needed */
+    --card: 220 20% 18%; /* Slightly Lighter Dark Slate Blue */
+    --card-foreground: 210 20% 85%;
     
-    --radius: 0.5rem;
+    --popover: 220 20% 18%;
+    --popover-foreground: 210 20% 85%;
+    
+    --primary: 200 80% 55%; /* Bright Cyan-Blue */
+    --primary-foreground: 220 20% 10%; /* Dark for contrast on primary */
+    
+    --secondary: 220 15% 30%; /* Muted Blue-Gray */
+    --secondary-foreground: 210 20% 80%;
+    
+    --muted: 220 15% 25%;
+    --muted-foreground: 210 15% 65%; /* Lighter gray for muted text */
+    
+    --accent: 180 100% 45%; /* Vibrant Cyan/Teal */
+    --accent-foreground: 0 0% 100%; /* White for contrast on accent */
+    
+    --destructive: 0 70% 55%; /* Vivid Red */
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 220 15% 28%; /* Subtle border */
+    --input: 220 15% 22%; /* Darker input fields */
+    --ring: 200 80% 55%; /* Matches primary */
+    
+    /* Chart Colors for a Dark, Futuristic Theme */
+    --chart-1: 150 70% 50%; /* Vibrant Green */
+    --chart-2: 45 80% 55%;  /* Bright Yellow/Orange */
+    --chart-3: 0 70% 55%;   /* Vivid Red (can match destructive) */
+    --chart-4: 210 70% 60%; /* Bright Blue */
+    --chart-5: 270 70% 65%; /* Bright Purple */
+    
+    --radius: 0.375rem; /* Sharper corners */
 
-    /* Sidebar variables (keeping them as they might be used by shadcn/ui components) */
-    --sidebar-background: 225 20% 94%; /* Slightly darker than main background */
-    --sidebar-foreground: 231 48% 28%;
-    --sidebar-primary: 231 48% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 291 64% 42%;
+    /* Sidebar variables - themed for dark mode */
+    --sidebar-background: 220 20% 15%; 
+    --sidebar-foreground: 210 20% 88%;
+    --sidebar-primary: 200 80% 55%;
+    --sidebar-primary-foreground: 220 20% 10%;
+    --sidebar-accent: 180 100% 45%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 225 10% 80%;
-    --sidebar-ring: 231 48% 48%;
+    --sidebar-border: 220 15% 25%;
+    --sidebar-ring: 200 80% 55%;
   }
 
   .dark {
-    /* Keeping dark mode as is, focusing on light mode as per request */
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Ensure dark mode specific overrides are also futuristic if used,
+       but the primary focus is now the default (which is dark) */
+    --background: 220 20% 10%; 
+    --foreground: 210 20% 92%;
+    --card: 220 20% 15%;
+    --card-foreground: 210 20% 90%;
+    --popover: 220 20% 15%;
+    --popover-foreground: 210 20% 90%;
+    --primary: 200 80% 60%;
+    --primary-foreground: 220 20% 8%;
+    --secondary: 220 15% 28%;
+    --secondary-foreground: 210 20% 85%;
+    --muted: 220 15% 22%;
+    --muted-foreground: 210 15% 60%;
+    --accent: 180 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 15% 26%;
+    --input: 220 15% 20%;
+    --ring: 200 80% 60%;
+
+    --chart-1: 150 70% 55%;
+    --chart-2: 45 80% 60%;
+    --chart-3: 0 75% 60%;
+    --chart-4: 210 70% 65%;
+    --chart-5: 270 70% 70%;
+
+    --sidebar-background: 220 20% 12%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: 200 80% 60%;
+    --sidebar-primary-foreground: 220 20% 8%;
+    --sidebar-accent: 180 100% 50%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 15% 22%;
+    --sidebar-ring: 200 80% 60%;
   }
 }
 
@@ -90,5 +103,7 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    /* Apply a subtle gradient to the background for a futuristic feel */
+    background-image: linear-gradient(to bottom right, hsl(var(--background)), hsl(var(--secondary) / 0.5));
   }
 }
