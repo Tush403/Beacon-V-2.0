@@ -43,11 +43,6 @@ export default function HomePage() {
   const [estimatorLoading, setEstimatorLoading] = useState<boolean>(false);
   const [estimatorError, setEstimatorError] = useState<string | null>(null);
 
-  // State for Comparison Tools
-  const [toolForCol1Id, setToolForCol1Id] = useState<string | null>(null);
-  const [toolForCol2Id, setToolForCol2Id] = useState<string | null>(null);
-  const [toolForCol3Id, setToolForCol3Id] = useState<string | null>(null);
-
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
   }, []);
@@ -61,10 +56,6 @@ export default function HomePage() {
 
   const handleResetFilters = useCallback(() => {
     setFilters(initialFilters);
-    // Optionally reset comparison tools as well, or let them persist
-    // setToolForCol1Id(null); 
-    // setToolForCol2Id(null);
-    // setToolForCol3Id(null);
   }, []);
   
   const filteredToolsForDisplay = useMemo(() => {
@@ -95,32 +86,9 @@ export default function HomePage() {
     return tools.sort((a, b) => b.score - a.score);
   }, [filters]);
 
-  useEffect(() => {
-    setToolForCol1Id(filteredToolsForDisplay[0]?.id || null);
-    setToolForCol2Id(filteredToolsForDisplay[1]?.id || null);
-    setToolForCol3Id(filteredToolsForDisplay[2]?.id || null);
+  const topThreeTools = useMemo(() => {
+    return filteredToolsForDisplay.slice(0, 3);
   }, [filteredToolsForDisplay]);
-
-  const comparisonTools: Tool[] = useMemo(() => {
-    const tools = [];
-    if (toolForCol1Id) {
-      const tool1 = mockToolsData.find(t => t.id === toolForCol1Id);
-      if (tool1) tools.push(tool1);
-    }
-    if (toolForCol2Id) {
-      const tool2 = mockToolsData.find(t => t.id === toolForCol2Id);
-      // Ensure not to add the same tool twice if it was already tool1
-      if (tool2 && tool2.id !== toolForCol1Id) tools.push(tool2);
-      else if (!tool2 && toolForCol1Id !== toolForCol2Id) setToolForCol2Id(null); // Reset if selected tool not found
-    }
-     if (toolForCol3Id) {
-      const tool3 = mockToolsData.find(t => t.id === toolForCol3Id);
-      // Ensure not to add the same tool twice if it was already tool1 or tool2
-      if (tool3 && tool3.id !== toolForCol1Id && tool3.id !== toolForCol2Id) tools.push(tool3);
-      else if (!tool3 && toolForCol1Id !== toolForCol3Id && toolForCol2Id !== toolForCol3Id) setToolForCol3Id(null); // Reset
-    }
-    return tools;
-  }, [toolForCol1Id, toolForCol2Id, toolForCol3Id]);
 
 
   const handleEstimatorInputChange = useCallback((field: keyof EstimatorInputValues, value: string | number | boolean) => {
@@ -182,14 +150,9 @@ export default function HomePage() {
 
           <div className="lg:col-span-8 xl:col-span-9 space-y-6">
             <ToolResults
-              allTools={mockToolsData}
-              toolForCol1Id={toolForCol1Id}
-              toolForCol2Id={toolForCol2Id}
-              onToolForCol2Change={setToolForCol2Id}
-              toolForCol3Id={toolForCol3Id}
-              onToolForCol3Change={setToolForCol3Id}
+              toolsToDisplay={topThreeTools}
             />
-            {comparisonTools.length > 0 && <RoiChart tools={comparisonTools} />}
+            {topThreeTools.length > 0 && <RoiChart tools={topThreeTools} />}
           </div>
         </div>
       </main>
@@ -200,3 +163,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    
