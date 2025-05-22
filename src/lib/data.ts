@@ -1,5 +1,5 @@
 
-import type { Tool, FilterOptions, TrendData, ApplicationType, TestType, OperatingSystem, CodingRequirement, CodingLanguage, PricingModel, ReportingAnalytics, RoiTimePoint } from './types';
+import type { Tool, FilterOptions, TrendData, ApplicationType, TestType, OperatingSystem, CodingRequirement, CodingLanguage, PricingModel, ReportingAnalytics, RoiTimePoint, ComparisonParameter } from './types';
 import { ALL_FILTER_VALUE } from '../lib/constants';
 
 export const ALL_APPLICATION_TYPES: ApplicationType[] = ["Web", "Mobile", "API", "Desktop", "Backend"];
@@ -284,17 +284,17 @@ export const trendDataPerTestType: TrendData = {
   "API Testing": {
     testType: "API Testing",
     mostWidelyUsedTool: "Postman",
-    trendingTool: "Playwright", // Playwright has API testing capabilities
-    topRatedTool: "Postman", // Often cited as top for ease of use and features
-    aiPoweredTool: "Testim (for UI, some API)", // Placeholder, API specific AI tools exist
-    enterpriseReadyTool: "Katalon Studio", // Good API testing features
+    trendingTool: "Playwright", 
+    topRatedTool: "Postman", 
+    aiPoweredTool: "Testim (for UI, some API)", 
+    enterpriseReadyTool: "Katalon Studio", 
   },
   "Performance Testing": {
     testType: "Performance Testing",
     mostWidelyUsedTool: "JMeter",
     trendingTool: "k6",
-    topRatedTool: "Grafana k6", // k6 often gets high ratings for modern perf testing
-    aiPoweredTool: "LoadNinja", // AI-powered performance testing
+    topRatedTool: "Grafana k6", 
+    aiPoweredTool: "LoadNinja", 
     enterpriseReadyTool: "LoadRunner",
   },
     "Security Testing": {
@@ -307,7 +307,7 @@ export const trendDataPerTestType: TrendData = {
   },
   "Unit Testing": {
     testType: "Unit Testing",
-    mostWidelyUsedTool: "JUnit (Java), PyTest (Python), Jest (JS)", // Varies by language
+    mostWidelyUsedTool: "JUnit (Java), PyTest (Python), Jest (JS)", 
     trendingTool: "Jest (JS), Mockito (Java)",
     topRatedTool: "PyTest (Python)",
     aiPoweredTool: "GitHub Copilot (assists writing tests)",
@@ -321,7 +321,7 @@ export const trendDataPerTestType: TrendData = {
     aiPoweredTool: "Testim",
     enterpriseReadyTool: "Katalon Studio",
   },
-  "Default": { // Fallback if selectedTestType is not found
+  "Default": { 
     testType: "General Testing",
     mostWidelyUsedTool: "Selenium",
     trendingTool: "Playwright",
@@ -330,3 +330,15 @@ export const trendDataPerTestType: TrendData = {
     enterpriseReadyTool: "Katalon Studio",
   }
 };
+
+export const comparisonParametersData: ComparisonParameter[] = [
+  { key: "initialSetupTime", label: "Initial Setup Time" },
+  { key: "maintenanceOverhead", label: "Maintenance Overhead" },
+  { key: "testCreationSpeed", label: "Test Creation Speed" },
+  { key: "scriptReusability", label: "Script Reusability" },
+  { key: "parallelExecutionSupport", label: "Parallel Execution Support" },
+  { key: "testCaseCreationEffort", label: "Test Case Creation Effort" },
+  { key: "skillRequirement", label: "Skill Requirement" },
+  { key: "overallAutomationCoverage", label: "Overall Automation Coverage" },
+  { key: "totalCostOfOwnership", label: "Total Cost of Ownership" },
+];

@@ -18,8 +18,8 @@ export interface Tool {
   id: string;
   name: string;
   score: number; // e.g., 8.9
-  logoUrl?: string; 
-  dataAiHint?: string; 
+  logoUrl?: string;
+  dataAiHint?: string;
   applicationTypes: ApplicationType[];
   testTypes: TestType[];
   operatingSystems: OperatingSystem[];
@@ -28,7 +28,6 @@ export interface Tool {
   pricingModels: PricingModel[];
   reportingAnalytics: ReportingAnalytics[];
   
-  // Fields for the original tabbed detail view (strengths, weaknesses, website)
   strengths: string[];
   weaknesses: string[];
   pdfLink: string; 
@@ -36,7 +35,6 @@ export interface Tool {
   
   roiProjection: RoiTimePoint[];
 
-  // New fields for ROI Table comparison
   initialSetupTime: string;
   maintenanceOverhead: string;
   testCreationSpeed: string;
@@ -79,7 +77,6 @@ export interface TrendData {
   [key: string]: TrendSummaryInput;
 }
 
-// Types for Effort Estimator
 export interface EstimatorInputValues {
   complexityLow: number;
   complexityMedium: number;
@@ -95,7 +92,7 @@ export interface EffortEstimationOutput {
   explanation: string;
 }
 
-// For ToolResults comparison table
+// For ROI Comparison Table
 export interface ComparisonParameter {
   key: keyof Tool;
   label: string;

@@ -8,8 +8,9 @@ import ToolResults from '@/components/ToolResults';
 import RoiChart from '@/components/RoiChart';
 import TrendSummaryPanel from '@/components/TrendSummaryPanel';
 import EffortEstimator from '@/components/EffortEstimator';
-import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
-import { mockToolsData, filterOptionsData, trendDataPerTestType } from '@/lib/data';
+import RoiComparisonTable from '@/components/RoiComparisonTable'; // Import new component
+import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput, ComparisonParameter } from '@/lib/types';
+import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
 import { estimateEffort as estimateEffortAction } from '@/actions/aiActions';
 
@@ -37,11 +38,15 @@ export default function HomePage() {
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
 
-  // State for Effort Estimator
   const [estimatorInputs, setEstimatorInputs] = useState<EstimatorInputValues>(initialEstimatorInputs);
   const [effortEstimation, setEffortEstimation] = useState<EffortEstimationOutput | null>(null);
   const [estimatorLoading, setEstimatorLoading] = useState<boolean>(false);
   const [estimatorError, setEstimatorError] = useState<string | null>(null);
+
+  // State for ROI Comparison Table
+  const [toolForCol1Id, setToolForCol1Id] = useState<string | null>(null);
+  const [toolForCol2Id, setToolForCol2Id] = useState<string | null>(null);
+  const [toolForCol3Id, setToolForCol3Id] = useState<string | null>(null);
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
@@ -56,6 +61,9 @@ export default function HomePage() {
 
   const handleResetFilters = useCallback(() => {
     setFilters(initialFilters);
+    setToolForCol1Id(null);
+    setToolForCol2Id(null);
+    setToolForCol3Id(null);
   }, []);
   
   const filteredToolsForDisplay = useMemo(() => {
@@ -89,6 +97,31 @@ export default function HomePage() {
   const topThreeTools = useMemo(() => {
     return filteredToolsForDisplay.slice(0, 3);
   }, [filteredToolsForDisplay]);
+
+  // Effect to update comparison table tools when filters change
+  useEffect(() => {
+    if (filteredToolsForDisplay.length > 0) {
+      setToolForCol1Id(filteredToolsForDisplay[0].id);
+      setToolForCol2Id(filteredToolsForDisplay.length > 1 ? filteredToolsForDisplay[1].id : null);
+      setToolForCol3Id(filteredToolsForDisplay.length > 2 ? filteredToolsForDisplay[2].id : null);
+    } else {
+      setToolForCol1Id(null);
+      setToolForCol2Id(null);
+      setToolForCol3Id(null);
+    }
+  }, [filteredToolsForDisplay]);
+
+  const handleTool2Change = useCallback((toolId: string | null) => {
+    setToolForCol2Id(toolId);
+  }, []);
+
+  const handleTool3Change = useCallback((toolId: string | null) => {
+    setToolForCol3Id(toolId);
+  }, []);
+
+  const tool1ForComparison = useMemo(() => mockToolsData.find(t => t.id === toolForCol1Id) || null, [toolForCol1Id]);
+  const tool2ForComparison = useMemo(() => mockToolsData.find(t => t.id === toolForCol2Id) || null, [toolForCol2Id]);
+  const tool3ForComparison = useMemo(() => mockToolsData.find(t => t.id === toolForCol3Id) || null, [toolForCol3Id]);
 
 
   const handleEstimatorInputChange = useCallback((field: keyof EstimatorInputValues, value: string | number | boolean) => {
@@ -149,10 +182,24 @@ export default function HomePage() {
           </div>
 
           <div className="lg:col-span-8 xl:col-span-9 space-y-6">
+            {topThreeTools.length > 0 && <RoiChart tools={topThreeTools} />}
+            
+            {/* ROI Comparison Table */}
+            {tool1ForComparison && (
+                 <RoiComparisonTable
+                    allTools={mockToolsData}
+                    tool1={tool1ForComparison}
+                    tool2={tool2ForComparison}
+                    tool3={tool3ForComparison}
+                    onTool2Change={handleTool2Change}
+                    onTool3Change={handleTool3Change}
+                    comparisonParameters={comparisonParametersData}
+                 />
+            )}
+
             <ToolResults
               toolsToDisplay={topThreeTools}
             />
-            {topThreeTools.length > 0 && <RoiChart tools={topThreeTools} />}
           </div>
         </div>
       </main>
@@ -163,5 +210,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-    
