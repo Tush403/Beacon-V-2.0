@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { Cog } from 'lucide-react'; // Changed from Sigma, and will be used for TAO DIGITAL
+import { Cog } from 'lucide-react';
 
 const Header: React.FC = () => {
   return (
-    <header className="bg-primary text-primary-foreground shadow-xl backdrop-blur-md bg-opacity-90 sticky top-0 z-50">
+    <header className="bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(231,48%,40%)] text-primary-foreground shadow-lg backdrop-blur-md bg-opacity-90 sticky top-0 z-50">
       <div className="container mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
         {/* Left Part: TAO DIGITAL Logo and Text */}
         <div className="flex items-center">
@@ -36,4 +36,3 @@ const Header: React.FC = () => {
 
 
 export default Header;
-
