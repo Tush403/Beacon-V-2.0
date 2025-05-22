@@ -103,7 +103,7 @@ const RoiComparisonTable: React.FC<RoiComparisonTableProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent className="p-0 overflow-x-auto">
-        <div className="grid grid-cols-[minmax(150px,1fr)_repeat(3,minmax(150px,1fr))] border-t border-l border-border rounded-b-lg">
+        <div className="grid grid-cols-[minmax(220px,auto)_repeat(3,minmax(150px,1fr))] border-t border-l border-border rounded-b-lg">
           {/* Headers */}
           <div className="p-3 font-semibold bg-muted/50 border-b border-r border-border text-primary">Parameters</div>
           <div className="border-r border-border">{renderToolColumnHeader(tool1, () => {}, "Tool 1", true)}</div>
