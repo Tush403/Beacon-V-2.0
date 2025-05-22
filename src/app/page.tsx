@@ -8,7 +8,7 @@ import ToolResults from '@/components/ToolResults';
 import RoiChart from '@/components/RoiChart';
 import TrendSummaryPanel from '@/components/TrendSummaryPanel';
 import EffortEstimator from '@/components/EffortEstimator';
-import RoiComparisonTable from '@/components/RoiComparisonTable'; // Import new component
+import RoiComparisonTable from '@/components/RoiComparisonTable';
 import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput, ComparisonParameter } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
@@ -182,7 +182,9 @@ export default function HomePage() {
           </div>
 
           <div className="lg:col-span-8 xl:col-span-9 space-y-6">
-            {topThreeTools.length > 0 && <RoiChart tools={topThreeTools} />}
+            <ToolResults
+              toolsToDisplay={topThreeTools}
+            />
             
             {/* ROI Comparison Table */}
             {tool1ForComparison && (
@@ -197,9 +199,7 @@ export default function HomePage() {
                  />
             )}
 
-            <ToolResults
-              toolsToDisplay={topThreeTools}
-            />
+            {topThreeTools.length > 0 && <RoiChart tools={topThreeTools} />}
           </div>
         </div>
       </main>
