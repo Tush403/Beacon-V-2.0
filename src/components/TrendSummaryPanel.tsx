@@ -94,3 +94,4 @@ const TrendSummaryPanel: React.FC<TrendSummaryPanelProps> = ({ selectedTestType,
 };
 
 export default TrendSummaryPanel;
+
