@@ -56,7 +56,7 @@ const TrendSummaryPanel: React.FC<TrendSummaryPanelProps> = ({ selectedTestType,
   }, [currentTestTypeForSummary, trendData]);
 
   return (
-    <Card className="shadow-xl rounded-lg border-border/50 bg-card text-card-foreground animate-in fade-in-0 slide-in-from-left-12 duration-700 ease-out delay-200">
+    <Card className="shadow-xl rounded-lg border-border/50 bg-card text-card-foreground animate-in fade-in-0 slide-in-from-left-12 duration-700 ease-out delay-200 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
       <CardHeader>
         <CardTitle className="text-xl flex items-center text-primary">
           <Zap className="mr-2 h-6 w-6 text-accent animate-pulse" /> 
@@ -94,4 +94,3 @@ const TrendSummaryPanel: React.FC<TrendSummaryPanelProps> = ({ selectedTestType,
 };
 
 export default TrendSummaryPanel;
-

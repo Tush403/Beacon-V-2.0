@@ -2,8 +2,8 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from 'react';
-import type { Tool, RoiTimePoint } from '@/lib/types';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import type { Tool } from '@/lib/types';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { TrendingUp } from 'lucide-react';
 
@@ -28,7 +28,6 @@ const RoiChart: React.FC<RoiChartProps> = ({ tools }) => {
   const [tooltipStyleRadius, setTooltipStyleRadius] = useState<string>('0.375rem'); // Default based on globals.css --radius
 
   useEffect(() => {
-    // This effect runs only on the client side
     if (typeof window !== 'undefined') {
       try {
         const rootStyle = getComputedStyle(document.documentElement);
@@ -80,7 +79,7 @@ const RoiChart: React.FC<RoiChartProps> = ({ tools }) => {
   }
 
   return (
-    <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-200">
+    <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-200 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
       <CardHeader>
         <CardTitle className="text-xl text-primary flex items-center"><TrendingUp className="mr-2 h-6 w-6 text-accent"/>ROI Projection Comparison</CardTitle>
         <CardDescription>Projected Return on Investment (ROI) for the selected tools over 6 months.</CardDescription>
@@ -138,7 +137,7 @@ const RoiChart: React.FC<RoiChartProps> = ({ tools }) => {
                   strokeWidth={2.5}
                   activeDot={{ r: 7, strokeWidth: 2, fill: lineColors[index % lineColors.length] }}
                   dot={{ r: 4, strokeWidth: 1}}
-                  connectNulls // Optional: to connect points even if there are nulls in data
+                  connectNulls
                 />
               ))}
             </LineChart>

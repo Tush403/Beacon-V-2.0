@@ -35,7 +35,7 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
   };
 
   return (
-    <Card className="shadow-xl rounded-lg border-border/50 bg-card text-card-foreground animate-in fade-in-0 slide-in-from-left-12 duration-700 ease-out delay-300">
+    <Card className="shadow-xl rounded-lg border-border/50 bg-card text-card-foreground animate-in fade-in-0 slide-in-from-left-12 duration-700 ease-out delay-300 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
       <CardHeader>
         <CardTitle className="text-xl flex items-center text-primary">
           <Bot className="mr-2 h-6 w-6 text-accent" />
@@ -164,4 +164,3 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
 };
 
 export default EffortEstimator;
-
