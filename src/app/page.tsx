@@ -13,6 +13,8 @@ import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
 import { estimateEffort as estimateEffortAction } from '@/actions/aiActions';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from '@/components/ui/button';
 
 const initialFilters: Filters = {
   applicationType: "",
@@ -47,6 +49,9 @@ export default function HomePage() {
   const [toolForCol1Id, setToolForCol1Id] = useState<string | null>(null);
   const [toolForCol2Id, setToolForCol2Id] = useState<string | null>(null);
   const [toolForCol3Id, setToolForCol3Id] = useState<string | null>(null);
+
+  // State for ROI Chart Dialog
+  const [showRoiChartDialog, setShowRoiChartDialog] = useState(false);
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
@@ -197,8 +202,28 @@ export default function HomePage() {
                     comparisonParameters={comparisonParametersData}
                  />
             )}
+            
+            {topThreeTools.length > 0 && (
+              <div className="flex justify-center pt-4">
+                <Button onClick={() => setShowRoiChartDialog(true)} variant="default" size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                  View ROI Projection Comparison
+                </Button>
+              </div>
+            )}
 
-            {topThreeTools.length > 0 && <RoiChart tools={topThreeTools} />}
+            <Dialog open={showRoiChartDialog} onOpenChange={setShowRoiChartDialog}>
+              <DialogContent className="sm:max-w-4xl"> {/* Increased max-width for better chart display */}
+                <DialogHeader>
+                  <DialogTitle className="text-xl text-primary">ROI Projection Comparison</DialogTitle>
+                </DialogHeader>
+                {topThreeTools.length > 0 ? (
+                    <RoiChart tools={topThreeTools} />
+                ) : (
+                    <p className="text-muted-foreground text-center py-8">No tools selected to display ROI projection.</p>
+                )}
+              </DialogContent>
+            </Dialog>
+
           </div>
         </div>
       </main>
@@ -209,3 +234,4 @@ export default function HomePage() {
     </div>
   );
 }
+
