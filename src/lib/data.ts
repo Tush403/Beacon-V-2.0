@@ -21,19 +21,6 @@ export const filterOptionsData: FilterOptions = {
   reportingAnalytics: [{ value: ALL_FILTER_VALUE, label: "Any Analytics" }, ...ALL_REPORTING_ANALYTICS.map(val => ({ value: val, label: val }))],
 };
 
-const generateProjections = (baseRoi: number, months: number = 6): RoiTimePoint[] => {
-  const projection: RoiTimePoint[] = [];
-  let currentRoi = baseRoi;
-  for (let i = 1; i <= months; i++) {
-    // Simulate some variance and growth
-    const growthFactor = 1 + (Math.random() * 0.1 - 0.03); // -3% to +7% monthly change
-    currentRoi *= growthFactor;
-    currentRoi = Math.max(0, Math.min(100, currentRoi)); // Clamp between 0 and 100
-    projection.push({ month: i, roi: parseFloat(currentRoi.toFixed(1)) });
-  }
-  return projection;
-};
-
 export const mockToolsData: Tool[] = [
   {
     id: "1",
@@ -56,6 +43,15 @@ export const mockToolsData: Tool[] = [
       { month: 1, roi: 50 }, { month: 2, roi: 55 }, { month: 3, roi: 62 },
       { month: 4, roi: 70 }, { month: 5, roi: 75 }, { month: 6, roi: 78 }
     ],
+    initialSetupTime: "3-5 days",
+    maintenanceOverhead: "High - Requires skilled engineers for script maintenance",
+    testCreationSpeed: "Moderate - Depends on element locator strategy and framework",
+    scriptReusability: "High - With proper design patterns (e.g., Page Object Model)",
+    parallelExecutionSupport: "Excellent - Via Selenium Grid or cloud providers",
+    testCaseCreationEffort: "Moderate to High - Pure scripting approach",
+    skillRequirement: "High - Strong coding skills (Java, Python, C# etc.) needed",
+    overallAutomationCoverage: "Very High - Can automate almost any web interaction",
+    totalCostOfOwnership: "Medium - Open source, but skilled resource costs can be high",
   },
   {
     id: "2",
@@ -78,6 +74,15 @@ export const mockToolsData: Tool[] = [
       { month: 1, roi: 60 }, { month: 2, roi: 68 }, { month: 3, roi: 75 },
       { month: 4, roi: 82 }, { month: 5, roi: 88 }, { month: 6, roi: 90 }
     ],
+    initialSetupTime: "1-2 days",
+    maintenanceOverhead: "Medium - Auto-waits reduce flakiness",
+    testCreationSpeed: "High - Powerful selectors and tooling",
+    scriptReusability: "High - Supports modern coding practices",
+    parallelExecutionSupport: "Excellent - Built-in sharding and parallel capabilities",
+    testCaseCreationEffort: "Moderate - Efficient scripting",
+    skillRequirement: "Medium to High - Coding skills (JS, Python, etc.) beneficial",
+    overallAutomationCoverage: "Very High - Handles complex scenarios well",
+    totalCostOfOwnership: "Low to Medium - Open source, good developer experience",
   },
   {
     id: "3",
@@ -100,6 +105,15 @@ export const mockToolsData: Tool[] = [
       { month: 1, roi: 55 }, { month: 2, roi: 65 }, { month: 3, roi: 72 },
       { month: 4, roi: 78 }, { month: 5, roi: 83 }, { month: 6, roi: 85 }
     ],
+    initialSetupTime: "1 day",
+    maintenanceOverhead: "Low to Medium - Good selector engine, time-travel debugging",
+    testCreationSpeed: "Very High - Interactive runner, easy API",
+    scriptReusability: "Medium to High - JavaScript ecosystem",
+    parallelExecutionSupport: "Good - Via Cypress Dashboard (paid) or custom setup",
+    testCaseCreationEffort: "Low to Moderate - Developer-friendly",
+    skillRequirement: "Medium - JavaScript knowledge required",
+    overallAutomationCoverage: "High - Primarily for web applications",
+    totalCostOfOwnership: "Low (Open Source) to Medium (Dashboard)",
   },
   {
     id: "4",
@@ -122,6 +136,15 @@ export const mockToolsData: Tool[] = [
       { month: 1, roi: 65 }, { month: 2, roi: 72 }, { month: 3, roi: 78 },
       { month: 4, roi: 85 }, { month: 5, roi: 90 }, { month: 6, roi: 92 }
     ],
+    initialSetupTime: "Less than 1 day",
+    maintenanceOverhead: "Very Low - AI-powered self-healing locators",
+    testCreationSpeed: "Very High - Record, playback, and AI suggestions",
+    scriptReusability: "High - Reusable groups and components",
+    parallelExecutionSupport: "Excellent - Cloud-based parallel execution",
+    testCaseCreationEffort: "Very Low - Minimal coding required for most cases",
+    skillRequirement: "Low - Suitable for manual testers and less technical users",
+    overallAutomationCoverage: "High - Focus on UI and E2E for web",
+    totalCostOfOwnership: "High - Subscription-based, depends on scale",
   },
   {
     id: "5",
@@ -144,6 +167,15 @@ export const mockToolsData: Tool[] = [
       { month: 1, roi: 70 }, { month: 2, roi: 73 }, { month: 3, roi: 76 },
       { month: 4, roi: 78 }, { month: 5, roi: 80 }, { month: 6, roi: 81 }
     ],
+    initialSetupTime: "Minutes to hours",
+    maintenanceOverhead: "Low - GUI based, version control for collections",
+    testCreationSpeed: "Very High - Easy to create requests and assertions",
+    scriptReusability: "High - Collections, environments, variables",
+    parallelExecutionSupport: "Good - Via Newman CLI and CI/CD integrations",
+    testCaseCreationEffort: "Low - Primarily GUI-driven with scripting options",
+    skillRequirement: "Low to Medium - Basic understanding of APIs, JS for advanced scripts",
+    overallAutomationCoverage: "Very High - For API functional and integration testing",
+    totalCostOfOwnership: "Low (Freemium) to Medium (Team/Enterprise)",
   },
   {
     id: "6",
@@ -155,7 +187,7 @@ export const mockToolsData: Tool[] = [
     testTypes: ["Performance Testing"],
     operatingSystems: ["Windows", "macOS", "Linux", "Cross-Platform"],
     codingRequirements: ["Scripting", "Low-Code"],
-    codingLanguages: ["Java", "N/A"],
+    codingLanguages: ["Java", "N/A"], // Groovy/BeanShell for scripting
     pricingModels: ["Open Source"],
     reportingAnalytics: ["Advanced", "Customizable"],
     strengths: ["Powerful and versatile for load testing", "Supports various protocols", "Extensible with plugins"],
@@ -166,13 +198,22 @@ export const mockToolsData: Tool[] = [
       { month: 1, roi: 40 }, { month: 2, roi: 48 }, { month: 3, roi: 55 },
       { month: 4, roi: 60 }, { month: 5, roi: 65 }, { month: 6, roi: 70 }
     ],
+    initialSetupTime: "2-3 days",
+    maintenanceOverhead: "Medium - Test plans can become complex",
+    testCreationSpeed: "Moderate - GUI with scripting elements",
+    scriptReusability: "Medium - Test fragments and modules",
+    parallelExecutionSupport: "Good - Distributed testing setup",
+    testCaseCreationEffort: "Moderate - Requires understanding of performance concepts",
+    skillRequirement: "Medium to High - Performance testing knowledge, some scripting",
+    overallAutomationCoverage: "High - For performance, load, and stress testing",
+    totalCostOfOwnership: "Low - Open source, but infra for distributed tests costs",
   },
   {
     id: "7",
     name: "Katalon Studio",
     score: 8.6,
     logoUrl: "https://placehold.co/60x60.png",
-    dataAiHint: "Katalon Studio",
+    dataAiHint: "Katalon Studio logo",
     applicationTypes: ["Web", "Mobile", "API", "Desktop"],
     testTypes: ["UI Testing", "API Testing", "E2E Testing"],
     operatingSystems: ["Windows", "macOS", "Linux"],
@@ -188,6 +229,15 @@ export const mockToolsData: Tool[] = [
       { month: 1, roi: 58 }, { month: 2, roi: 63 }, { month: 3, roi: 68 },
       { month: 4, roi: 72 }, { month: 5, roi: 76 }, { month: 6, roi: 78 }
     ],
+    initialSetupTime: "1-2 days",
+    maintenanceOverhead: "Medium - Object repository helps, but UI changes impact",
+    testCreationSpeed: "High - Record/playback, manual mode, script mode",
+    scriptReusability: "High - Keywords, test listeners, page object model support",
+    parallelExecutionSupport: "Good - Via TestOps (paid) or custom configuration",
+    testCaseCreationEffort: "Low to Moderate - Versatile options",
+    skillRequirement: "Low to Medium - Groovy/Java for advanced scripting",
+    overallAutomationCoverage: "Very High - Broad application type support",
+    totalCostOfOwnership: "Medium - Freemium with paid enterprise features",
   },
    {
     id: "8",
@@ -210,6 +260,15 @@ export const mockToolsData: Tool[] = [
       { month: 1, roi: 52 }, { month: 2, roi: 60 }, { month: 3, roi: 67 },
       { month: 4, roi: 73 }, { month: 5, roi: 78 }, { month: 6, roi: 82 }
     ],
+    initialSetupTime: "3-5 days",
+    maintenanceOverhead: "High - Mobile flakiness, OS updates",
+    testCreationSpeed: "Moderate - Requires robust locator strategies",
+    scriptReusability: "Medium to High - With good framework design",
+    parallelExecutionSupport: "Good - With Selenium Grid or cloud mobile device farms",
+    testCaseCreationEffort: "Moderate to High - Scripting for mobile interactions",
+    skillRequirement: "High - Mobile automation concepts, coding skills",
+    overallAutomationCoverage: "High - For native and hybrid mobile apps",
+    totalCostOfOwnership: "Medium - Open source, but device farm/cloud costs",
   },
 ];
 
@@ -225,18 +284,42 @@ export const trendDataPerTestType: TrendData = {
   "API Testing": {
     testType: "API Testing",
     mostWidelyUsedTool: "Postman",
-    trendingTool: "Playwright",
-    topRatedTool: "Rest Assured",
-    aiPoweredTool: "APIsec",
-    enterpriseReadyTool: "SoapUI Pro",
+    trendingTool: "Playwright", // Playwright has API testing capabilities
+    topRatedTool: "Postman", // Often cited as top for ease of use and features
+    aiPoweredTool: "Testim (for UI, some API)", // Placeholder, API specific AI tools exist
+    enterpriseReadyTool: "Katalon Studio", // Good API testing features
   },
   "Performance Testing": {
     testType: "Performance Testing",
     mostWidelyUsedTool: "JMeter",
     trendingTool: "k6",
-    topRatedTool: "LoadRunner",
-    aiPoweredTool: "Neoload",
+    topRatedTool: "Grafana k6", // k6 often gets high ratings for modern perf testing
+    aiPoweredTool: "LoadNinja", // AI-powered performance testing
     enterpriseReadyTool: "LoadRunner",
+  },
+    "Security Testing": {
+    testType: "Security Testing",
+    mostWidelyUsedTool: "OWASP ZAP",
+    trendingTool: "Burp Suite",
+    topRatedTool: "Burp Suite Professional",
+    aiPoweredTool: "Invicti (formerly Netsparker)",
+    enterpriseReadyTool: "Veracode",
+  },
+  "Unit Testing": {
+    testType: "Unit Testing",
+    mostWidelyUsedTool: "JUnit (Java), PyTest (Python), Jest (JS)", // Varies by language
+    trendingTool: "Jest (JS), Mockito (Java)",
+    topRatedTool: "PyTest (Python)",
+    aiPoweredTool: "GitHub Copilot (assists writing tests)",
+    enterpriseReadyTool: "Language-specific frameworks (e.g. NUnit for C#)",
+  },
+  "E2E Testing": {
+    testType: "E2E Testing",
+    mostWidelyUsedTool: "Selenium",
+    trendingTool: "Playwright",
+    topRatedTool: "Cypress",
+    aiPoweredTool: "Testim",
+    enterpriseReadyTool: "Katalon Studio",
   },
   "Default": { // Fallback if selectedTestType is not found
     testType: "General Testing",

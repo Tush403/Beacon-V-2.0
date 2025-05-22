@@ -18,8 +18,8 @@ export interface Tool {
   id: string;
   name: string;
   score: number; // e.g., 8.9
-  logoUrl?: string; // URL for the tool's logo
-  dataAiHint?: string; // Specific hint for AI image generation/search
+  logoUrl?: string; 
+  dataAiHint?: string; 
   applicationTypes: ApplicationType[];
   testTypes: TestType[];
   operatingSystems: OperatingSystem[];
@@ -27,11 +27,25 @@ export interface Tool {
   codingLanguages: CodingLanguage[];
   pricingModels: PricingModel[];
   reportingAnalytics: ReportingAnalytics[];
+  
+  // Fields for the original tabbed detail view (strengths, weaknesses, website)
   strengths: string[];
   weaknesses: string[];
-  pdfLink: string; // Link to a detailed guide/PDF - Kept for potential future use
-  websiteUrl: string; // Link to the tool's homepage
+  pdfLink: string; 
+  websiteUrl: string; 
+  
   roiProjection: RoiTimePoint[];
+
+  // New fields for ROI Table comparison
+  initialSetupTime: string;
+  maintenanceOverhead: string;
+  testCreationSpeed: string;
+  scriptReusability: string;
+  parallelExecutionSupport: string;
+  testCaseCreationEffort: string;
+  skillRequirement: string;
+  overallAutomationCoverage: string;
+  totalCostOfOwnership: string;
 }
 
 export interface Filters {
@@ -79,4 +93,10 @@ export interface EstimatorInputValues {
 export interface EffortEstimationOutput {
   estimatedPersonDays: number;
   explanation: string;
+}
+
+// For ToolResults comparison table
+export interface ComparisonParameter {
+  key: keyof Tool;
+  label: string;
 }

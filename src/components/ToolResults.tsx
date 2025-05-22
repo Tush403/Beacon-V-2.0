@@ -1,36 +1,96 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import type { Tool } from '@/lib/types';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, Star, ExternalLink, Package } from 'lucide-react'; 
+import React from 'react';
+import type { Tool, ComparisonParameter } from '@/lib/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Star } from 'lucide-react';
 
 interface ToolResultsProps {
-  tools: Tool[];
+  allTools: Tool[];
+  toolForCol1Id: string | null;
+  toolForCol2Id: string | null;
+  onToolForCol2Change: (id: string | null) => void;
+  toolForCol3Id: string | null;
+  onToolForCol3Change: (id: string | null) => void;
 }
 
-const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
-  const [activeTab, setActiveTab] = useState<string | undefined>(tools.length > 0 ? tools[0].id : undefined);
+const comparisonParameters: ComparisonParameter[] = [
+  { key: 'initialSetupTime', label: 'Initial Setup Time' },
+  { key: 'maintenanceOverhead', label: 'Maintenance Overhead' },
+  { key: 'testCreationSpeed', label: 'Test Creation Speed' },
+  { key: 'scriptReusability', label: 'Script Reusability' },
+  { key: 'parallelExecutionSupport', label: 'Parallel Execution Support' },
+  { key: 'testCaseCreationEffort', label: 'Test Case Creation Effort' },
+  { key: 'skillRequirement', label: 'Skill Requirement' },
+  { key: 'overallAutomationCoverage', label: 'Overall Automation Coverage' },
+  { key: 'totalCostOfOwnership', label: 'Total Cost of Ownership' },
+];
 
-  useEffect(() => {
-    if (tools.length > 0 && !tools.find(tool => tool.id === activeTab)) {
-      setActiveTab(tools[0].id);
-    } else if (tools.length === 0) {
-      setActiveTab(undefined);
+const ToolResults: React.FC<ToolResultsProps> = ({
+  allTools,
+  toolForCol1Id,
+  toolForCol2Id,
+  onToolForCol2Change,
+  toolForCol3Id,
+  onToolForCol3Change,
+}) => {
+  const tool1 = allTools.find(t => t.id === toolForCol1Id);
+  const tool2 = allTools.find(t => t.id === toolForCol2Id);
+  const tool3 = allTools.find(t => t.id === toolForCol3Id);
+
+  const renderToolColumnHeader = (tool: Tool | undefined, selectedValue: string | null, onChange: (id: string | null) => void, isFixed: boolean = false) => {
+    if (isFixed) {
+      return tool ? (
+        <div className="p-2 text-center border-b border-border">
+          <h3 className="font-semibold text-primary">{tool.name}</h3>
+          <p className="text-sm text-accent">{tool.score}/10</p>
+        </div>
+      ) : (
+        <div className="p-2 text-center text-muted-foreground border-b border-border">N/A</div>
+      );
     }
-  }, [tools, activeTab]);
 
-  if (tools.length === 0) {
     return (
-      <Card className="shadow-lg rounded-lg border-border/50 bg-card/90 backdrop-blur-sm animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out">
+      <div className="p-2 border-b border-border space-y-1">
+        <Select
+          value={selectedValue || ""}
+          onValueChange={(value) => onChange(value === "" ? null : value)}
+        >
+          <SelectTrigger className="w-full bg-input/80 text-sm">
+            <SelectValue placeholder="Select Tool..." />
+          </SelectTrigger>
+          <SelectContent className="max-h-60">
+            <SelectItem value="">Clear Selection</SelectItem>
+            {allTools.map(t => (
+              <SelectItem key={t.id} value={t.id} disabled={t.id === toolForCol1Id || (selectedValue !== t.id && (t.id === toolForCol2Id || t.id === toolForCol3Id))}>
+                {t.name} - {t.score}/10
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {tool && (
+           <div className="text-center">
+             <h3 className="font-semibold text-primary text-sm truncate">{tool.name}</h3>
+             <p className="text-xs text-accent">{tool.score}/10</p>
+           </div>
+        )}
+      </div>
+    );
+  };
+
+  if (!tool1 && !toolForCol1Id) { // Show message if no primary tool from filters
+     return (
+      <Card className="shadow-lg rounded-lg border-border/50 bg-card/90 backdrop-blur-sm animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
         <CardHeader>
-          <CardTitle className="text-xl text-primary">No Tools Found</CardTitle>
+          <CardTitle className="text-xl text-primary flex items-center"><Star className="mr-2 h-6 w-6 text-accent" />ROI Comparison Table</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">Try adjusting your filters to find matching tools or select broader categories.</p>
+          <p className="text-muted-foreground p-4 text-center">
+            Please apply filters to select a primary tool for comparison, or select tools using the dropdowns.
+          </p>
         </CardContent>
       </Card>
     );
@@ -39,73 +99,32 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
   return (
     <Card className="shadow-xl rounded-lg border-border/50 bg-card text-card-foreground animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-100 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
       <CardHeader>
-        <CardTitle className="text-xl text-primary flex items-center"><Star className="mr-2 h-6 w-6 text-accent" />Top Recommended Tools</CardTitle>
-        <CardDescription>Click on a tool to see more details. Results are sorted by overall score.</CardDescription>
+        <CardTitle className="text-xl text-primary flex items-center"><Star className="mr-2 h-6 w-6 text-accent" />ROI Comparison Table</CardTitle>
+        <CardDescription>Compare tools side-by-side. The first tool is based on your filters.</CardDescription>
       </CardHeader>
-      <CardContent>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-4 bg-muted/50 p-1 rounded-md">
-            {tools.map((tool) => (
-              <TabsTrigger
-                key={tool.id}
-                value={tool.id}
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-sm transition-all duration-150 ease-in-out hover:bg-primary/10"
-              >
-                {tool.name} – Score: {tool.score}/10
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          {tools.map((tool) => (
-            <TabsContent key={tool.id} value={tool.id}>
-              <Card className="border-primary/20 bg-background shadow-inner rounded-md animate-in fade-in-50 duration-500">
-                <CardHeader className="flex flex-col sm:flex-row items-start gap-4 p-4">
-                  <div 
-                    className="w-[60px] h-[60px] flex items-center justify-center rounded-md border-2 border-accent p-0.5 shadow-md bg-secondary"
-                    data-ai-hint={tool.dataAiHint || "tool related image"}
-                  >
-                    <Package className="h-8 w-8 text-muted-foreground animate-spin-very-slow" />
-                  </div>
-                  <div className="flex-grow">
-                    <CardTitle className="text-2xl text-primary">{tool.name}</CardTitle>
-                    <CardDescription className="text-md text-accent font-semibold">Overall Score: {tool.score}/10</CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4 p-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <h4 className="font-semibold text-md mb-2 flex items-center text-positive"><CheckCircle2 className="h-5 w-5 mr-2" />Strengths:</h4>
-                      <ul className="list-disc list-inside pl-4 space-y-1 text-sm text-muted-foreground">
-                        {tool.strengths.map((strength, index) => <li key={index}>{strength}</li>)}
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-md mb-2 flex items-center text-destructive"><XCircle className="h-5 w-5 mr-2" />Weaknesses:</h4>
-                      <ul className="list-disc list-inside pl-4 space-y-1 text-sm text-muted-foreground">
-                        {tool.weaknesses.map((weakness, index) => <li key={index}>{weakness}</li>)}
-                      </ul>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm mt-3 pt-3 border-t border-border/30">
-                    <p><strong className="text-foreground/80">Application Types:</strong> {tool.applicationTypes.join(', ')}</p>
-                    <p><strong className="text-foreground/80">Test Types:</strong> {tool.testTypes.join(', ')}</p>
-                    <p><strong className="text-foreground/80">Operating Systems:</strong> {tool.operatingSystems.join(', ')}</p>
-                    <p><strong className="text-foreground/80">Coding Requirement:</strong> {tool.codingRequirements.join(', ')}</p>
-                    <p><strong className="text-foreground/80">Coding Languages:</strong> {tool.codingLanguages.join(', ')}</p>
-                    <p><strong className="text-foreground/80">Pricing Model:</strong> {tool.pricingModels.join(', ')}</p>
-                    <p><strong className="text-foreground/80">Reporting & Analytics:</strong> {tool.reportingAnalytics.join(', ')}</p>
-                  </div>
-                </CardContent>
-                <CardFooter className="p-4">
-                  <Button asChild variant="default" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-md shadow-md hover:shadow-lg transition-shadow">
-                    <a href={tool.websiteUrl} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="mr-2 h-4 w-4" /> Visit Website
-                    </a>
-                  </Button>
-                </CardFooter>
-              </Card>
-            </TabsContent>
-          ))}
-        </Tabs>
+      <CardContent className="p-0 md:p-2 lg:p-4 overflow-x-auto">
+        <div className="min-w-[800px] md:min-w-full"> {/* Ensure horizontal scroll on small screens */}
+          <Table className="border-collapse border border-border">
+            <TableHeader>
+              <TableRow className="bg-muted/30">
+                <TableHead className="w-1/4 font-bold text-foreground p-2 border border-border">Parameters</TableHead>
+                <TableHead className="w-1/4 p-0 border border-border">{renderToolColumnHeader(tool1, toolForCol1Id, () => {}, true)}</TableHead>
+                <TableHead className="w-1/4 p-0 border border-border">{renderToolColumnHeader(tool2, toolForCol2Id, onToolForCol2Change)}</TableHead>
+                <TableHead className="w-1/4 p-0 border border-border">{renderToolColumnHeader(tool3, toolForCol3Id, onToolForCol3Change)}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {comparisonParameters.map(param => (
+                <TableRow key={param.key} className="hover:bg-muted/10">
+                  <TableCell className="font-semibold text-sm text-foreground/90 p-2 border border-border">{param.label}</TableCell>
+                  <TableCell className="text-sm p-2 border border-border">{tool1 ? (tool1[param.key] as string || 'N/A') : <span className="text-muted-foreground italic">N/A</span>}</TableCell>
+                  <TableCell className="text-sm p-2 border border-border">{tool2 ? (tool2[param.key] as string || 'N/A') : <span className="text-muted-foreground italic">N/A</span>}</TableCell>
+                  <TableCell className="text-sm p-2 border border-border">{tool3 ? (tool3[param.key] as string || 'N/A') : <span className="text-muted-foreground italic">N/A</span>}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );
