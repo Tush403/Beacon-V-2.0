@@ -64,3 +64,19 @@ export type TrendSummaryInput = AiTrendSummaryInput;
 export interface TrendData {
   [key: string]: TrendSummaryInput;
 }
+
+// Types for Effort Estimator
+export interface EstimatorInputValues {
+  complexityLow: number;
+  complexityMedium: number;
+  complexityHigh: number;
+  complexityHighlyComplex: number;
+  usesFramework: boolean;
+  usesCiCd: boolean;
+  teamSize: number;
+}
+
+export interface EffortEstimationOutput {
+  estimatedPersonDays: number;
+  explanation: string;
+}

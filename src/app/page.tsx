@@ -7,10 +7,11 @@ import ToolFilters from '@/components/ToolFilters';
 import ToolResults from '@/components/ToolResults';
 import RoiChart from '@/components/RoiChart';
 import TrendSummaryPanel from '@/components/TrendSummaryPanel';
-import type { Filters, Tool } from '@/lib/types';
+import EffortEstimator from '@/components/EffortEstimator'; // Import new component
+import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType } from '@/lib/data';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
+import { estimateEffort as estimateEffortAction } from '@/actions/aiActions';
 
 
 const initialFilters: Filters = {
@@ -23,11 +24,28 @@ const initialFilters: Filters = {
   reportingAnalytics: "",
 };
 
+const initialEstimatorInputs: EstimatorInputValues = {
+  complexityLow: 0,
+  complexityMedium: 0,
+  complexityHigh: 0,
+  complexityHighlyComplex: 0,
+  usesFramework: false,
+  usesCiCd: false,
+  teamSize: 1,
+};
+
 export default function HomePage() {
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
 
+  // State for Effort Estimator
+  const [estimatorInputs, setEstimatorInputs] = useState<EstimatorInputValues>(initialEstimatorInputs);
+  const [effortEstimation, setEffortEstimation] = useState<EffortEstimationOutput | null>(null);
+  const [estimatorLoading, setEstimatorLoading] = useState<boolean>(false);
+  const [estimatorError, setEstimatorError] = useState<string | null>(null);
+
   useEffect(() => {
+    // Client-side only effect
     setCurrentYear(new Date().getFullYear());
   }, []);
 
@@ -42,6 +60,37 @@ export default function HomePage() {
   const handleResetFilters = useCallback(() => {
     setFilters(initialFilters);
   }, []);
+
+  const handleEstimatorInputChange = useCallback((field: keyof EstimatorInputValues, value: string | number | boolean) => {
+    setEstimatorInputs(prevInputs => ({
+      ...prevInputs,
+      [field]: value,
+    }));
+  }, []);
+
+  const handleGetEstimate = useCallback(async () => {
+    if (estimatorInputs.teamSize <= 0) {
+        setEstimatorError("Team size must be greater than 0.");
+        setEffortEstimation(null);
+        return;
+    }
+    setEstimatorLoading(true);
+    setEstimatorError(null);
+    setEffortEstimation(null);
+    try {
+      const result = await estimateEffortAction(estimatorInputs);
+      if ('error' in result) {
+        setEstimatorError(result.error);
+      } else {
+        setEffortEstimation(result);
+      }
+    } catch (e) {
+      console.error("Effort estimation error:", e);
+      setEstimatorError("An unexpected error occurred during estimation.");
+    } finally {
+      setEstimatorLoading(false);
+    }
+  }, [estimatorInputs]);
 
   const filteredTools = useMemo(() => {
     let tools = mockToolsData;
@@ -68,7 +117,6 @@ export default function HomePage() {
       tools = tools.filter(tool => tool.reportingAnalytics.includes(filters.reportingAnalytics!));
     }
     
-    // Sort by score descending and take top 3
     return tools.sort((a, b) => b.score - a.score).slice(0, 3);
   }, [filters]);
 
@@ -77,7 +125,7 @@ export default function HomePage() {
       <Header />
       <main className="flex-grow container mx-auto p-4 md:p-6 lg:p-8">
         <div className="lg:grid lg:grid-cols-12 lg:gap-8 space-y-6 lg:space-y-0">
-          {/* Left Column / Filters and Trends */}
+          {/* Left Column / Filters, Trends, and Estimator */}
           <div className="lg:col-span-4 xl:col-span-3 space-y-6">
             <ToolFilters
               filters={filters}
@@ -88,6 +136,14 @@ export default function HomePage() {
              <TrendSummaryPanel
               selectedTestType={filters.testType}
               trendData={trendDataPerTestType}
+            />
+            <EffortEstimator
+              inputValues={estimatorInputs}
+              onInputChange={handleEstimatorInputChange}
+              onSubmit={handleGetEstimate}
+              estimation={effortEstimation}
+              isLoading={estimatorLoading}
+              error={estimatorError}
             />
           </div>
 
@@ -105,4 +161,3 @@ export default function HomePage() {
     </div>
   );
 }
-
