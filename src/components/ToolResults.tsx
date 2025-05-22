@@ -29,6 +29,8 @@ const comparisonParameters: ComparisonParameter[] = [
   { key: 'totalCostOfOwnership', label: 'Total Cost of Ownership' },
 ];
 
+const CLEAR_TOOL_VALUE = "--clear-selection--";
+
 const ToolResults: React.FC<ToolResultsProps> = ({
   allTools,
   toolForCol1Id,
@@ -57,13 +59,19 @@ const ToolResults: React.FC<ToolResultsProps> = ({
       <div className="p-2 border-b border-border space-y-1">
         <Select
           value={selectedValue || ""}
-          onValueChange={(value) => onChange(value === "" ? null : value)}
+          onValueChange={(value) => {
+            if (value === CLEAR_TOOL_VALUE) {
+              onChange(null);
+            } else {
+              onChange(value);
+            }
+          }}
         >
           <SelectTrigger className="w-full bg-input/80 text-sm">
             <SelectValue placeholder="Select Tool..." />
           </SelectTrigger>
           <SelectContent className="max-h-60">
-            <SelectItem value="">Clear Selection</SelectItem>
+            <SelectItem value={CLEAR_TOOL_VALUE}>Clear Selection</SelectItem>
             {allTools.map(t => (
               <SelectItem key={t.id} value={t.id} disabled={t.id === toolForCol1Id || (selectedValue !== t.id && (t.id === toolForCol2Id || t.id === toolForCol3Id))}>
                 {t.name} - {t.score}/10
@@ -81,7 +89,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({
     );
   };
 
-  if (!tool1 && !toolForCol1Id) { // Show message if no primary tool from filters
+  if (!tool1 && !toolForCol1Id) { 
      return (
       <Card className="shadow-lg rounded-lg border-border/50 bg-card/90 backdrop-blur-sm animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
         <CardHeader>
@@ -103,7 +111,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({
         <CardDescription>Compare tools side-by-side. The first tool is based on your filters.</CardDescription>
       </CardHeader>
       <CardContent className="p-0 md:p-2 lg:p-4 overflow-x-auto">
-        <div className="min-w-[800px] md:min-w-full"> {/* Ensure horizontal scroll on small screens */}
+        <div className="min-w-[800px] md:min-w-full">
           <Table className="border-collapse border border-border">
             <TableHeader>
               <TableRow className="bg-muted/30">
