@@ -7,7 +7,7 @@ import type { Tool } from '@/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, Star, ExternalLink } from 'lucide-react';
+import { CheckCircle2, XCircle, Star, ExternalLink, Puzzle } from 'lucide-react'; // Added Puzzle icon
 
 interface ToolResultsProps {
   tools: Tool[];
@@ -26,7 +26,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
 
   if (tools.length === 0) {
     return (
-      <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out">
+      <Card className="shadow-lg rounded-lg border-border/50 bg-card/90 backdrop-blur-sm animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out">
         <CardHeader>
           <CardTitle className="text-xl text-primary">No Tools Found</CardTitle>
         </CardHeader>
@@ -38,7 +38,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
   }
 
   return (
-    <Card className="shadow-xl rounded-lg border-border/50 bg-card text-card-foreground animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out">
+    <Card className="shadow-lg rounded-lg border-border/50 bg-card text-card-foreground animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out">
       <CardHeader>
         <CardTitle className="text-xl text-primary flex items-center"><Star className="mr-2 h-6 w-6 text-accent" />Top Recommended Tools</CardTitle>
         <CardDescription>Click on a tool to see more details. Results are sorted by overall score.</CardDescription>
@@ -60,7 +60,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
             <TabsContent key={tool.id} value={tool.id}>
               <Card className="border-primary/20 bg-background shadow-inner rounded-md animate-in fade-in-50 duration-500">
                 <CardHeader className="flex flex-col sm:flex-row items-start gap-4 p-4">
-                  {tool.logoUrl && (
+                  {tool.logoUrl ? (
                      <Image
                         src={tool.logoUrl}
                         alt={`${tool.name} logo`}
@@ -69,6 +69,10 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
                         className="rounded-md border-2 border-accent p-0.5 shadow-md object-contain bg-secondary"
                         data-ai-hint={tool.dataAiHint || "logo tech"}
                       />
+                  ) : (
+                    <div className="w-[60px] h-[60px] flex items-center justify-center rounded-md border-2 border-accent p-0.5 shadow-md bg-secondary">
+                      <Puzzle className="h-8 w-8 text-muted-foreground" />
+                    </div>
                   )}
                   <div className="flex-grow">
                     <CardTitle className="text-2xl text-primary">{tool.name}</CardTitle>
