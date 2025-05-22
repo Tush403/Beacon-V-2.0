@@ -7,7 +7,7 @@ import type { Tool } from '@/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, Star, ExternalLink, Puzzle } from 'lucide-react'; // Added Puzzle icon
+import { CheckCircle2, XCircle, Star, ExternalLink, Puzzle } from 'lucide-react';
 
 interface ToolResultsProps {
   tools: Tool[];
@@ -60,20 +60,12 @@ const ToolResults: React.FC<ToolResultsProps> = ({ tools }) => {
             <TabsContent key={tool.id} value={tool.id}>
               <Card className="border-primary/20 bg-background shadow-inner rounded-md animate-in fade-in-50 duration-500">
                 <CardHeader className="flex flex-col sm:flex-row items-start gap-4 p-4">
-                  {tool.logoUrl ? (
-                     <Image
-                        src={tool.logoUrl}
-                        alt={`${tool.name} logo`}
-                        width={60}
-                        height={60}
-                        className="rounded-md border-2 border-accent p-0.5 shadow-md object-contain bg-secondary"
-                        data-ai-hint={tool.dataAiHint || "logo tech"}
-                      />
-                  ) : (
-                    <div className="w-[60px] h-[60px] flex items-center justify-center rounded-md border-2 border-accent p-0.5 shadow-md bg-secondary">
-                      <Puzzle className="h-8 w-8 text-muted-foreground" />
-                    </div>
-                  )}
+                  <div 
+                    className="w-[60px] h-[60px] flex items-center justify-center rounded-md border-2 border-accent p-0.5 shadow-md bg-secondary"
+                    data-ai-hint={tool.dataAiHint || "logo tech"}
+                  >
+                    <Puzzle className="h-8 w-8 text-muted-foreground animate-pulse-slow" />
+                  </div>
                   <div className="flex-grow">
                     <CardTitle className="text-2xl text-primary">{tool.name}</CardTitle>
                     <CardDescription className="text-md text-accent font-semibold">Overall Score: {tool.score}/10</CardDescription>
