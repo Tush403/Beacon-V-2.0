@@ -28,7 +28,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({
 
   if (!toolsToDisplay || toolsToDisplay.length === 0) {
     return (
-      <Card className="shadow-xl rounded-lg border-border/50 bg-card text-card-foreground animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-100 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
+      <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-100 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
         <CardHeader>
           <CardTitle className="text-xl text-primary flex items-center"><Star className="mr-2 h-6 w-6 text-accent" />Top Recommended Tools</CardTitle>
           <CardDescription>No tools match your current filter criteria. Try adjusting your filters.</CardDescription>
@@ -43,7 +43,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({
   }
 
   return (
-    <Card className="shadow-xl rounded-lg border-border/50 bg-card text-card-foreground animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-100 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
+    <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-100 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
       <CardHeader>
         <CardTitle className="text-xl text-primary flex items-center"><Star className="mr-2 h-6 w-6 text-accent" />Top Recommended Tools</CardTitle>
         <CardDescription>Click on a tool to see more details. Results are sorted by overall score.</CardDescription>
@@ -61,8 +61,8 @@ const ToolResults: React.FC<ToolResultsProps> = ({
             <TabsContent key={tool.id} value={tool.id} className="mt-0 animate-in fade-in-50 duration-500">
               <Card className="border-primary/20 shadow-lg">
                 <CardHeader className="flex flex-row items-start gap-4 p-4 sm:p-6 bg-muted/20 rounded-t-lg">
-                  <div className="p-2 rounded-md bg-primary/10 border border-primary/20 shadow-sm">
-                     <Package className="h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin-very-slow" data-ai-hint={`${tool.dataAiHint || 'tool icon'}`} />
+                  <div className="p-2 rounded-md bg-primary/10 border border-primary/20 shadow-sm" data-ai-hint={tool.dataAiHint || 'tool related image'}>
+                     <Package className="h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin-very-slow" />
                   </div>
                   <div>
                     <CardTitle className="text-2xl sm:text-3xl text-primary">{tool.name}</CardTitle>
@@ -121,5 +121,3 @@ const ToolResults: React.FC<ToolResultsProps> = ({
 };
 
 export default ToolResults;
-
-    

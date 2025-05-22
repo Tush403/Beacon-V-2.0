@@ -9,7 +9,7 @@ import RoiChart from '@/components/RoiChart';
 import TrendSummaryPanel from '@/components/TrendSummaryPanel';
 import EffortEstimator from '@/components/EffortEstimator';
 import RoiComparisonTable from '@/components/RoiComparisonTable';
-import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput, ComparisonParameter } from '@/lib/types';
+import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
 import { estimateEffort as estimateEffortAction } from '@/actions/aiActions';
@@ -186,7 +186,6 @@ export default function HomePage() {
               toolsToDisplay={topThreeTools}
             />
             
-            {/* ROI Comparison Table */}
             {tool1ForComparison && (
                  <RoiComparisonTable
                     allTools={mockToolsData}
@@ -205,7 +204,7 @@ export default function HomePage() {
       </main>
       <footer className="flex items-center justify-between p-4 text-sm text-muted-foreground border-t border-border/50 mt-auto bg-background/80 backdrop-blur-sm">
         <span>V.1.0</span>
-        <span>Copyright© {currentYear !== null ? currentYear : 'Loading...'} Tao Digital Solutions Inc. All rights reserved</span>
+        <span>Copyright© {currentYear !== null ? currentYear : '----'} Tao Digital Solutions Inc. All rights reserved</span>
       </footer>
     </div>
   );

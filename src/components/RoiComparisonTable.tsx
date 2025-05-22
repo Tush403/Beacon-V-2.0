@@ -46,15 +46,15 @@ const RoiComparisonTable: React.FC<RoiComparisonTableProps> = ({
           value={selectedTool?.id || CLEAR_TOOL_VALUE}
           onValueChange={(value) => onChange(value === CLEAR_TOOL_VALUE ? null : value)}
         >
-          <SelectTrigger className="w-full bg-card text-card-foreground text-xs sm:text-sm">
+          <SelectTrigger className="w-full bg-card text-card-foreground text-xs sm:text-sm border-border/70 focus:ring-accent focus:border-accent">
             <SelectValue placeholder={`Select ${columnLabel}`} />
           </SelectTrigger>
-          <SelectContent className="bg-popover border-border text-popover-foreground">
-            <SelectItem value={CLEAR_TOOL_VALUE} className="text-muted-foreground italic">
+          <SelectContent className="bg-popover border-border/70 text-popover-foreground rounded-md shadow-xl backdrop-blur-sm">
+            <SelectItem value={CLEAR_TOOL_VALUE} className="text-muted-foreground italic focus:bg-accent/20 hover:bg-accent/10">
               Clear Selection
             </SelectItem>
             {allTools.map(tool => (
-              <SelectItem key={tool.id} value={tool.id}>
+              <SelectItem key={tool.id} value={tool.id} className="focus:bg-accent/20 hover:bg-accent/10">
                 {tool.name} - {tool.score.toFixed(1)}/10
               </SelectItem>
             ))}
@@ -79,7 +79,7 @@ const RoiComparisonTable: React.FC<RoiComparisonTableProps> = ({
 
   if (!tool1) {
     return (
-        <Card className="shadow-xl rounded-lg border-border/50 bg-card text-card-foreground animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-200">
+        <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm text-card-foreground animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-200 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
         <CardHeader>
           <CardTitle className="text-xl text-primary flex items-center"><Star className="mr-2 h-6 w-6 text-accent" />ROI Comparison Table</CardTitle>
           <CardDescription>Select tools using filters to see comparison data.</CardDescription>
@@ -92,7 +92,7 @@ const RoiComparisonTable: React.FC<RoiComparisonTableProps> = ({
   }
 
   return (
-    <Card className="shadow-xl rounded-lg border-border/50 bg-card text-card-foreground animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-150 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
+    <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm text-card-foreground animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-150 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
       <CardHeader>
         <CardTitle className="text-xl text-primary flex items-center">
           <Star className="mr-2 h-6 w-6 text-accent" />

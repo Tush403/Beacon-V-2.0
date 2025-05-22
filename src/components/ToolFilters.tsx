@@ -74,7 +74,11 @@ const ToolFilters: React.FC<ToolFiltersProps> = ({ filters, filterOptions, onFil
           {renderSelect("pricingModel", "Pricing Model", filterOptions.pricingModels)}
           {renderSelect("reportingAnalytics", "Reporting & Analytics", filterOptions.reportingAnalytics)}
         </div>
-        <Button onClick={onResetFilters} variant="outline" className="w-full md:w-auto border-accent/50 text-accent hover:bg-accent hover:text-accent-foreground transition-colors duration-150 rounded-md shadow-sm hover:shadow-md">
+        <Button 
+          onClick={onResetFilters} 
+          variant="outline" 
+          className="w-full md:w-auto border-accent/50 text-accent hover:bg-accent hover:text-accent-foreground transition-colors duration-150 rounded-md shadow-sm hover:shadow-md"
+        >
           <RotateCcw className="mr-2 h-4 w-4" /> Reset Filters
         </Button>
       </CardContent>
