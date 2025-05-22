@@ -2,19 +2,21 @@
 "use client";
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import type { Metadata } from 'next'; // Keep if used for specific page metadata, otherwise remove.
 import Header from '@/components/Header';
 import ToolFilters from '@/components/ToolFilters';
 import ToolResults from '@/components/ToolResults';
 import RoiChart from '@/components/RoiChart';
 import TrendSummaryPanel from '@/components/TrendSummaryPanel';
 import EffortEstimator from '@/components/EffortEstimator';
-import RoiComparisonTable from '@/components/RoiComparisonTable';
+import RoiComparisonTable from '@/components/RoiComparisonTable'; // Import the new component
 import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
 import { estimateEffort as estimateEffortAction } from '@/actions/aiActions';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
+
 
 const initialFilters: Filters = {
   applicationType: "",
@@ -52,6 +54,7 @@ export default function HomePage() {
 
   // State for ROI Chart Dialog
   const [showRoiChartDialog, setShowRoiChartDialog] = useState(false);
+
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
@@ -103,18 +106,18 @@ export default function HomePage() {
     return filteredToolsForDisplay.slice(0, 3);
   }, [filteredToolsForDisplay]);
 
-  // Effect to update comparison table tools when filters change
+  // Effect to update comparison table tools when filters change or topThreeTools change
   useEffect(() => {
-    if (filteredToolsForDisplay.length > 0) {
-      setToolForCol1Id(filteredToolsForDisplay[0].id);
-      setToolForCol2Id(filteredToolsForDisplay.length > 1 ? filteredToolsForDisplay[1].id : null);
-      setToolForCol3Id(filteredToolsForDisplay.length > 2 ? filteredToolsForDisplay[2].id : null);
+    if (topThreeTools.length > 0) {
+      setToolForCol1Id(topThreeTools[0].id);
+      setToolForCol2Id(topThreeTools.length > 1 ? topThreeTools[1].id : null);
+      setToolForCol3Id(topThreeTools.length > 2 ? topThreeTools[2].id : null);
     } else {
       setToolForCol1Id(null);
       setToolForCol2Id(null);
       setToolForCol3Id(null);
     }
-  }, [filteredToolsForDisplay]);
+  }, [topThreeTools]); // Depends on topThreeTools now
 
   const handleTool2Change = useCallback((toolId: string | null) => {
     setToolForCol2Id(toolId);
@@ -159,6 +162,10 @@ export default function HomePage() {
       setEstimatorLoading(false);
     }
   }, [estimatorInputs]);
+  
+  const toolsForChartDialog = useMemo(() => {
+    return [tool1ForComparison, tool2ForComparison, tool3ForComparison].filter(Boolean) as Tool[];
+  }, [tool1ForComparison, tool2ForComparison, tool3ForComparison]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -191,7 +198,7 @@ export default function HomePage() {
               toolsToDisplay={topThreeTools}
             />
             
-            {tool1ForComparison && (
+            {tool1ForComparison && ( // Show table if tool1 (from filters) exists
                  <RoiComparisonTable
                     allTools={mockToolsData}
                     tool1={tool1ForComparison}
@@ -203,35 +210,43 @@ export default function HomePage() {
                  />
             )}
             
-            {topThreeTools.length > 0 && (
+            {/* Button to show ROI Chart Dialog - visible if tool1ForComparison is set */}
+            {tool1ForComparison && (
               <div className="flex justify-center pt-4">
-                <Button onClick={() => setShowRoiChartDialog(true)} variant="default" size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Button 
+                  onClick={() => setShowRoiChartDialog(true)} 
+                  variant="default" 
+                  size="lg" 
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                  disabled={toolsForChartDialog.length === 0} // Disable if no tools to show in chart
+                >
                   View ROI Projection Comparison
                 </Button>
               </div>
             )}
-
-            <Dialog open={showRoiChartDialog} onOpenChange={setShowRoiChartDialog}>
-              <DialogContent className="sm:max-w-4xl"> {/* Increased max-width for better chart display */}
-                <DialogHeader>
-                  <DialogTitle className="text-xl text-primary">ROI Projection Comparison</DialogTitle>
-                </DialogHeader>
-                {topThreeTools.length > 0 ? (
-                    <RoiChart tools={topThreeTools} />
-                ) : (
-                    <p className="text-muted-foreground text-center py-8">No tools selected to display ROI projection.</p>
-                )}
-              </DialogContent>
-            </Dialog>
-
           </div>
         </div>
       </main>
+
+      <Dialog open={showRoiChartDialog} onOpenChange={setShowRoiChartDialog}>
+        <DialogContent className="sm:max-w-4xl"> {/* Increased max-width for better chart display */}
+          <DialogHeader>
+            <DialogTitle className="text-xl text-primary">ROI Projection Comparison</DialogTitle>
+          </DialogHeader>
+          {toolsForChartDialog.length > 0 ? (
+              <RoiChart tools={toolsForChartDialog} />
+          ) : (
+              <p className="text-muted-foreground text-center py-8">No tools selected in the comparison table to display ROI projection.</p>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <footer className="flex items-center justify-between p-4 text-sm text-muted-foreground border-t border-border/50 mt-auto bg-background/80 backdrop-blur-sm">
         <span>V.1.0</span>
-        <span>Copyright© {currentYear !== null ? currentYear : '----'} Tao Digital Solutions Inc. All rights reserved</span>
+        <span>Copyright© {currentYear !== null ? currentYear : 'Loading year...'} Tao Digital Solutions Inc. All rights reserved</span>
       </footer>
     </div>
   );
 }
 
+    
