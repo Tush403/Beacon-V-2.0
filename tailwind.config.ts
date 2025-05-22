@@ -91,18 +91,23 @@ export default {
         'spin-slow': {
           'to': { transform: 'rotate(360deg)' },
         },
-        'pulse-slow': {
+        'pulse-slow': { // Kept if used elsewhere, or can be removed if not.
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.6' },
+        },
+        'spin-very-slow': { // New animation for the cube
+          'to': { transform: 'rotate(360deg)' },
         },
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
         'spin-slow': 'spin 3s linear infinite',
-        'pulse-slow': 'pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'pulse-slow': 'pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite', // Kept
+        'spin-very-slow': 'spin-very-slow 10s linear infinite', // New animation for the cube
   		}
   	}
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
