@@ -65,7 +65,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({
                     className="p-2 rounded-md bg-primary/10 border border-primary/20 shadow-sm" 
                     data-ai-hint={tool.dataAiHint || 'tool related image'}
                   >
-                     <Box className="h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin-very-slow" />
+                     <Box className="h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin-slow" />
                   </div>
                   <div>
                     <CardTitle className="text-2xl sm:text-3xl text-primary">{tool.name}</CardTitle>
