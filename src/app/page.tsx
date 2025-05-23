@@ -7,7 +7,6 @@ import Header from '@/components/Header';
 import ToolFilters from '@/components/ToolFilters';
 import ToolResults from '@/components/ToolResults';
 import RoiChart from '@/components/RoiChart';
-// import TrendSummaryPanel from '@/components/TrendSummaryPanel'; // Removed
 import EffortEstimator from '@/components/EffortEstimator';
 import RoiComparisonTable from '@/components/RoiComparisonTable';
 import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
@@ -68,10 +67,19 @@ export default function HomePage() {
   }, []);
 
   const handleFilterChange = useCallback(<K extends keyof Filters>(filterType: K, value: Filters[K]) => {
-    setFilters(prevFilters => ({
-      ...prevFilters,
-      [filterType]: value,
-    }));
+    setFilters(prevFilters => {
+      const newFilters = {
+        ...prevFilters,
+        [filterType]: value,
+      };
+      if (filterType === 'codingRequirement' && value === 'AI/ML') {
+        newFilters.codingLanguage = 'N/A'; // Automatically set coding language to N/A
+      } else if (filterType === 'codingRequirement' && value !== 'AI/ML' && prevFilters.codingLanguage === 'N/A' && prevFilters.codingRequirement === 'AI/ML') {
+        // If changing from AI/ML to something else, and language was N/A, clear language filter
+        newFilters.codingLanguage = '';
+      }
+      return newFilters;
+    });
   }, []);
 
   const handleResetFilters = useCallback(() => {
@@ -97,7 +105,11 @@ export default function HomePage() {
       tools = tools.filter(tool => tool.codingRequirements.includes(filters.codingRequirement!));
     }
     if (filters.codingLanguage && filters.codingLanguage !== ALL_FILTER_VALUE) {
-      tools = tools.filter(tool => tool.codingLanguages.includes(filters.codingLanguage!) || filters.codingLanguage === "N/A" && tool.codingLanguages.includes("N/A"));
+        // Ensure "N/A" specifically matches tools that list "N/A" or if the tool can be codeless.
+      tools = tools.filter(tool => 
+        tool.codingLanguages.includes(filters.codingLanguage!) || 
+        (filters.codingLanguage === "N/A" && tool.codingLanguages.includes("N/A"))
+      );
     }
     if (filters.pricingModel && filters.pricingModel !== ALL_FILTER_VALUE) {
       tools = tools.filter(tool => tool.pricingModels.includes(filters.pricingModel!));
@@ -234,7 +246,7 @@ export default function HomePage() {
           </div>
 
           <div className="lg:col-span-8 xl:col-span-9 space-y-6">
-            <ToolResults
+             <ToolResults
               toolsToDisplay={topThreeTools}
             />
             

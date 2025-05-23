@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Filter, RotateCcw } from 'lucide-react';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
+import { cn } from '@/lib/utils';
 
 interface ToolFiltersProps {
   filters: Filters;
@@ -22,38 +23,47 @@ const ToolFilters: React.FC<ToolFiltersProps> = ({ filters, filterOptions, onFil
     filterKey: K,
     label: string,
     options: FilterOption[] 
-  ) => (
-    <div className="space-y-1.5">
-      <label htmlFor={filterKey} className="block text-sm font-medium text-foreground/80">
-        {label}
-      </label>
-      <Select
-        value={filters[filterKey] === "" ? ALL_FILTER_VALUE : filters[filterKey]}
-        onValueChange={(valueFromSelect) => {
-          const actualValue = valueFromSelect === ALL_FILTER_VALUE ? "" : valueFromSelect;
-          onFilterChange(filterKey, actualValue as Filters[K]);
-        }}
-      >
-        <SelectTrigger 
-          id={filterKey} 
-          className="w-full bg-input/80 text-foreground placeholder:text-muted-foreground rounded-md border-border/70 focus:ring-accent focus:border-accent"
+  ) => {
+    const isDisabled = filterKey === 'codingLanguage' && filters.codingRequirement === 'AI/ML';
+    
+    return (
+      <div className="space-y-1.5">
+        <label htmlFor={filterKey} className="block text-sm font-medium text-foreground/80">
+          {label}
+        </label>
+        <Select
+          value={filters[filterKey] === "" ? ALL_FILTER_VALUE : filters[filterKey]}
+          onValueChange={(valueFromSelect) => {
+            const actualValue = valueFromSelect === ALL_FILTER_VALUE ? "" : valueFromSelect;
+            onFilterChange(filterKey, actualValue as Filters[K]);
+          }}
+          disabled={isDisabled} // Disable the Select component itself
         >
-          <SelectValue placeholder={`Any ${label}`} />
-        </SelectTrigger>
-        <SelectContent className="bg-popover border-border/70 text-popover-foreground rounded-md shadow-xl backdrop-blur-sm">
-          {options.map((option) => (
-            <SelectItem 
-              key={option.value} 
-              value={option.value}
-              className="focus:bg-accent/20 focus:text-accent-foreground hover:bg-accent/10 rounded-sm"
-            >
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
-  );
+          <SelectTrigger 
+            id={filterKey} 
+            className={cn(
+              "w-full bg-input/80 text-foreground placeholder:text-muted-foreground rounded-md border-border/70 focus:ring-accent focus:border-accent",
+              isDisabled && "cursor-not-allowed opacity-50"
+            )}
+            // No need for disabled prop here if Select parent is disabled, but doesn't hurt
+          >
+            <SelectValue placeholder={`Any ${label}`} />
+          </SelectTrigger>
+          <SelectContent className="bg-popover border-border/70 text-popover-foreground rounded-md shadow-xl backdrop-blur-sm">
+            {options.map((option) => (
+              <SelectItem 
+                key={option.value} 
+                value={option.value}
+                className="focus:bg-accent/20 focus:text-accent-foreground hover:bg-accent/10 rounded-sm"
+              >
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    );
+  };
 
   return (
     <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm animate-in fade-in-0 slide-in-from-left-12 duration-700 ease-out hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
