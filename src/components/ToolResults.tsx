@@ -6,7 +6,7 @@ import type { Tool } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, Star, ExternalLink, Package } from 'lucide-react';
+import { CheckCircle2, XCircle, Star, ExternalLink, Wrench } from 'lucide-react'; // Changed Package to Wrench
 import Link from 'next/link';
 
 interface ToolResultsProps {
@@ -62,7 +62,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({
               <Card className="border-primary/20 shadow-lg">
                 <CardHeader className="flex flex-row items-start gap-4 p-4 sm:p-6 bg-muted/20 rounded-t-lg">
                   <div className="p-2 rounded-md bg-primary/10 border border-primary/20 shadow-sm" data-ai-hint={tool.dataAiHint || 'tool related image'}>
-                     <Package className="h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin-very-slow" />
+                     <Wrench className="h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin-very-slow" />
                   </div>
                   <div>
                     <CardTitle className="text-2xl sm:text-3xl text-primary">{tool.name}</CardTitle>
