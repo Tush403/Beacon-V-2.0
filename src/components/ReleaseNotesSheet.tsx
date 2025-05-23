@@ -10,23 +10,23 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
+  // SheetTrigger, // Removed: No longer self-triggered
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Newspaper, CalendarDays, Sparkles, CheckCircle2, XCircle, Pin, AlertTriangle, Gem } from 'lucide-react';
+import { CalendarDays, Sparkles, CheckCircle2, XCircle, Pin, AlertTriangle, Gem } from 'lucide-react';
 
-const ReleaseNotesSheet: React.FC = () => {
+interface ReleaseNotesSheetProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+const ReleaseNotesSheet: React.FC<ReleaseNotesSheetProps> = ({ open, onOpenChange }) => {
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-white/10">
-          <Newspaper className="h-5 w-5" />
-          <span className="sr-only">View Release Notes</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="right" className="w-[400px] sm:w-[540px] flex flex-col">
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      {/* SheetTrigger is removed as this component is now controlled externally */}
+      <SheetContent side="right" className="w-[400px] sm:w-[540px] flex flex-col bg-card text-card-foreground">
         <SheetHeader className="pb-2">
           <SheetTitle className="flex items-center text-2xl text-primary">
             <CalendarDays className="mr-2 h-6 w-6 text-accent" />
@@ -37,7 +37,7 @@ const ReleaseNotesSheet: React.FC = () => {
         <div className="flex-grow overflow-y-auto pr-4 space-y-6 py-4">
           <div>
             <h3 className="flex items-center text-xl font-semibold text-foreground mb-2">
-              <Badge variant="default" className="mr-2 bg-blue-500 text-white">NEW</Badge>
+              <Badge variant="default" className="mr-2 bg-primary text-primary-foreground">NEW</Badge>
               <Sparkles className="mr-2 h-5 w-5 text-yellow-500" />
               What's New?
             </h3>
@@ -108,7 +108,7 @@ const ReleaseNotesSheet: React.FC = () => {
           </div>
         </div>
 
-        <SheetFooter className="pt-4 border-t">
+        <SheetFooter className="pt-4 border-t border-border">
           <div className="flex items-center text-xs text-muted-foreground mr-auto">
             <AlertTriangle className="h-4 w-4 mr-1 text-yellow-500" />
             V.2.0
@@ -123,4 +123,3 @@ const ReleaseNotesSheet: React.FC = () => {
 };
 
 export default ReleaseNotesSheet;
-
