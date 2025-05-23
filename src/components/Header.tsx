@@ -11,7 +11,7 @@ const Header: React.FC = () => {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 64 64"
-            className="h-9 w-9 mr-3" // Removed animate-spin-slow from here
+            className="h-9 w-9 mr-3"
             aria-hidden="true"
           >
             <defs>
@@ -48,7 +48,11 @@ const Header: React.FC = () => {
               <rect x="22" y="33" width="5" height="5" fill="#F97316" /> {/* Orange */}
             </g>
             {/* Cog Part - Right Half (Animated) */}
-            <g transform="translate(45, 32)" fill="hsl(var(--primary))" className="animate-spin-slow origin-center"> {/* Added animate-spin-slow and origin-center here */}
+            <g 
+              transform="translate(45, 32)" 
+              fill="hsl(var(--primary))" 
+              className="animate-spin-slow origin-[0px_0px]"
+            >
               {/* Central body of the cog - approximated as a partial disc */}
               <path d="M0,-20 A20,20 0 0 1 0,20 L-10,20 A10,10 0 0 0 -10,-20 Z" />
               {/* Teeth - 7 teeth for approx 180 degrees */}
