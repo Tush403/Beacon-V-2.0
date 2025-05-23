@@ -21,7 +21,7 @@ const ReleaseNotesSheet: React.FC = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary/80">
+        <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-white/10">
           <Newspaper className="h-5 w-5" />
           <span className="sr-only">View Release Notes</span>
         </Button>
@@ -123,3 +123,4 @@ const ReleaseNotesSheet: React.FC = () => {
 };
 
 export default ReleaseNotesSheet;
+
