@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Settings, BookOpenCheck, Palette, Mail, Search, LogIn, Menu, Sun, Moon, Sparkles, CheckCircle2, XCircle, Pin, AlertTriangle, Gem, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Settings, BookOpenCheck, Palette, Mail, Search, LogIn, Menu, Sun, Moon, Sparkles, CheckCircle2, XCircle, Pin, AlertTriangle, Gem, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SettingsSheetProps {
@@ -23,7 +23,7 @@ interface SettingsSheetProps {
 }
 
 const ReleaseNotesContent: React.FC = () => (
-  <div className="space-y-6 py-4 text-sm h-full overflow-y-auto px-1"> {/* Added px-1 for slight padding from border */}
+  <div className="space-y-6 py-4 text-sm h-full overflow-y-auto px-1">
     <div>
       <h3 className="flex items-center text-lg font-semibold text-foreground mb-2">
         <Badge variant="default" className="mr-2 bg-primary text-primary-foreground">NEW</Badge>
@@ -105,41 +105,41 @@ const ReleaseNotesContent: React.FC = () => (
 
 const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheetOpenChange }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [showReleaseNotesPane, setShowReleaseNotesPane] = useState(false);
+  const [currentView, setCurrentView] = useState<'main' | 'releaseNotes'>('main');
 
   useEffect(() => {
-    const currentThemeIsDark = localStorage.getItem('theme') === 'dark' || document.documentElement.classList.contains('dark');
-    setIsDarkMode(currentThemeIsDark);
-    if (currentThemeIsDark) {
-        document.documentElement.classList.add('dark');
+    // Check for saved theme and apply it
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || (!savedTheme && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+      setIsDarkMode(true);
     } else {
-        document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove('dark');
+      setIsDarkMode(false);
     }
   }, []);
 
   const handleThemeToggle = () => {
-    if (isDarkMode) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setIsDarkMode(false);
-    } else {
+    const newIsDarkMode = !isDarkMode;
+    setIsDarkMode(newIsDarkMode);
+    if (newIsDarkMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
-      setIsDarkMode(true);
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
   };
 
   const handleOptionClick = (optionName: string) => {
     console.log(`${optionName} clicked. Placeholder action.`);
-    // For non-toggle actions, you might want to close the sheet:
-    // handleSheetOpenChange(false); 
   };
 
   return (
     <Sheet onOpenChange={(open) => {
       handleSheetOpenChange(open);
       if (!open) { 
-        setShowReleaseNotesPane(false); // Reset pane visibility when sheet closes
+        setCurrentView('main'); // Reset to main view when sheet closes
       }
     }}>
       <SheetTrigger asChild>
@@ -148,72 +148,68 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
           <span className="sr-only">Open App Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[350px] sm:w-[700px] flex flex-col bg-card text-card-foreground p-0">
+      <SheetContent side="right" className="w-[350px] sm:w-[400px] flex flex-col bg-card text-card-foreground p-0">
         <SheetHeader className="p-6 pb-2 border-b">
-          <SheetTitle className="flex items-center text-xl text-primary">
+           <SheetTitle className="flex items-center text-xl text-primary">
             <Menu className="mr-2 h-6 w-6 text-accent" />
-            Beacon Menu
+            {currentView === 'main' ? 'Beacon Menu' : 'Release Notes'}
           </SheetTitle>
-          <SheetDescription>
-            App options, information, and release notes.
-          </SheetDescription>
+          {currentView === 'main' && (
+            <SheetDescription>
+              App options, information, and release notes.
+            </SheetDescription>
+          )}
         </SheetHeader>
 
-        <div className="flex flex-1 overflow-hidden"> {/* Main flex container for two panes */}
-          {/* Release Notes Pane (Left) */}
-          <div className={cn(
-            "transition-all duration-300 ease-in-out h-full border-r border-border/50",
-            showReleaseNotesPane ? "w-3/5 p-4" : "w-0 p-0 opacity-0" 
-            // No padding when hidden to prevent border from showing strangely
-          )}>
-            {showReleaseNotesPane && ( // Only render content when visible to help with transitions/layout
-              <>
-                <h3 className="text-lg font-semibold text-accent mb-2">Release Notes</h3>
-                <ReleaseNotesContent />
-              </>
-            )}
-          </div>
-
-          {/* Main Menu Pane (Right, or full if release notes hidden) */}
-          <div className={cn(
-            "flex-1 p-4 space-y-1 overflow-y-auto h-full transition-all duration-300 ease-in-out",
-            // Width adjustment is implicitly handled by flex-1 and the sibling's conditional width
-          )}>
-            <Button 
-              variant="ghost" 
-              className={cn(
-                "w-full justify-between text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md",
-                showReleaseNotesPane && "bg-accent/10" // Highlight when active
-              )} 
-              onClick={() => setShowReleaseNotesPane(!showReleaseNotesPane)}
-            >
-              <span className="flex items-center">
+        <div className="flex-1 p-4 space-y-1 overflow-y-auto">
+          {currentView === 'main' && (
+            <>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md"
+                onClick={() => setCurrentView('releaseNotes')}
+              >
                 <BookOpenCheck className="mr-3 h-5 w-5 text-muted-foreground" />
                 Acknowledgement
-              </span>
-              {showReleaseNotesPane ? <ChevronLeft className="h-5 w-5 text-muted-foreground" /> : <ChevronRight className="h-5 w-5 text-muted-foreground" />}
-            </Button>
-            <Separator className="my-2" />
-            <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={handleThemeToggle}>
-              {isDarkMode ? <Sun className="mr-3 h-5 w-5 text-muted-foreground" /> : <Moon className="mr-3 h-5 w-5 text-muted-foreground" />}
-              {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            </Button>
-            <Separator className="my-2" />
-            <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Write Us')}>
-              <Mail className="mr-3 h-5 w-5 text-muted-foreground" />
-              Write Us
-            </Button>
-            <Separator className="my-2" />
-            <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Search Tool Action')}>
-              <Search className="mr-3 h-5 w-5 text-muted-foreground" />
-              Search Tool
-            </Button>
-            <Separator className="my-2" />
-            <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Sign In/Sign Up')}>
-              <LogIn className="mr-3 h-5 w-5 text-muted-foreground" />
-              Sign In / Sign Up
-            </Button>
-          </div>
+              </Button>
+              <Separator className="my-2" />
+              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={handleThemeToggle}>
+                {isDarkMode ? <Sun className="mr-3 h-5 w-5 text-muted-foreground" /> : <Moon className="mr-3 h-5 w-5 text-muted-foreground" />}
+                {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              </Button>
+              <Separator className="my-2" />
+              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Write Us')}>
+                <Mail className="mr-3 h-5 w-5 text-muted-foreground" />
+                Write Us
+              </Button>
+              <Separator className="my-2" />
+              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Search Tool Action')}>
+                <Search className="mr-3 h-5 w-5 text-muted-foreground" />
+                Search Tool
+              </Button>
+              <Separator className="my-2" />
+              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Sign In/Sign Up')}>
+                <LogIn className="mr-3 h-5 w-5 text-muted-foreground" />
+                Sign In / Sign Up
+              </Button>
+            </>
+          )}
+
+          {currentView === 'releaseNotes' && (
+            <div className="flex flex-col h-full">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md mb-2 sticky top-0 bg-card z-10 -mt-4 pt-4 -mx-4 px-4"
+                onClick={() => setCurrentView('main')}
+              >
+                <ChevronLeft className="mr-2 h-5 w-5 text-muted-foreground" />
+                Back to Menu
+              </Button>
+              <div className="flex-1 overflow-y-auto -mx-4 px-4"> {/* Adjust padding for scrollable area */}
+                <ReleaseNotesContent />
+              </div>
+            </div>
+          )}
         </div>
 
         <SheetFooter className="p-6 pt-4 border-t border-border">
