@@ -231,7 +231,6 @@ export default function HomePage() {
               isLoading={estimatorLoading}
               error={estimatorError}
             />
-            {/* TrendSummaryPanel removed from here */}
           </div>
 
           <div className="lg:col-span-8 xl:col-span-9 space-y-6">
@@ -329,7 +328,7 @@ export default function HomePage() {
 
 
       <footer className="flex items-center justify-between p-4 text-sm text-muted-foreground border-t border-border/50 mt-auto bg-background/80 backdrop-blur-sm">
-        <span>V.1.0</span>
+        <span>V.2.0</span>
         <div className="flex items-center gap-x-3 sm:gap-x-4">
             <Link href="https://www.taodigitalsolutions.com/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline">
                 Privacy Policy

@@ -30,7 +30,7 @@ const ReleaseNotesSheet: React.FC = () => {
         <SheetHeader className="pb-2">
           <SheetTitle className="flex items-center text-2xl text-primary">
             <CalendarDays className="mr-2 h-6 w-6 text-accent" />
-            Beacon (Beta Version)
+            Beacon (V.2.0)
           </SheetTitle>
         </SheetHeader>
 
@@ -111,7 +111,7 @@ const ReleaseNotesSheet: React.FC = () => {
         <SheetFooter className="pt-4 border-t">
           <div className="flex items-center text-xs text-muted-foreground mr-auto">
             <AlertTriangle className="h-4 w-4 mr-1 text-yellow-500" />
-            Beta Version
+            V.2.0
           </div>
           <SheetClose asChild>
             <Button type="button" className="bg-primary hover:bg-primary/90 text-primary-foreground">Acknowledge</Button>
