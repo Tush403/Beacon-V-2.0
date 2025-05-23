@@ -15,14 +15,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Settings, BookOpenCheck, Palette, Mail, Search, LogIn, Menu, Sun, Moon, Sparkles, CheckCircle2, XCircle, Pin, AlertTriangle, Gem, ChevronLeft } from 'lucide-react';
+import { Settings, BookOpenCheck, Palette, Mail, Search, LogIn, Menu, Sun, Moon, Sparkles, CheckCircle2, XCircle, Pin, AlertTriangle, Gem, ChevronLeft, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface SettingsSheetProps {
   onOpenChange: (open: boolean) => void;
 }
 
 const ReleaseNotesContent: React.FC = () => (
-  <div className="space-y-6 py-4 text-sm">
+  <div className="space-y-6 py-4 text-sm h-full overflow-y-auto px-1">
     <div>
       <h3 className="flex items-center text-lg font-semibold text-foreground mb-2">
         <Badge variant="default" className="mr-2 bg-primary text-primary-foreground">NEW</Badge>
@@ -104,7 +105,7 @@ const ReleaseNotesContent: React.FC = () => (
 
 const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheetOpenChange }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeSection, setActiveSection] = useState<'main' | 'releaseNotes'>('main');
+  const [showReleaseNotesPane, setShowReleaseNotesPane] = useState(false);
 
   useEffect(() => {
     const currentThemeIsDark = localStorage.getItem('theme') === 'dark' || document.documentElement.classList.contains('dark');
@@ -126,23 +127,19 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
       localStorage.setItem('theme', 'dark');
       setIsDarkMode(true);
     }
-    // Do not close sheet on theme toggle to allow further interactions
   };
 
   const handleOptionClick = (optionName: string) => {
     console.log(`${optionName} clicked. Placeholder action.`);
-    // Optionally close sheet for other actions, but not for theme or acknowledgement navigation
+    // For non-toggle actions, you might want to close the sheet:
     // handleSheetOpenChange(false); 
   };
-
-  const sheetTitle = activeSection === 'releaseNotes' ? 'Release Notes' : 'Beacon Menu';
-  const sheetDescription = activeSection === 'releaseNotes' ? 'Latest updates and improvements.' : 'App options, information, and release notes.';
 
   return (
     <Sheet onOpenChange={(open) => {
       handleSheetOpenChange(open);
-      if (!open) { // Reset to main section when sheet is closed
-        setActiveSection('main');
+      if (!open) { 
+        setShowReleaseNotesPane(false); // Reset pane visibility when sheet closes
       }
     }}>
       <SheetTrigger asChild>
@@ -151,64 +148,74 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
           <span className="sr-only">Open App Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[400px] sm:w-[540px] flex flex-col bg-card text-card-foreground">
-        <SheetHeader className="pb-2">
+      <SheetContent side="right" className="w-[350px] sm:w-[700px] flex flex-col bg-card text-card-foreground p-0">
+        <SheetHeader className="p-6 pb-2 border-b">
           <SheetTitle className="flex items-center text-xl text-primary">
-            {activeSection === 'releaseNotes' ? (
-              <BookOpenCheck className="mr-2 h-6 w-6 text-accent" />
-            ) : (
-              <Menu className="mr-2 h-6 w-6 text-accent" />
-            )}
-            {sheetTitle}
+            <Menu className="mr-2 h-6 w-6 text-accent" />
+            Beacon Menu
           </SheetTitle>
           <SheetDescription>
-            {sheetDescription}
+            App options, information, and release notes.
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-grow overflow-y-auto space-y-1 py-2 pr-2">
-          {activeSection === 'main' && (
-            <>
-              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => setActiveSection('releaseNotes')}>
+        <div className="flex flex-1 overflow-hidden">
+          {/* Release Notes Pane (Left) */}
+          <div className={cn(
+            "transition-all duration-300 ease-in-out h-full border-r border-border/50",
+            showReleaseNotesPane ? "w-3/5 p-4" : "w-0 p-0 opacity-0" 
+          )}>
+            {showReleaseNotesPane && (
+              <>
+                <h3 className="text-lg font-semibold text-accent mb-2">Release Notes</h3>
+                <ReleaseNotesContent />
+              </>
+            )}
+          </div>
+
+          {/* Main Menu Pane (Right, or full if release notes hidden) */}
+          <div className={cn(
+            "flex-1 p-4 space-y-1 overflow-y-auto h-full transition-all duration-300 ease-in-out",
+            showReleaseNotesPane ? "w-2/5" : "w-full"
+          )}>
+            <Button 
+              variant="ghost" 
+              className={cn(
+                "w-full justify-between text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md",
+                showReleaseNotesPane && "bg-accent/10"
+              )} 
+              onClick={() => setShowReleaseNotesPane(!showReleaseNotesPane)}
+            >
+              <span className="flex items-center">
                 <BookOpenCheck className="mr-3 h-5 w-5 text-muted-foreground" />
                 Acknowledgement
-              </Button>
-              <Separator className="my-2" />
-              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={handleThemeToggle}>
-                {isDarkMode ? <Sun className="mr-3 h-5 w-5 text-muted-foreground" /> : <Moon className="mr-3 h-5 w-5 text-muted-foreground" />}
-                {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              </Button>
-              <Separator className="my-2" />
-              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Write Us')}>
-                <Mail className="mr-3 h-5 w-5 text-muted-foreground" />
-                Write Us
-              </Button>
-              <Separator className="my-2" />
-              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Search Tool Action')}>
-                <Search className="mr-3 h-5 w-5 text-muted-foreground" />
-                Search Tool
-              </Button>
-              <Separator className="my-2" />
-              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Sign In/Sign Up')}>
-                <LogIn className="mr-3 h-5 w-5 text-muted-foreground" />
-                Sign In / Sign Up
-              </Button>
-            </>
-          )}
-
-          {activeSection === 'releaseNotes' && (
-            <>
-              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md mb-2" onClick={() => setActiveSection('main')}>
-                <ChevronLeft className="mr-3 h-5 w-5 text-muted-foreground" />
-                Back to Menu
-              </Button>
-              <Separator className="my-1" />
-              <ReleaseNotesContent />
-            </>
-          )}
+              </span>
+              {showReleaseNotesPane ? <ChevronRight className="h-5 w-5 text-muted-foreground" /> : <ChevronLeft className="h-5 w-5 text-muted-foreground" />}
+            </Button>
+            <Separator className="my-2" />
+            <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={handleThemeToggle}>
+              {isDarkMode ? <Sun className="mr-3 h-5 w-5 text-muted-foreground" /> : <Moon className="mr-3 h-5 w-5 text-muted-foreground" />}
+              {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            </Button>
+            <Separator className="my-2" />
+            <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Write Us')}>
+              <Mail className="mr-3 h-5 w-5 text-muted-foreground" />
+              Write Us
+            </Button>
+            <Separator className="my-2" />
+            <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Search Tool Action')}>
+              <Search className="mr-3 h-5 w-5 text-muted-foreground" />
+              Search Tool
+            </Button>
+            <Separator className="my-2" />
+            <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Sign In/Sign Up')}>
+              <LogIn className="mr-3 h-5 w-5 text-muted-foreground" />
+              Sign In / Sign Up
+            </Button>
+          </div>
         </div>
 
-        <SheetFooter className="pt-4 border-t border-border">
+        <SheetFooter className="p-6 pt-4 border-t border-border">
           <SheetClose asChild>
             <Button type="button" variant="outline" className="w-full">
               Close Menu
@@ -221,3 +228,5 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
 };
 
 export default SettingsSheet;
+
+    
