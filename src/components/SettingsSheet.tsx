@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Grid3x3, BookOpenCheck, Palette, Mail, Search, LogIn, Settings } from 'lucide-react';
+import { Settings, BookOpenCheck, Palette, Mail, Search, LogIn } from 'lucide-react'; // Changed Grid3x3 to Settings
 
 interface SettingsSheetProps {
   onOpenChange: (open: boolean) => void;
@@ -37,7 +37,7 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange, onOpenRelea
     <Sheet onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-white/10">
-          <Grid3x3 className="h-5 w-5" />
+          <Settings className="h-5 w-5" /> {/* Changed from Grid3x3 to Settings */}
           <span className="sr-only">Open App Settings</span>
         </Button>
       </SheetTrigger>
