@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Sheet,
   SheetClose,
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Settings, BookOpenCheck, Palette, Mail, Search, LogIn, Menu } from 'lucide-react'; // Added Menu
+import { Settings, BookOpenCheck, Palette, Mail, Search, LogIn, Menu, Sun, Moon } from 'lucide-react';
 
 interface SettingsSheetProps {
   onOpenChange: (open: boolean) => void;
@@ -22,6 +22,34 @@ interface SettingsSheetProps {
 }
 
 const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange, onOpenReleaseNotesRequest }) => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    // Initialize theme state based on localStorage or document class
+    const currentThemeIsDark = localStorage.getItem('theme') === 'dark' || document.documentElement.classList.contains('dark');
+    setIsDarkMode(currentThemeIsDark);
+    // Ensure the class matches the state, especially for initial load if layout.tsx hasn't run yet or if class was manually changed
+    if (currentThemeIsDark) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  const handleThemeToggle = () => {
+    if (isDarkMode) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setIsDarkMode(false);
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDarkMode(true);
+    }
+    // Optionally close the sheet after toggling theme
+    // onOpenChange(false); 
+  };
+
   const handleOptionClick = (optionName: string) => {
     console.log(`${optionName} clicked. Placeholder action.`);
     // Potentially close the sheet after action
@@ -37,18 +65,18 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange, onOpenRelea
     <Sheet onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-white/10">
-          <Menu className="h-5 w-5" /> {/* Changed from Settings to Menu */}
+          <Menu className="h-5 w-5" />
           <span className="sr-only">Open App Menu</span>
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-[300px] sm:w-[360px] flex flex-col bg-card text-card-foreground">
         <SheetHeader className="pb-4">
           <SheetTitle className="flex items-center text-xl text-primary">
-            <Menu className="mr-2 h-6 w-6 text-accent" /> {/* Changed from Settings to Menu */}
+            <Menu className="mr-2 h-6 w-6 text-accent" />
             Beacon Menu
           </SheetTitle>
           <SheetDescription>
-            App options and information. {/* Slightly more generic description */}
+            App options and information.
           </SheetDescription>
         </SheetHeader>
 
@@ -58,9 +86,9 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange, onOpenRelea
             Acknowledgement
           </Button>
           <Separator className="my-1" />
-          <Button variant="ghost" className="w-full justify-start text-left" onClick={() => handleOptionClick('Theme Settings')}>
-            <Palette className="mr-3 h-5 w-5 text-muted-foreground" />
-            Theme
+          <Button variant="ghost" className="w-full justify-start text-left" onClick={handleThemeToggle}>
+            {isDarkMode ? <Sun className="mr-3 h-5 w-5 text-muted-foreground" /> : <Moon className="mr-3 h-5 w-5 text-muted-foreground" />}
+            {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           </Button>
            <Separator className="my-1" />
           <Button variant="ghost" className="w-full justify-start text-left" onClick={() => handleOptionClick('Write Us')}>
