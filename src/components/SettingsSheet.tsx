@@ -23,7 +23,7 @@ interface SettingsSheetProps {
 }
 
 const ReleaseNotesContent: React.FC = () => (
-  <div className="space-y-6 py-4 text-sm h-full overflow-y-auto px-1">
+  <div className="space-y-6 py-4 text-sm h-full overflow-y-auto px-1"> {/* Added px-1 for slight padding from border */}
     <div>
       <h3 className="flex items-center text-lg font-semibold text-foreground mb-2">
         <Badge variant="default" className="mr-2 bg-primary text-primary-foreground">NEW</Badge>
@@ -159,13 +159,14 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 overflow-hidden"> {/* Main flex container for two panes */}
           {/* Release Notes Pane (Left) */}
           <div className={cn(
             "transition-all duration-300 ease-in-out h-full border-r border-border/50",
             showReleaseNotesPane ? "w-3/5 p-4" : "w-0 p-0 opacity-0" 
+            // No padding when hidden to prevent border from showing strangely
           )}>
-            {showReleaseNotesPane && (
+            {showReleaseNotesPane && ( // Only render content when visible to help with transitions/layout
               <>
                 <h3 className="text-lg font-semibold text-accent mb-2">Release Notes</h3>
                 <ReleaseNotesContent />
@@ -176,13 +177,13 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
           {/* Main Menu Pane (Right, or full if release notes hidden) */}
           <div className={cn(
             "flex-1 p-4 space-y-1 overflow-y-auto h-full transition-all duration-300 ease-in-out",
-            showReleaseNotesPane ? "w-2/5" : "w-full"
+            // Width adjustment is implicitly handled by flex-1 and the sibling's conditional width
           )}>
             <Button 
               variant="ghost" 
               className={cn(
                 "w-full justify-between text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md",
-                showReleaseNotesPane && "bg-accent/10"
+                showReleaseNotesPane && "bg-accent/10" // Highlight when active
               )} 
               onClick={() => setShowReleaseNotesPane(!showReleaseNotesPane)}
             >
@@ -228,5 +229,3 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
 };
 
 export default SettingsSheet;
-
-    
