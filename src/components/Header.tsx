@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Cog, Newspaper } from 'lucide-react'; // Ensure Newspaper is imported if not already
+import { Cog, Newspaper } from 'lucide-react'; // Ensure Newspaper is imported
 import ReleaseNotesSheet from './ReleaseNotesSheet';
 
 const Header: React.FC = () => {
@@ -20,12 +20,12 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Side: Release Notes Button and Beacon Title */}
+        {/* Right Side: Beacon Title and Release Notes Button */}
         <div className="flex items-center gap-x-2 sm:gap-x-3">
-          <ReleaseNotesSheet /> {/* Moved ReleaseNotesSheet trigger here */}
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-primary-foreground">
             Beacon
           </h1>
+          <ReleaseNotesSheet /> {/* Moved here */}
         </div>
       </div>
     </header>
