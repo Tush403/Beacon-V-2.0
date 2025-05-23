@@ -16,6 +16,7 @@ import { ALL_FILTER_VALUE } from '@/lib/constants';
 import { estimateEffort as estimateEffortAction } from '@/actions/aiActions';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 
 const initialFilters: Filters = {
@@ -198,7 +199,7 @@ export default function HomePage() {
               toolsToDisplay={topThreeTools}
             />
             
-            {tool1ForComparison && ( // Show table if tool1 (from filters) exists
+            {tool1ForComparison && ( 
                  <RoiComparisonTable
                     allTools={mockToolsData}
                     tool1={tool1ForComparison}
@@ -210,7 +211,6 @@ export default function HomePage() {
                  />
             )}
             
-            {/* Button to show ROI Chart Dialog - visible if tool1ForComparison is set */}
             {tool1ForComparison && (
               <div className="flex justify-center pt-4">
                 <Button 
@@ -218,7 +218,7 @@ export default function HomePage() {
                   variant="default" 
                   size="lg" 
                   className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                  disabled={toolsForChartDialog.length === 0} // Disable if no tools to show in chart
+                  disabled={toolsForChartDialog.length === 0}
                 >
                   View ROI Projection Comparison
                 </Button>
@@ -229,7 +229,7 @@ export default function HomePage() {
       </main>
 
       <Dialog open={showRoiChartDialog} onOpenChange={setShowRoiChartDialog}>
-        <DialogContent className="sm:max-w-4xl"> {/* Increased max-width for better chart display */}
+        <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle className="text-xl text-primary">ROI Projection Comparison</DialogTitle>
           </DialogHeader>
@@ -243,10 +243,19 @@ export default function HomePage() {
 
       <footer className="flex items-center justify-between p-4 text-sm text-muted-foreground border-t border-border/50 mt-auto bg-background/80 backdrop-blur-sm">
         <span>V.1.0</span>
-        <span>Copyright© {currentYear !== null ? currentYear : 'Loading year...'} Tao Digital Solutions Inc. All rights reserved</span>
+        <div className="flex items-center gap-x-3 sm:gap-x-4">
+            <Link href="https://www.taodigitalsolutions.com/privacy-policy/" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline">
+                Privacy Policy
+            </Link>
+            <span className="select-none">|</span>
+            <Link href="https://www.taodigitalsolutions.com/terms-and-conditions/" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline">
+                Terms of Service
+            </Link>
+        </div>
+        <span className="text-right">
+            Copyright© {currentYear !== null ? currentYear : '....'} Tao Digital Solutions Inc. All rights reserved
+        </span>
       </footer>
     </div>
   );
 }
-
-    
