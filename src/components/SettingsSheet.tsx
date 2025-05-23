@@ -12,20 +12,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Settings, BookOpenCheck, Palette, Mail, Search, LogIn, Menu, Sun, Moon, CalendarDays, Sparkles, CheckCircle2, XCircle, Pin, AlertTriangle, Gem } from 'lucide-react';
+import { Settings, BookOpenCheck, Palette, Mail, Search, LogIn, Menu, Sun, Moon, Sparkles, CheckCircle2, XCircle, Pin, AlertTriangle, Gem, ChevronLeft } from 'lucide-react';
 
 interface SettingsSheetProps {
   onOpenChange: (open: boolean) => void;
-  // onOpenReleaseNotesRequest prop is no longer needed
 }
 
 const ReleaseNotesContent: React.FC = () => (
@@ -109,8 +102,9 @@ const ReleaseNotesContent: React.FC = () => (
 );
 
 
-const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange }) => {
+const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheetOpenChange }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [activeSection, setActiveSection] = useState<'main' | 'releaseNotes'>('main');
 
   useEffect(() => {
     const currentThemeIsDark = localStorage.getItem('theme') === 'dark' || document.documentElement.classList.contains('dark');
@@ -137,11 +131,20 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange }) => {
 
   const handleOptionClick = (optionName: string) => {
     console.log(`${optionName} clicked. Placeholder action.`);
-    onOpenChange(false); 
+    // Optionally close sheet for other actions, but not for theme or acknowledgement navigation
+    // handleSheetOpenChange(false); 
   };
 
+  const sheetTitle = activeSection === 'releaseNotes' ? 'Release Notes' : 'Beacon Menu';
+  const sheetDescription = activeSection === 'releaseNotes' ? 'Latest updates and improvements.' : 'App options, information, and release notes.';
+
   return (
-    <Sheet onOpenChange={onOpenChange}>
+    <Sheet onOpenChange={(open) => {
+      handleSheetOpenChange(open);
+      if (!open) { // Reset to main section when sheet is closed
+        setActiveSection('main');
+      }
+    }}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-white/10">
           <Menu className="h-5 w-5" />
@@ -151,50 +154,58 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange }) => {
       <SheetContent side="right" className="w-[400px] sm:w-[540px] flex flex-col bg-card text-card-foreground">
         <SheetHeader className="pb-2">
           <SheetTitle className="flex items-center text-xl text-primary">
-            <Menu className="mr-2 h-6 w-6 text-accent" />
-            Beacon Menu
+            {activeSection === 'releaseNotes' ? (
+              <BookOpenCheck className="mr-2 h-6 w-6 text-accent" />
+            ) : (
+              <Menu className="mr-2 h-6 w-6 text-accent" />
+            )}
+            {sheetTitle}
           </SheetTitle>
           <SheetDescription>
-            App options, information, and release notes.
+            {sheetDescription}
           </SheetDescription>
         </SheetHeader>
 
         <div className="flex-grow overflow-y-auto space-y-1 py-2 pr-2">
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="acknowledgement">
-              <AccordionTrigger className="py-2 px-3 hover:bg-accent/10 rounded-md text-sm font-normal data-[state=open]:font-medium">
-                <div className="flex items-center">
-                  <BookOpenCheck className="mr-3 h-5 w-5 text-muted-foreground" />
-                  Acknowledgement
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pl-3 pr-1 pb-2">
-                <ReleaseNotesContent />
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-          
-          <Separator className="my-2" />
-          
-          <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={handleThemeToggle}>
-            {isDarkMode ? <Sun className="mr-3 h-5 w-5 text-muted-foreground" /> : <Moon className="mr-3 h-5 w-5 text-muted-foreground" />}
-            {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          </Button>
-           <Separator className="my-2" />
-          <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Write Us')}>
-            <Mail className="mr-3 h-5 w-5 text-muted-foreground" />
-            Write Us
-          </Button>
-           <Separator className="my-2" />
-          <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Search Tool Action')}>
-            <Search className="mr-3 h-5 w-5 text-muted-foreground" />
-            Search Tool
-          </Button>
-           <Separator className="my-2" />
-          <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Sign In/Sign Up')}>
-            <LogIn className="mr-3 h-5 w-5 text-muted-foreground" />
-            Sign In / Sign Up
-          </Button>
+          {activeSection === 'main' && (
+            <>
+              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => setActiveSection('releaseNotes')}>
+                <BookOpenCheck className="mr-3 h-5 w-5 text-muted-foreground" />
+                Acknowledgement
+              </Button>
+              <Separator className="my-2" />
+              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={handleThemeToggle}>
+                {isDarkMode ? <Sun className="mr-3 h-5 w-5 text-muted-foreground" /> : <Moon className="mr-3 h-5 w-5 text-muted-foreground" />}
+                {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              </Button>
+              <Separator className="my-2" />
+              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Write Us')}>
+                <Mail className="mr-3 h-5 w-5 text-muted-foreground" />
+                Write Us
+              </Button>
+              <Separator className="my-2" />
+              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Search Tool Action')}>
+                <Search className="mr-3 h-5 w-5 text-muted-foreground" />
+                Search Tool
+              </Button>
+              <Separator className="my-2" />
+              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Sign In/Sign Up')}>
+                <LogIn className="mr-3 h-5 w-5 text-muted-foreground" />
+                Sign In / Sign Up
+              </Button>
+            </>
+          )}
+
+          {activeSection === 'releaseNotes' && (
+            <>
+              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md mb-2" onClick={() => setActiveSection('main')}>
+                <ChevronLeft className="mr-3 h-5 w-5 text-muted-foreground" />
+                Back to Menu
+              </Button>
+              <Separator className="my-1" />
+              <ReleaseNotesContent />
+            </>
+          )}
         </div>
 
         <SheetFooter className="pt-4 border-t border-border">
@@ -210,5 +221,3 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange }) => {
 };
 
 export default SettingsSheet;
-
-    
