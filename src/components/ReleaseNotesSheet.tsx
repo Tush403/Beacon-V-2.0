@@ -26,7 +26,7 @@ const ReleaseNotesSheet: React.FC = () => {
           <span className="sr-only">View Release Notes</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[400px] sm:w-[540px] flex flex-col">
+      <SheetContent side="right" className="w-[400px] sm:w-[540px] flex flex-col">
         <SheetHeader className="pb-2">
           <SheetTitle className="flex items-center text-2xl text-primary">
             <CalendarDays className="mr-2 h-6 w-6 text-accent" />
