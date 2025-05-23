@@ -2,21 +2,20 @@
 "use client";
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import type { Metadata } from 'next'; // Keep if used for specific page metadata, otherwise remove.
+import Link from 'next/link'; // Ensure Link is imported
 import Header from '@/components/Header';
 import ToolFilters from '@/components/ToolFilters';
 import ToolResults from '@/components/ToolResults';
 import RoiChart from '@/components/RoiChart';
 import TrendSummaryPanel from '@/components/TrendSummaryPanel';
 import EffortEstimator from '@/components/EffortEstimator';
-import RoiComparisonTable from '@/components/RoiComparisonTable'; // Import the new component
+import RoiComparisonTable from '@/components/RoiComparisonTable';
 import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
 import { estimateEffort as estimateEffortAction } from '@/actions/aiActions';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 
 
 const initialFilters: Filters = {
@@ -118,7 +117,7 @@ export default function HomePage() {
       setToolForCol2Id(null);
       setToolForCol3Id(null);
     }
-  }, [topThreeTools]); // Depends on topThreeTools now
+  }, [topThreeTools]);
 
   const handleTool2Change = useCallback((toolId: string | null) => {
     setToolForCol2Id(toolId);
@@ -136,9 +135,12 @@ export default function HomePage() {
   const handleEstimatorInputChange = useCallback((field: keyof EstimatorInputValues, value: string | number | boolean) => {
     setEstimatorInputs(prevInputs => ({
       ...prevInputs,
-      [field]: value,
+      [field]: typeof value === 'string' && (field === 'complexityLow' || field === 'complexityMedium' || field === 'complexityHigh' || field === 'complexityHighlyComplex' || field === 'teamSize')
+        ? parseInt(value, 10) || 0
+        : value,
     }));
   }, []);
+  
 
   const handleGetEstimate = useCallback(async () => {
     if (estimatorInputs.teamSize <= 0) {
@@ -244,11 +246,11 @@ export default function HomePage() {
       <footer className="flex items-center justify-between p-4 text-sm text-muted-foreground border-t border-border/50 mt-auto bg-background/80 backdrop-blur-sm">
         <span>V.1.0</span>
         <div className="flex items-center gap-x-3 sm:gap-x-4">
-            <Link href="https://www.taodigitalsolutions.com/privacy-policy/" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline">
+            <Link href="https://www.taodigitalsolutions.com/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline">
                 Privacy Policy
             </Link>
             <span className="select-none">|</span>
-            <Link href="https://www.taodigitalsolutions.com/terms-and-conditions/" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline">
+            <Link href="https://www.taodigitalsolutions.com/terms-conditions" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline">
                 Terms of Service
             </Link>
         </div>
@@ -259,3 +261,4 @@ export default function HomePage() {
     </div>
   );
 }
+
