@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Settings, BookOpenCheck, Palette, Mail, Search, LogIn } from 'lucide-react'; // Changed Grid3x3 to Settings
+import { Settings, BookOpenCheck, Palette, Mail, Search, LogIn, Menu } from 'lucide-react'; // Added Menu
 
 interface SettingsSheetProps {
   onOpenChange: (open: boolean) => void;
@@ -37,18 +37,18 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange, onOpenRelea
     <Sheet onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-white/10">
-          <Settings className="h-5 w-5" /> {/* Changed from Grid3x3 to Settings */}
-          <span className="sr-only">Open App Settings</span>
+          <Menu className="h-5 w-5" /> {/* Changed from Settings to Menu */}
+          <span className="sr-only">Open App Menu</span>
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-[300px] sm:w-[360px] flex flex-col bg-card text-card-foreground">
         <SheetHeader className="pb-4">
           <SheetTitle className="flex items-center text-xl text-primary">
-            <Settings className="mr-2 h-6 w-6 text-accent" />
+            <Menu className="mr-2 h-6 w-6 text-accent" /> {/* Changed from Settings to Menu */}
             Beacon Menu
           </SheetTitle>
           <SheetDescription>
-            App settings and options.
+            App options and information. {/* Slightly more generic description */}
           </SheetDescription>
         </SheetHeader>
 
