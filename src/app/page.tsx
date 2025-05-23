@@ -182,10 +182,6 @@ export default function HomePage() {
               onFilterChange={handleFilterChange}
               onResetFilters={handleResetFilters}
             />
-             <TrendSummaryPanel
-              selectedTestType={filters.testType}
-              trendData={trendDataPerTestType}
-            />
             <EffortEstimator
               inputValues={estimatorInputs}
               onInputChange={handleEstimatorInputChange}
@@ -193,6 +189,10 @@ export default function HomePage() {
               estimation={effortEstimation}
               isLoading={estimatorLoading}
               error={estimatorError}
+            />
+            <TrendSummaryPanel
+              selectedTestType={filters.testType}
+              trendData={trendDataPerTestType}
             />
           </div>
 
