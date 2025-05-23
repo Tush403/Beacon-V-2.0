@@ -11,7 +11,7 @@ const Header: React.FC = () => {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 64 64"
-            className="h-9 w-9 mr-3 animate-spin-slow" // Removed text-accent, fills are explicit
+            className="h-9 w-9 mr-3" // Removed animate-spin-slow from here
             aria-hidden="true"
           >
             <defs>
@@ -20,7 +20,7 @@ const Header: React.FC = () => {
                 d="M-2,-6 L2,-6 L4,-2 L4,2 L2,6 L-2,6 L-4,2 L-4,-2 Z"
               />
             </defs>
-            {/* Pixel Part */}
+            {/* Pixel Part (Static) */}
             <g id="pixels">
               {/* Column 1 */}
               <rect x="4" y="12" width="5" height="5" fill="#1E40AF" /> {/* Dark Blue */}
@@ -47,8 +47,8 @@ const Header: React.FC = () => {
               <rect x="22" y="27" width="5" height="5" fill="#60A5FA" /> {/* Light Blue */}
               <rect x="22" y="33" width="5" height="5" fill="#F97316" /> {/* Orange */}
             </g>
-            {/* Cog Part - Right Half (Simplified) */}
-            <g transform="translate(45, 32)" fill="hsl(var(--primary))">
+            {/* Cog Part - Right Half (Animated) */}
+            <g transform="translate(45, 32)" fill="hsl(var(--primary))" className="animate-spin-slow origin-center"> {/* Added animate-spin-slow and origin-center here */}
               {/* Central body of the cog - approximated as a partial disc */}
               <path d="M0,-20 A20,20 0 0 1 0,20 L-10,20 A10,10 0 0 0 -10,-20 Z" />
               {/* Teeth - 7 teeth for approx 180 degrees */}
