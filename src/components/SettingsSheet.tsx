@@ -190,7 +190,7 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
                 <BookOpenCheck className="mr-3 h-5 w-5 text-muted-foreground" />
                 Acknowledgement
               </span>
-              {showReleaseNotesPane ? <ChevronRight className="h-5 w-5 text-muted-foreground" /> : <ChevronLeft className="h-5 w-5 text-muted-foreground" />}
+              {showReleaseNotesPane ? <ChevronLeft className="h-5 w-5 text-muted-foreground" /> : <ChevronRight className="h-5 w-5 text-muted-foreground" />}
             </Button>
             <Separator className="my-2" />
             <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={handleThemeToggle}>
