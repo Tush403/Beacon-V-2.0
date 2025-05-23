@@ -24,6 +24,11 @@ interface TrendSummaryPanelProps {
   trendData: TrendData;
 }
 
+// This component is no longer used as its functionality has been moved
+// to src/app/page.tsx. It is being deleted.
+// Keeping the content here for reference during this transaction,
+// but the file operation will be a delete.
+
 const TrendSummaryPanel: React.FC<TrendSummaryPanelProps> = ({ selectedTestType, trendData }) => {
   const [summary, setSummary] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -38,7 +43,7 @@ const TrendSummaryPanel: React.FC<TrendSummaryPanelProps> = ({ selectedTestType,
     const fetchSummary = async () => {
       setIsLoading(true);
       setError(null);
-      setSummary(null); // Clear previous summary when fetching new one
+      setSummary(null); 
 
       const inputData: TrendSummaryInput | undefined = trendData[currentTestTypeForSummary] || trendData["Default"];
 
@@ -62,15 +67,11 @@ const TrendSummaryPanel: React.FC<TrendSummaryPanelProps> = ({ selectedTestType,
         setIsLoading(false);
       }
     };
-
-    // Fetch summary only if the dialog is about to be opened or test type changes
-    // Or, fetch it always and let the dialog show the latest
-    // For now, let's fetch when component mounts or test type changes
+    
     fetchSummary();
   }, [currentTestTypeForSummary, trendData]);
 
   const handleViewSummaryClick = () => {
-    // Optionally re-fetch if data might be stale, or rely on useEffect
     setShowSummaryDialog(true);
   };
 
@@ -90,12 +91,12 @@ const TrendSummaryPanel: React.FC<TrendSummaryPanelProps> = ({ selectedTestType,
           <Button
             onClick={handleViewSummaryClick}
             className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-            disabled={isLoading && !summary} // Disable if loading initial summary
+            disabled={isLoading && !summary}
           >
             {isLoading && !summary ? 'Loading Summary...' : `View AI Summary for ${currentTestTypeForSummary}`}
           </Button>
         </CardContent>
-        {error && !isLoading && !summary && ( // Show inline error if dialog isn't open and summary fetch failed
+        {error && !isLoading && !summary && ( 
              <CardFooter className="border-t border-border/50 pt-4">
                 <Alert variant="destructive" className="bg-destructive/10 border-destructive/50 text-destructive rounded-md">
                     <AlertCircle className="h-4 w-4" />

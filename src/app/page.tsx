@@ -2,20 +2,24 @@
 "use client";
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import Link from 'next/link'; // Ensure Link is imported
+import Link from 'next/link';
 import Header from '@/components/Header';
 import ToolFilters from '@/components/ToolFilters';
 import ToolResults from '@/components/ToolResults';
 import RoiChart from '@/components/RoiChart';
-import TrendSummaryPanel from '@/components/TrendSummaryPanel';
+// import TrendSummaryPanel from '@/components/TrendSummaryPanel'; // Removed
 import EffortEstimator from '@/components/EffortEstimator';
 import RoiComparisonTable from '@/components/RoiComparisonTable';
 import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
-import { estimateEffort as estimateEffortAction } from '@/actions/aiActions';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { estimateEffort as estimateEffortAction, generateTestTypeSummary } from '@/actions/aiActions';
+import type { GenerateTestTypeSummaryOutput, GenerateTestTypeSummaryInput } from '@/ai/flows/generate-test-type-summary';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
+import { AlertCircle, Zap } from 'lucide-react';
 
 
 const initialFilters: Filters = {
@@ -47,14 +51,17 @@ export default function HomePage() {
   const [estimatorLoading, setEstimatorLoading] = useState<boolean>(false);
   const [estimatorError, setEstimatorError] = useState<string | null>(null);
 
-  // State for ROI Comparison Table
   const [toolForCol1Id, setToolForCol1Id] = useState<string | null>(null);
   const [toolForCol2Id, setToolForCol2Id] = useState<string | null>(null);
   const [toolForCol3Id, setToolForCol3Id] = useState<string | null>(null);
 
-  // State for ROI Chart Dialog
   const [showRoiChartDialog, setShowRoiChartDialog] = useState(false);
 
+  // State for AI Trend Summary Dialog
+  const [aiTrendSummary, setAiTrendSummary] = useState<GenerateTestTypeSummaryOutput | null>(null);
+  const [aiTrendSummaryLoading, setAiTrendSummaryLoading] = useState<boolean>(false);
+  const [aiTrendSummaryError, setAiTrendSummaryError] = useState<string | null>(null);
+  const [showAiTrendSummaryDialog, setShowAiTrendSummaryDialog] = useState<boolean>(false);
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
@@ -106,7 +113,6 @@ export default function HomePage() {
     return filteredToolsForDisplay.slice(0, 3);
   }, [filteredToolsForDisplay]);
 
-  // Effect to update comparison table tools when filters change or topThreeTools change
   useEffect(() => {
     if (topThreeTools.length > 0) {
       setToolForCol1Id(topThreeTools[0].id);
@@ -170,6 +176,41 @@ export default function HomePage() {
     return [tool1ForComparison, tool2ForComparison, tool3ForComparison].filter(Boolean) as Tool[];
   }, [tool1ForComparison, tool2ForComparison, tool3ForComparison]);
 
+  const currentTestTypeForSummary = useMemo(() => {
+    return filters.testType || "UI Testing";
+  }, [filters.testType]);
+
+  const handleViewAiTrendSummaryClick = async () => {
+    setAiTrendSummaryLoading(true);
+    setAiTrendSummary(null);
+    setAiTrendSummaryError(null);
+
+    const inputData: GenerateTestTypeSummaryInput | undefined = trendDataPerTestType[currentTestTypeForSummary] || trendDataPerTestType["Default"];
+
+    if (!inputData) {
+      setAiTrendSummaryError(`No trend data available for ${currentTestTypeForSummary}.`);
+      setAiTrendSummaryLoading(false);
+      setShowAiTrendSummaryDialog(true);
+      return;
+    }
+
+    try {
+      const result = await generateTestTypeSummary(inputData);
+      if ('error' in result) {
+        setAiTrendSummaryError(result.error);
+      } else {
+        setAiTrendSummary(result);
+      }
+    } catch (e) {
+      setAiTrendSummaryError("An unexpected error occurred while fetching the summary.");
+      console.error(e);
+    } finally {
+      setAiTrendSummaryLoading(false);
+      setShowAiTrendSummaryDialog(true);
+    }
+  };
+
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -190,10 +231,7 @@ export default function HomePage() {
               isLoading={estimatorLoading}
               error={estimatorError}
             />
-            <TrendSummaryPanel
-              selectedTestType={filters.testType}
-              trendData={trendDataPerTestType}
-            />
+            {/* TrendSummaryPanel removed from here */}
           </div>
 
           <div className="lg:col-span-8 xl:col-span-9 space-y-6">
@@ -213,8 +251,8 @@ export default function HomePage() {
                  />
             )}
             
-            {tool1ForComparison && (
-              <div className="flex justify-center pt-4">
+            <div className="flex justify-center items-center pt-4 space-x-4">
+              {tool1ForComparison && (
                 <Button 
                   onClick={() => setShowRoiChartDialog(true)} 
                   variant="default" 
@@ -224,8 +262,17 @@ export default function HomePage() {
                 >
                   View ROI Projection Comparison
                 </Button>
-              </div>
-            )}
+              )}
+              <Button
+                onClick={handleViewAiTrendSummaryClick}
+                variant="default"
+                size="lg"
+                className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                disabled={aiTrendSummaryLoading}
+              >
+                {aiTrendSummaryLoading ? 'Loading Summary...' : 'View AI Trend Summary'}
+              </Button>
+            </div>
           </div>
         </div>
       </main>
@@ -242,6 +289,44 @@ export default function HomePage() {
           )}
         </DialogContent>
       </Dialog>
+
+      <Dialog open={showAiTrendSummaryDialog} onOpenChange={setShowAiTrendSummaryDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center text-primary">
+              <Zap className="mr-2 h-5 w-5 text-accent" />
+              AI Trend Summary: {currentTestTypeForSummary}
+            </DialogTitle>
+            <DialogDescription>
+              AI-generated insights based on current tool trends.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            {aiTrendSummaryLoading && (
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full bg-muted/50" />
+                <Skeleton className="h-4 w-full bg-muted/50" />
+                <Skeleton className="h-4 w-3/4 bg-muted/50" />
+              </div>
+            )}
+            {aiTrendSummaryError && !aiTrendSummaryLoading && (
+              <Alert variant="destructive" className="bg-destructive/10 border-destructive/50 text-destructive rounded-md">
+                <AlertCircle className="h-4 w-4" />
+                <UIAlertTitle>Error Fetching Summary</UIAlertTitle>
+                <AlertDescription>{aiTrendSummaryError}</AlertDescription>
+              </Alert>
+            )}
+            {aiTrendSummary && !aiTrendSummaryLoading && !aiTrendSummaryError && (
+              <div className="p-3 rounded-lg bg-background/70 dark:bg-black/20 backdrop-blur-sm shadow-sm border border-border/30">
+                <p className="text-sm text-foreground/90 leading-relaxed">
+                  {aiTrendSummary.summary}
+                </p>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
 
       <footer className="flex items-center justify-between p-4 text-sm text-muted-foreground border-t border-border/50 mt-auto bg-background/80 backdrop-blur-sm">
         <span>V.1.0</span>
@@ -261,4 +346,3 @@ export default function HomePage() {
     </div>
   );
 }
-
