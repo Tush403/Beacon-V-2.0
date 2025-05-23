@@ -2,10 +2,9 @@
 "use client"; // Required because we are using useState for sheet control
 
 import React, { useState } from 'react';
-import { Cog, Grid3x3 } from 'lucide-react'; // Removed Newspaper
+import { Cog, Menu } from 'lucide-react'; // Changed from Grid3x3 to Settings
 import ReleaseNotesSheet from './ReleaseNotesSheet';
-import SettingsSheet from './SettingsSheet'; // Import the new SettingsSheet
-// Removed Button import as it's only used by SettingsSheet trigger now
+import SettingsSheet from './SettingsSheet';
 
 const Header: React.FC = () => {
   const [isReleaseNotesOpen, setIsReleaseNotesOpen] = useState(false);
@@ -22,7 +21,7 @@ const Header: React.FC = () => {
         <div className="container mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
           {/* Left Side: TAO DIGITAL Branding */}
           <div className="flex items-center gap-x-2 sm:gap-x-3">
-            <Cog className="h-8 w-8 sm:h-10 sm:w-10 text-accent animate-spin-slow" aria-hidden="true" />
+            <Cog className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground animate-spin-slow" aria-hidden="true" />
             <div>
               <span className="block text-xl sm:text-2xl font-bold tracking-tight text-primary-foreground">
                 TAO DIGITAL
@@ -38,17 +37,6 @@ const Header: React.FC = () => {
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-primary-foreground">
               Beacon
             </h1>
-            {/* Release Notes Button - REMOVED
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="text-primary-foreground hover:bg-white/10"
-              onClick={() => setIsReleaseNotesOpen(true)}
-            >
-              <Newspaper className="h-5 w-5" />
-              <span className="sr-only">View Release Notes</span>
-            </Button>
-            */}
             {/* Settings Button/Sheet Trigger */}
             <SettingsSheet 
               onOpenChange={setIsSettingsSheetOpen} 
