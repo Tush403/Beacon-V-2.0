@@ -12,23 +12,109 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Settings, BookOpenCheck, Palette, Mail, Search, LogIn, Menu, Sun, Moon } from 'lucide-react';
+import { Settings, BookOpenCheck, Palette, Mail, Search, LogIn, Menu, Sun, Moon, CalendarDays, Sparkles, CheckCircle2, XCircle, Pin, AlertTriangle, Gem } from 'lucide-react';
 
 interface SettingsSheetProps {
   onOpenChange: (open: boolean) => void;
-  onOpenReleaseNotesRequest: () => void;
+  // onOpenReleaseNotesRequest prop is no longer needed
 }
 
-const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange, onOpenReleaseNotesRequest }) => {
+const ReleaseNotesContent: React.FC = () => (
+  <div className="space-y-6 py-4 text-sm">
+    <div>
+      <h3 className="flex items-center text-lg font-semibold text-foreground mb-2">
+        <Badge variant="default" className="mr-2 bg-primary text-primary-foreground">NEW</Badge>
+        <Sparkles className="mr-2 h-5 w-5 text-yellow-500" />
+        What's New?
+      </h3>
+      <ul className="space-y-1.5 text-foreground/90 pl-2">
+        <li className="flex items-start">
+          <CheckCircle2 className="h-4 w-4 mr-2 mt-0.5 text-green-600 flex-shrink-0" />
+          <span><strong>Enhanced Tool Comparison UI:</strong> Improved design and readability.</span>
+        </li>
+        <li className="flex items-start">
+          <CheckCircle2 className="h-4 w-4 mr-2 mt-0.5 text-green-600 flex-shrink-0" />
+          <span><strong>Smart Search Updates:</strong> Faster and more accurate results.</span>
+        </li>
+        <li className="flex items-start">
+          <CheckCircle2 className="h-4 w-4 mr-2 mt-0.5 text-green-600 flex-shrink-0" />
+          <span><strong>ROI Table Enhancements:</strong> Better organization and data clarity.</span>
+        </li>
+        <li className="flex items-start">
+          <CheckCircle2 className="h-4 w-4 mr-2 mt-0.5 text-green-600 flex-shrink-0" />
+          <span><strong>Export to PDF:</strong> <span className="font-semibold text-green-700">(Coming Soon)</span></span>
+        </li>
+      </ul>
+    </div>
+
+    <Separator />
+
+    <div>
+      <h3 className="flex items-center text-lg font-semibold text-foreground mb-2">
+        <XCircle className="mr-2 h-5 w-5 text-destructive" />
+        Bug Fixes & Improvements
+      </h3>
+      <ul className="space-y-1.5 text-foreground/90 pl-2">
+        <li className="flex items-start">
+          <Gem className="h-3 w-3 mr-2.5 mt-1 text-primary flex-shrink-0" />
+          <span>Fixed dropdown disappearing issue when selecting <strong>AI/ML</strong>.</span>
+        </li>
+        <li className="flex items-start">
+          <Gem className="h-3 w-3 mr-2.5 mt-1 text-primary flex-shrink-0" />
+          <span>Resolved incorrect tool values in dropdowns.</span>
+        </li>
+        <li className="flex items-start">
+          <Gem className="h-3 w-3 mr-2.5 mt-1 text-primary flex-shrink-0" />
+          <span>Improved visibility & styling of disabled fields.</span>
+        </li>
+        <li className="flex items-start">
+          <Gem className="h-3 w-3 mr-2.5 mt-1 text-primary flex-shrink-0" />
+          <span>Optimized performance for faster search results.</span>
+        </li>
+      </ul>
+    </div>
+
+    <Separator />
+
+    <div>
+      <h3 className="flex items-center text-lg font-semibold text-foreground mb-2">
+        <Pin className="mr-2 h-5 w-5 text-blue-500" />
+        Notes for Users
+      </h3>
+      <ul className="space-y-1.5 text-foreground/90 pl-2">
+        <li className="flex items-start">
+          <Pin className="h-3 w-3 mr-2.5 mt-1 text-foreground/70 flex-shrink-0" />
+          <span><strong>Export to PDF</strong> is currently <span className="font-semibold text-green-700">disabled</span> but will be available in the next update.</span>
+        </li>
+        <li className="flex items-start">
+          <Pin className="h-3 w-3 mr-2.5 mt-1 text-foreground/70 flex-shrink-0" />
+          <span>More tooltips have been added for clarity—<strong>hover over key values</strong> to see details.</span>
+        </li>
+      </ul>
+    </div>
+     <div className="flex items-center text-xs text-muted-foreground pt-2">
+        <AlertTriangle className="h-4 w-4 mr-1 text-yellow-500" />
+        V.2.0
+      </div>
+  </div>
+);
+
+
+const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    // Initialize theme state based on localStorage or document class
     const currentThemeIsDark = localStorage.getItem('theme') === 'dark' || document.documentElement.classList.contains('dark');
     setIsDarkMode(currentThemeIsDark);
-    // Ensure the class matches the state, especially for initial load if layout.tsx hasn't run yet or if class was manually changed
     if (currentThemeIsDark) {
         document.documentElement.classList.add('dark');
     } else {
@@ -46,19 +132,12 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange, onOpenRelea
       localStorage.setItem('theme', 'dark');
       setIsDarkMode(true);
     }
-    // Optionally close the sheet after toggling theme
-    // onOpenChange(false); 
+    // Do not close sheet on theme toggle to allow further interactions
   };
 
   const handleOptionClick = (optionName: string) => {
     console.log(`${optionName} clicked. Placeholder action.`);
-    // Potentially close the sheet after action
     onOpenChange(false); 
-  };
-
-  const handleAcknowledgeClick = () => {
-    onOpenChange(false); // Close settings sheet
-    onOpenReleaseNotesRequest(); // Request to open release notes
   };
 
   return (
@@ -69,39 +148,50 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange, onOpenRelea
           <span className="sr-only">Open App Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[300px] sm:w-[360px] flex flex-col bg-card text-card-foreground">
-        <SheetHeader className="pb-4">
+      <SheetContent side="right" className="w-[400px] sm:w-[540px] flex flex-col bg-card text-card-foreground">
+        <SheetHeader className="pb-2">
           <SheetTitle className="flex items-center text-xl text-primary">
             <Menu className="mr-2 h-6 w-6 text-accent" />
             Beacon Menu
           </SheetTitle>
           <SheetDescription>
-            App options and information.
+            App options, information, and release notes.
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-grow overflow-y-auto space-y-2 py-2 pr-2">
-          <Button variant="ghost" className="w-full justify-start text-left" onClick={handleAcknowledgeClick}>
-            <BookOpenCheck className="mr-3 h-5 w-5 text-muted-foreground" />
-            Acknowledgement
-          </Button>
-          <Separator className="my-1" />
-          <Button variant="ghost" className="w-full justify-start text-left" onClick={handleThemeToggle}>
+        <div className="flex-grow overflow-y-auto space-y-1 py-2 pr-2">
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="acknowledgement">
+              <AccordionTrigger className="py-2 px-3 hover:bg-accent/10 rounded-md text-sm font-normal data-[state=open]:font-medium">
+                <div className="flex items-center">
+                  <BookOpenCheck className="mr-3 h-5 w-5 text-muted-foreground" />
+                  Acknowledgement
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pl-3 pr-1 pb-2">
+                <ReleaseNotesContent />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          
+          <Separator className="my-2" />
+          
+          <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={handleThemeToggle}>
             {isDarkMode ? <Sun className="mr-3 h-5 w-5 text-muted-foreground" /> : <Moon className="mr-3 h-5 w-5 text-muted-foreground" />}
             {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           </Button>
-           <Separator className="my-1" />
-          <Button variant="ghost" className="w-full justify-start text-left" onClick={() => handleOptionClick('Write Us')}>
+           <Separator className="my-2" />
+          <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Write Us')}>
             <Mail className="mr-3 h-5 w-5 text-muted-foreground" />
             Write Us
           </Button>
-           <Separator className="my-1" />
-          <Button variant="ghost" className="w-full justify-start text-left" onClick={() => handleOptionClick('Search Tool Action')}>
+           <Separator className="my-2" />
+          <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Search Tool Action')}>
             <Search className="mr-3 h-5 w-5 text-muted-foreground" />
             Search Tool
           </Button>
-           <Separator className="my-1" />
-          <Button variant="ghost" className="w-full justify-start text-left" onClick={() => handleOptionClick('Sign In/Sign Up')}>
+           <Separator className="my-2" />
+          <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Sign In/Sign Up')}>
             <LogIn className="mr-3 h-5 w-5 text-muted-foreground" />
             Sign In / Sign Up
           </Button>
@@ -120,3 +210,5 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange, onOpenRelea
 };
 
 export default SettingsSheet;
+
+    

@@ -1,19 +1,16 @@
 
-"use client"; // Required because we are using useState for sheet control
+"use client"; 
 
 import React, { useState } from 'react';
-import { Cog, Menu } from 'lucide-react'; // Changed from Grid3x3 to Settings
-import ReleaseNotesSheet from './ReleaseNotesSheet';
+import { Cog, Menu } from 'lucide-react'; 
+// ReleaseNotesSheet is no longer imported or used directly here
 import SettingsSheet from './SettingsSheet';
 
 const Header: React.FC = () => {
-  const [isReleaseNotesOpen, setIsReleaseNotesOpen] = useState(false);
+  // State for ReleaseNotesSheet is no longer needed here
   const [isSettingsSheetOpen, setIsSettingsSheetOpen] = useState(false);
 
-  const handleOpenReleaseNotes = () => {
-    setIsSettingsSheetOpen(false); // Ensure settings sheet is closed
-    setIsReleaseNotesOpen(true);
-  };
+  // handleOpenReleaseNotes is no longer needed as ReleaseNotes is part of SettingsSheet
   
   return (
     <>
@@ -40,16 +37,17 @@ const Header: React.FC = () => {
             {/* Settings Button/Sheet Trigger */}
             <SettingsSheet 
               onOpenChange={setIsSettingsSheetOpen} 
-              onOpenReleaseNotesRequest={handleOpenReleaseNotes} 
+              // onOpenReleaseNotesRequest prop is removed
             />
           </div>
         </div>
       </header>
 
-      {/* Sheets are rendered here but controlled by state */}
-      <ReleaseNotesSheet open={isReleaseNotesOpen} onOpenChange={setIsReleaseNotesOpen} />
+      {/* ReleaseNotesSheet is no longer rendered here */}
     </>
   );
 };
 
 export default Header;
+
+    

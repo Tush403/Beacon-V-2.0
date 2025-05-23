@@ -1,125 +1,50 @@
+"use client"; 
 
-"use client";
+import React, { useState } from 'react';
+import { Cog, Menu } from 'lucide-react'; 
+// ReleaseNotesSheet is no longer imported or used directly here
+import SettingsSheet from './SettingsSheet';
 
-import React from 'react';
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  // SheetTrigger, // Removed: No longer self-triggered
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { CalendarDays, Sparkles, CheckCircle2, XCircle, Pin, AlertTriangle, Gem } from 'lucide-react';
+const Header: React.FC = () => {
+  // State for ReleaseNotesSheet is no longer needed here
+  const [isSettingsSheetOpen, setIsSettingsSheetOpen] = useState(false);
 
-interface ReleaseNotesSheetProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-const ReleaseNotesSheet: React.FC<ReleaseNotesSheetProps> = ({ open, onOpenChange }) => {
+  // handleOpenReleaseNotes is no longer needed as ReleaseNotes is part of SettingsSheet
+  
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      {/* SheetTrigger is removed as this component is now controlled externally */}
-      <SheetContent side="right" className="w-[400px] sm:w-[540px] flex flex-col bg-card text-card-foreground">
-        <SheetHeader className="pb-2">
-          <SheetTitle className="flex items-center text-2xl text-primary">
-            <CalendarDays className="mr-2 h-6 w-6 text-accent" />
-            Beacon (V.2.0)
-          </SheetTitle>
-        </SheetHeader>
-
-        <div className="flex-grow overflow-y-auto pr-4 space-y-6 py-4">
-          <div>
-            <h3 className="flex items-center text-xl font-semibold text-foreground mb-2">
-              <Badge variant="default" className="mr-2 bg-primary text-primary-foreground">NEW</Badge>
-              <Sparkles className="mr-2 h-5 w-5 text-yellow-500" />
-              What's New?
-            </h3>
-            <ul className="space-y-1.5 text-sm text-foreground/90 pl-2">
-              <li className="flex items-start">
-                <CheckCircle2 className="h-4 w-4 mr-2 mt-0.5 text-green-600 flex-shrink-0" />
-                <span><strong>Enhanced Tool Comparison UI:</strong> Improved design and readability.</span>
-              </li>
-              <li className="flex items-start">
-                <CheckCircle2 className="h-4 w-4 mr-2 mt-0.5 text-green-600 flex-shrink-0" />
-                <span><strong>Smart Search Updates:</strong> Faster and more accurate results.</span>
-              </li>
-              <li className="flex items-start">
-                <CheckCircle2 className="h-4 w-4 mr-2 mt-0.5 text-green-600 flex-shrink-0" />
-                <span><strong>ROI Table Enhancements:</strong> Better organization and data clarity.</span>
-              </li>
-              <li className="flex items-start">
-                <CheckCircle2 className="h-4 w-4 mr-2 mt-0.5 text-green-600 flex-shrink-0" />
-                <span><strong>Export to PDF:</strong> <span className="font-semibold text-green-700">(Coming Soon)</span></span>
-              </li>
-            </ul>
+    <>
+      <header className="bg-gradient-to-r from-[hsl(255,65%,50%)] to-[hsl(295,75%,70%)] text-primary-foreground shadow-lg backdrop-blur-md bg-opacity-90 sticky top-0 z-50">
+        <div className="container mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
+          {/* Left Side: TAO DIGITAL Branding */}
+          <div className="flex items-center gap-x-2 sm:gap-x-3">
+            <Cog className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground animate-spin-slow" aria-hidden="true" />
+            <div>
+              <span className="block text-xl sm:text-2xl font-bold tracking-tight text-primary-foreground">
+                TAO DIGITAL
+              </span>
+              <p className="text-xs sm:text-sm text-primary-foreground/80 tracking-wide">
+                Transformation Made Simple
+              </p>
+            </div>
           </div>
 
-          <Separator />
-
-          <div>
-            <h3 className="flex items-center text-xl font-semibold text-foreground mb-2">
-              <XCircle className="mr-2 h-5 w-5 text-destructive" />
-              Bug Fixes & Improvements
-            </h3>
-            <ul className="space-y-1.5 text-sm text-foreground/90 pl-2">
-              <li className="flex items-start">
-                <Gem className="h-3 w-3 mr-2.5 mt-1 text-primary flex-shrink-0" />
-                <span>Fixed dropdown disappearing issue when selecting <strong>AI/ML</strong>.</span>
-              </li>
-              <li className="flex items-start">
-                <Gem className="h-3 w-3 mr-2.5 mt-1 text-primary flex-shrink-0" />
-                <span>Resolved incorrect tool values in dropdowns.</span>
-              </li>
-              <li className="flex items-start">
-                <Gem className="h-3 w-3 mr-2.5 mt-1 text-primary flex-shrink-0" />
-                <span>Improved visibility & styling of disabled fields.</span>
-              </li>
-              <li className="flex items-start">
-                <Gem className="h-3 w-3 mr-2.5 mt-1 text-primary flex-shrink-0" />
-                <span>Optimized performance for faster search results.</span>
-              </li>
-            </ul>
-          </div>
-
-          <Separator />
-
-          <div>
-            <h3 className="flex items-center text-xl font-semibold text-foreground mb-2">
-              <Pin className="mr-2 h-5 w-5 text-blue-500" />
-              Notes for Users
-            </h3>
-            <ul className="space-y-1.5 text-sm text-foreground/90 pl-2">
-              <li className="flex items-start">
-                <Pin className="h-3 w-3 mr-2.5 mt-1 text-foreground/70 flex-shrink-0" />
-                <span><strong>Export to PDF</strong> is currently <span className="font-semibold text-green-700">disabled</span> but will be available in the next update.</span>
-              </li>
-              <li className="flex items-start">
-                <Pin className="h-3 w-3 mr-2.5 mt-1 text-foreground/70 flex-shrink-0" />
-                <span>More tooltips have been added for clarity—<strong>hover over key values</strong> to see details.</span>
-              </li>
-            </ul>
+          {/* Right Side: App Title and Action Icons */}
+          <div className="flex items-center gap-x-1 sm:gap-x-2">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-primary-foreground">
+              Beacon
+            </h1>
+            {/* Settings Button/Sheet Trigger */}
+            <SettingsSheet 
+              onOpenChange={setIsSettingsSheetOpen} 
+              // onOpenReleaseNotesRequest prop is removed
+            />
           </div>
         </div>
+      </header>
 
-        <SheetFooter className="pt-4 border-t border-border">
-          <div className="flex items-center text-xs text-muted-foreground mr-auto">
-            <AlertTriangle className="h-4 w-4 mr-1 text-yellow-500" />
-            V.2.0
-          </div>
-          <SheetClose asChild>
-            <Button type="button" className="bg-primary hover:bg-primary/90 text-primary-foreground">Acknowledge</Button>
-          </SheetClose>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+      {/* ReleaseNotesSheet is no longer rendered here */}
+    </>
   );
 };
 
-export default ReleaseNotesSheet;
+export default Header;
