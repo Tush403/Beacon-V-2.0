@@ -8,7 +8,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
         {/* Left side: TAO Digital Logo and Name */}
         <div className="flex items-center gap-x-2 sm:gap-x-3">
-          <Cog className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground animate-spin-slow" aria-hidden="true" /> {/* Changed text-accent to text-primary-foreground for visibility on primary background */}
+          <Cog className="h-8 w-8 sm:h-10 sm:w-10 text-[hsl(var(--chart-4))] animate-spin-slow" aria-hidden="true" />
           <div>
             <span className="block text-xl sm:text-2xl font-bold tracking-tight text-primary-foreground">
               TAO DIGITAL
