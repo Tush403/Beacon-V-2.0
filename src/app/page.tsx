@@ -226,7 +226,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow container mx-auto p-4 md:p-6 lg:p-8">
+      <main className="flex-grow p-4 md:p-6 lg:p-8">
         <div className="lg:grid lg:grid-cols-12 lg:gap-8 space-y-6 lg:space-y-0">
           <div className="lg:col-span-4 xl:col-span-3 space-y-6">
             <ToolFilters
@@ -357,3 +357,4 @@ export default function HomePage() {
     </div>
   );
 }
+
