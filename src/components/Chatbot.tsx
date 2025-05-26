@@ -17,6 +17,7 @@ export interface ChatMessage {
   quickReplies?: string[];
   avatarIcon?: React.ElementType;
   senderName?: string;
+  isError?: boolean;
 }
 
 interface ChatbotProps {
@@ -56,7 +57,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
         scrollViewport.scrollTop = scrollViewport.scrollHeight;
       }
     }
-  }, [messages, isBotTyping]); // Added isBotTyping to ensure scroll on typing indicator
+  }, [messages, isBotTyping]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -81,7 +82,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
       {/* Chat Window */}
       {isOpen && (
         <div className={cn(
-          "fixed bottom-20 right-4 sm:right-6 md:right-8 w-[calc(100%-2rem)] sm:w-96 md:w-[448px] max-h-[70vh] sm:max-h-[560px] md:max-h-[600px] bg-card text-card-foreground border border-border/50 rounded-xl shadow-2xl flex flex-col transition-all duration-300 ease-out z-50",
+          "fixed bottom-20 right-4 sm:right-6 md:right-8 w-[calc(100%-2rem)] sm:w-96 md:w-[480px] max-h-[75vh] sm:max-h-[600px] md:max-h-[700px] bg-card text-card-foreground border border-border/50 rounded-xl shadow-2xl flex flex-col transition-all duration-300 ease-out z-50",
           "animate-in slide-in-from-bottom-12 fade-in-0"
         )}>
           {/* Header */}
@@ -96,7 +97,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
           </div>
 
           {/* Messages Area */}
-          <ScrollArea className="flex-grow p-3 space-y-3 min-h-0" ref={scrollAreaRef}> {/* Added min-h-0 */}
+          <ScrollArea className="flex-grow p-3 space-y-3 min-h-0" ref={scrollAreaRef}>
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -107,7 +108,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
               >
                 {msg.sender === 'bot' && (
                   <Avatar className="h-8 w-8 self-start shrink-0">
-                     <AvatarFallback className="bg-primary text-primary-foreground">
+                     <AvatarFallback className={cn("bg-primary text-primary-foreground", msg.isError && "bg-destructive text-destructive-foreground")}>
                         {msg.avatarIcon ? <msg.avatarIcon className="h-5 w-5" /> : getInitials(msg.senderName || "AI")}
                     </AvatarFallback>
                   </Avatar>
@@ -117,15 +118,19 @@ const Chatbot: React.FC<ChatbotProps> = ({
                     "p-2.5 rounded-lg max-w-[80%] break-words shadow-md text-sm",
                     msg.sender === 'user'
                       ? 'bg-primary text-primary-foreground rounded-br-none'
-                      : 'bg-muted text-foreground rounded-bl-none border border-border/30',
+                      : msg.isError 
+                        ? 'bg-destructive/20 text-destructive-foreground rounded-bl-none border border-destructive/30' 
+                        : 'bg-muted text-foreground rounded-bl-none border border-border/30',
                     msg.sender === 'system' && 'bg-transparent text-xs text-center text-muted-foreground italic w-full max-w-full shadow-none border-none p-1'
                   )}
                 >
                   {msg.sender === 'bot' && msg.senderName && (
-                     <p className="text-xs font-medium text-muted-foreground mb-0.5">{msg.senderName} <span className="text-xs text-muted-foreground/70">• {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></p>
+                     <p className={cn("text-xs font-medium mb-0.5", msg.isError ? "text-destructive-foreground/80" : "text-muted-foreground" )}>
+                        {msg.senderName} <span className={cn("text-xs", msg.isError ? "text-destructive-foreground/60" : "text-muted-foreground/70")}>• {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                     </p>
                   )}
                   <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                  {msg.quickReplies && msg.quickReplies.length > 0 && msg.sender === 'bot' && (
+                  {msg.quickReplies && msg.quickReplies.length > 0 && msg.sender === 'bot' && !msg.isError && (
                     <div className="mt-2.5 flex flex-col items-end space-y-1.5">
                       {msg.quickReplies.map((reply, index) => (
                         <Button

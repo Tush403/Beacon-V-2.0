@@ -12,17 +12,19 @@ import RoiComparisonTable from '@/components/RoiComparisonTable';
 import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
-import { estimateEffort as estimateEffortAction, generateTestTypeSummary } from '@/actions/aiActions';
+import { estimateEffort as estimateEffortAction, generateTestTypeSummary, askBeaconAssistant } from '@/actions/aiActions';
 import type { GenerateTestTypeSummaryOutput, GenerateTestTypeSummaryInput } from '@/ai/flows/generate-test-type-summary';
+import type { ChatbotFlowInput, ChatbotFlowOutput } from '@/ai/flows/chatbot-flow';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Zap, BookOpenCheck, Bot, Sparkles } from 'lucide-react'; // Added Bot
+import { AlertCircle, Zap, BookOpenCheck, Bot, Sparkles } from 'lucide-react';
 import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay'; 
 import { ScrollArea } from '@/components/ui/scroll-area';
-import Chatbot from '@/components/Chatbot'; // Import Chatbot
-import type { ChatMessage } from '@/components/Chatbot'; // Import ChatMessage type
+import Chatbot from '@/components/Chatbot';
+import type { ChatMessage } from '@/components/Chatbot';
+import { cn } from '@/lib/utils';
 
 const initialFilters: Filters = {
   applicationType: "",
@@ -47,15 +49,15 @@ const initialEstimatorInputs: EstimatorInputValues = {
 const initialChatMessages: ChatMessage[] = [
   {
     id: 'welcome-1',
-    text: "Hello 👋 Please let us know if we can help you today?",
+    text: "Hello 👋 I'm Beacon Assistant. How can I help you today?",
     sender: 'bot',
     timestamp: new Date(),
-    senderName: 'Beacon Concierge',
+    senderName: 'Beacon Assistant',
     avatarIcon: Bot,
     quickReplies: [
-      "I have questions about a product",
-      "I want to set up a demo",
-      "I am just looking around"
+      "What is Beacon?",
+      "Tell me about Playwright",
+      "How do I choose a tool?"
     ]
   }
 ];
@@ -82,7 +84,6 @@ export default function HomePage() {
 
   const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(true);
 
-  // Chatbot state
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(initialChatMessages);
   const [chatInputValue, setChatInputValue] = useState('');
@@ -247,7 +248,6 @@ export default function HomePage() {
     }
   };
 
-  // Chatbot Handlers
   const toggleChat = useCallback(() => {
     setIsChatOpen(prev => !prev);
   }, []);
@@ -256,84 +256,78 @@ export default function HomePage() {
     setChatInputValue(e.target.value);
   }, []);
 
-  const handleSendMessage = useCallback(async () => {
-    if (!chatInputValue.trim()) return;
-
-    const newUserMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
-      text: chatInputValue,
-      sender: 'user',
+  const processAndAddMessage = useCallback(async (text: string, sender: 'user' | 'bot' = 'user') => {
+    const newMessage: ChatMessage = {
+      id: `${sender}-${Date.now()}`,
+      text,
+      sender,
       timestamp: new Date(),
+      senderName: sender === 'bot' ? 'Beacon Assistant' : undefined,
+      avatarIcon: sender === 'bot' ? Bot : undefined,
     };
 
     setChatMessages(prev => {
       const lastMessage = prev[prev.length -1];
-      if(lastMessage.quickReplies) {
+      if(lastMessage?.quickReplies) { // Check if lastMessage exists
         const updatedLastMessage = {...lastMessage, quickReplies: undefined};
-        return [...prev.slice(0, -1), updatedLastMessage, newUserMessage];
+        return [...prev.slice(0, -1), updatedLastMessage, newMessage];
       }
-      return [...prev, newUserMessage];
+      return [...prev, newMessage];
     });
-    setChatInputValue('');
-    setIsBotTyping(true);
 
-    // Simulate bot response for now
-    setTimeout(() => {
-      const botResponse: ChatMessage = {
-        id: `bot-${Date.now()}`,
-        text: `I received: "${newUserMessage.text}" (This is a simulated response.)`,
-        sender: 'bot',
-        timestamp: new Date(),
-        senderName: 'Beacon Concierge',
-        avatarIcon: Bot,
-      };
-      setChatMessages(prev => [...prev, botResponse]);
+    if (sender === 'user') {
+      setChatInputValue('');
+      setIsBotTyping(true);
+
+      const historyForAI = chatMessages
+        .slice(-5) // Send last 5 messages for context
+        .map(msg => ({ sender: msg.sender, text: msg.text }));
+      
+      const aiInput: ChatbotFlowInput = { currentUserInput: text, history: historyForAI };
+      const result = await askBeaconAssistant(aiInput);
+
       setIsBotTyping(false);
-    }, 1500);
-  }, [chatInputValue]);
+      if ('error' in result) {
+        const errorMessage: ChatMessage = {
+          id: `bot-error-${Date.now()}`,
+          text: result.error,
+          sender: 'bot',
+          timestamp: new Date(),
+          senderName: 'Beacon Assistant',
+          avatarIcon: Bot,
+          isError: true,
+        };
+        setChatMessages(prev => [...prev, errorMessage]);
+      } else {
+        const botResponse: ChatMessage = {
+          id: `bot-${Date.now()}`,
+          text: result.responseText,
+          sender: 'bot',
+          timestamp: new Date(),
+          senderName: 'Beacon Assistant',
+          avatarIcon: Bot,
+        };
+        setChatMessages(prev => [...prev, botResponse]);
+      }
+    }
+  }, [chatMessages]);
 
-  const handleQuickReplyClick = useCallback(async (reply: string) => {
-    const newUserMessage: ChatMessage = {
-      id: `user-qr-${Date.now()}`,
-      text: reply,
-      sender: 'user',
-      timestamp: new Date(),
-    };
-    setChatMessages(prev => {
-      const lastMessage = prev[prev.length -1];
-      const updatedLastMessage = {...lastMessage, quickReplies: undefined};
-      return [...prev.slice(0, -1), updatedLastMessage, newUserMessage];
-    });
-    setIsBotTyping(true);
+  const handleSendMessage = useCallback(() => {
+    if (!chatInputValue.trim()) return;
+    processAndAddMessage(chatInputValue.trim(), 'user');
+  }, [chatInputValue, processAndAddMessage]);
 
-     // Simulate bot response for now
-    setTimeout(() => {
-        let responseText = "How can I assist you further with that?";
-        if (reply === "I have questions about a product") {
-            responseText = "Sure! Which product are you curious about, or what features are you looking for?";
-        } else if (reply === "I want to set up a demo") {
-            responseText = "Great! I can point you to our demo request page. Would you like the link?";
-        } else if (reply === "I am just looking around") {
-            responseText = "No problem! Take your time. If anything catches your eye or you have a question, I'm here to help.";
-        }
-      const botResponse: ChatMessage = {
-        id: `bot-qr-${Date.now()}`,
-        text: responseText,
-        sender: 'bot',
-        timestamp: new Date(),
-        senderName: 'Beacon Concierge',
-        avatarIcon: Bot,
-      };
-      setChatMessages(prev => [...prev, botResponse]);
-      setIsBotTyping(false);
-    }, 1000);
-  }, []);
-
+  const handleQuickReplyClick = useCallback((reply: string) => {
+    processAndAddMessage(reply, 'user');
+  }, [processAndAddMessage]);
 
   return (
     <>
       <div 
-        className={`flex flex-col min-h-screen ${showInitialReleaseNotes || isChatOpen ? 'filter backdrop-blur-sm pointer-events-none' : ''}`}
+        className={cn(
+          'flex flex-col min-h-screen',
+          (showInitialReleaseNotes || isChatOpen) && 'filter backdrop-blur-sm pointer-events-none'
+        )}
       >
         <Header />
         <main className="flex-grow p-4 md:p-6 lg:p-8">
@@ -414,7 +408,6 @@ export default function HomePage() {
         </footer>
       </div>
 
-      {/* Initial Release Notes Dialog */}
       <Dialog open={showInitialReleaseNotes} onOpenChange={(open) => { if (!open) setShowInitialReleaseNotes(false); }}>
         <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
           <DialogHeader>
@@ -440,8 +433,6 @@ export default function HomePage() {
         </DialogContent>
       </Dialog>
 
-
-      {/* ROI Chart Dialog */}
       <Dialog open={showRoiChartDialog} onOpenChange={setShowRoiChartDialog}>
         <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
@@ -455,7 +446,6 @@ export default function HomePage() {
         </DialogContent>
       </Dialog>
 
-      {/* AI Trend Summary Dialog */}
       <Dialog open={showAiTrendSummaryDialog} onOpenChange={setShowAiTrendSummaryDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -493,7 +483,6 @@ export default function HomePage() {
         </DialogContent>
       </Dialog>
 
-      {/* Chatbot */}
       <Chatbot
         isOpen={isChatOpen}
         onToggle={toggleChat}
@@ -507,4 +496,3 @@ export default function HomePage() {
     </>
   );
 }
-
