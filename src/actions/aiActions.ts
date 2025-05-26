@@ -7,9 +7,7 @@ import type { GenerateTestTypeSummaryInput, GenerateTestTypeSummaryOutput } from
 import { estimateEffortFlow as estimateEffortGenkitFlow } from '@/ai/flows/estimate-effort-flow';
 import type { EstimateEffortInput, EstimateEffortOutput } from '@/ai/flows/estimate-effort-flow';
 
-import { chatbotFlow as beaconChatbotFlow } from '@/ai/flows/chatbot-flow';
-import type { ChatbotFlowInput, ChatbotFlowOutput } from '@/ai/flows/chatbot-flow';
-
+// Chatbot related imports removed
 
 export async function generateTestTypeSummary(input: GenerateTestTypeSummaryInput): Promise<GenerateTestTypeSummaryOutput | { error: string }> {
   try {
@@ -38,19 +36,4 @@ export async function estimateEffort(input: EstimateEffortInput): Promise<Estima
   }
 }
 
-export async function askBeaconAssistant(input: ChatbotFlowInput): Promise<ChatbotFlowOutput | { error: string }> {
-  try {
-    if (!input.currentUserInput.trim()) {
-      return { error: "Message cannot be empty." };
-    }
-    const result = await beaconChatbotFlow(input);
-    return result;
-  } catch (error: any) {
-    console.error("Error asking Beacon Assistant:", error);
-     if (error.issues && Array.isArray(error.issues)) {
-      const messages = error.issues.map((issue: any) => `${issue.path.join('.')} - ${issue.message}`).join('; ');
-      return { error: `Invalid input for chatbot: ${messages}` };
-    }
-    return { error: error.message || "Failed to get a response from the assistant. Please try again." };
-  }
-}
+// askBeaconAssistant function removed

@@ -12,18 +12,15 @@ import RoiComparisonTable from '@/components/RoiComparisonTable';
 import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput, ComparisonParameter } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
-import { estimateEffort as estimateEffortAction, generateTestTypeSummary, askBeaconAssistant } from '@/actions/aiActions';
+import { estimateEffort as estimateEffortAction, generateTestTypeSummary } from '@/actions/aiActions';
 import type { GenerateTestTypeSummaryOutput, GenerateTestTypeSummaryInput } from '@/ai/flows/generate-test-type-summary';
-import type { ChatbotFlowInput, ChatbotFlowOutput } from '@/ai/flows/chatbot-flow';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Zap, BookOpenCheck, Bot as BotIcon } from 'lucide-react'; // Renamed Bot to BotIcon
+import { AlertCircle, Zap, BookOpenCheck } from 'lucide-react'; 
 import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import Chatbot from '@/components/Chatbot';
-import type { ChatMessage } from '@/components/Chatbot';
 import { cn } from '@/lib/utils';
 
 const initialFilters: Filters = {
@@ -45,12 +42,6 @@ const initialEstimatorInputs: EstimatorInputValues = {
   usesCiCd: false,
   teamSize: 1,
 };
-
-// Updated initial chat messages to be simpler, as the new UI has a visual greeting
-const initialChatMessages: ChatMessage[] = [
-   // The first message can be added by the AI after user interaction, or be a very brief system message.
-   // For now, let's start with an empty array, and the AI can send the first substantial message.
-];
 
 export default function HomePage() {
   const [filters, setFilters] = useState<Filters>(initialFilters);
@@ -74,18 +65,12 @@ export default function HomePage() {
 
   const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(true);
 
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(initialChatMessages);
-  const [chatInputValue, setChatInputValue] = useState('');
-  const [isBotTyping, setIsBotTyping] = useState(false);
-
-
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
   }, []);
 
   useEffect(() => {
-    if (isChatOpen || showInitialReleaseNotes) {
+    if (showInitialReleaseNotes) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -93,7 +78,7 @@ export default function HomePage() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isChatOpen, showInitialReleaseNotes]);
+  }, [showInitialReleaseNotes]);
 
   const handleFilterChange = useCallback(<K extends keyof Filters>(filterType: K, value: Filters[K]) => {
     setFilters(prevFilters => {
@@ -249,85 +234,13 @@ export default function HomePage() {
     }
   };
 
-  const toggleChat = useCallback(() => {
-    setIsChatOpen(prev => !prev);
-  }, []);
-
-  const handleChatInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setChatInputValue(e.target.value);
-  }, []);
-
-  const processAndAddMessage = useCallback(async (text: string, sender: 'user' | 'bot' = 'user') => {
-    const newMessage: ChatMessage = {
-      id: `${sender}-${Date.now()}`,
-      text,
-      sender,
-      timestamp: new Date(),
-      senderName: sender === 'bot' ? 'Beacon Assistant' : undefined,
-      avatarIcon: sender === 'bot' ? BotIcon : undefined,
-    };
-
-    setChatMessages(prev => {
-      const lastMessage = prev[prev.length -1];
-      if(lastMessage?.quickReplies) { 
-        const updatedLastMessage = {...lastMessage, quickReplies: undefined};
-        return [...prev.slice(0, -1), updatedLastMessage, newMessage];
-      }
-      return [...prev, newMessage];
-    });
-
-    if (sender === 'user') {
-      setChatInputValue('');
-      setIsBotTyping(true);
-
-      const historyForAI = chatMessages
-        .slice(-5) 
-        .map(msg => ({ sender: msg.sender, text: msg.text }));
-
-      const aiInput: ChatbotFlowInput = { currentUserInput: text, history: historyForAI };
-      const result = await askBeaconAssistant(aiInput);
-
-      setIsBotTyping(false);
-      if ('error' in result) {
-        const errorMessage: ChatMessage = {
-          id: `bot-error-${Date.now()}`,
-          text: result.error,
-          sender: 'bot',
-          timestamp: new Date(),
-          senderName: 'Beacon Assistant',
-          avatarIcon: BotIcon,
-          isError: true,
-        };
-        setChatMessages(prev => [...prev, errorMessage]);
-      } else {
-        const botResponse: ChatMessage = {
-          id: `bot-${Date.now()}`,
-          text: result.responseText,
-          sender: 'bot',
-          timestamp: new Date(),
-          senderName: 'Beacon Assistant',
-          avatarIcon: BotIcon,
-        };
-        setChatMessages(prev => [...prev, botResponse]);
-      }
-    }
-  }, [chatMessages]);
-
-  const handleSendMessage = useCallback(() => {
-    if (!chatInputValue.trim()) return;
-    processAndAddMessage(chatInputValue.trim(), 'user');
-  }, [chatInputValue, processAndAddMessage]);
-
-  const handleQuickReplyClick = useCallback((reply: string) => {
-    processAndAddMessage(reply, 'user');
-  }, [processAndAddMessage]);
 
   return (
     <>
       <div
         className={cn(
           'flex flex-col min-h-screen',
-          (showInitialReleaseNotes || isChatOpen) && 'filter backdrop-blur-sm pointer-events-none'
+          showInitialReleaseNotes && 'filter backdrop-blur-sm pointer-events-none'
         )}
       >
         <Header />
@@ -484,16 +397,6 @@ export default function HomePage() {
         </DialogContent>
       </Dialog>
 
-      <Chatbot
-        isOpen={isChatOpen}
-        onToggle={toggleChat}
-        messages={chatMessages}
-        inputValue={chatInputValue}
-        onInputChange={handleChatInputChange}
-        onSendMessage={handleSendMessage}
-        onQuickReplyClick={handleQuickReplyClick}
-        isBotTyping={isBotTyping}
-      />
     </>
   );
 }
