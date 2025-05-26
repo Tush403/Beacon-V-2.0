@@ -4,11 +4,11 @@
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea } from '@/components/ui/scroll-area'; // ScrollArea is not needed here if parent handles scrolling
 import { Sparkles, CheckCircle2, XCircle, Pin, AlertTriangle, Gem } from 'lucide-react';
 
 const ReleaseNotesDisplay: React.FC = () => (
-  <div className="space-y-6 py-4 text-sm h-full overflow-y-auto px-1">
+  <div className="space-y-6 py-4 text-sm px-1"> {/* Removed h-full overflow-y-auto */}
     <div>
       <h3 className="flex items-center text-lg font-semibold text-foreground mb-2">
         <Badge variant="default" className="mr-2 bg-primary text-primary-foreground">NEW</Badge>
