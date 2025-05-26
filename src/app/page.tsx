@@ -14,12 +14,13 @@ import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParam
 import { ALL_FILTER_VALUE } from '@/lib/constants';
 import { estimateEffort as estimateEffortAction, generateTestTypeSummary } from '@/actions/aiActions';
 import type { GenerateTestTypeSummaryOutput, GenerateTestTypeSummaryInput } from '@/ai/flows/generate-test-type-summary';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Zap } from 'lucide-react';
-
+import { AlertCircle, Zap, BookOpenCheck } from 'lucide-react';
+import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay'; // Import the new component
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const initialFilters: Filters = {
   applicationType: "",
@@ -56,11 +57,12 @@ export default function HomePage() {
 
   const [showRoiChartDialog, setShowRoiChartDialog] = useState(false);
 
-  // State for AI Trend Summary Dialog
   const [aiTrendSummary, setAiTrendSummary] = useState<GenerateTestTypeSummaryOutput | null>(null);
   const [aiTrendSummaryLoading, setAiTrendSummaryLoading] = useState<boolean>(false);
   const [aiTrendSummaryError, setAiTrendSummaryError] = useState<string | null>(null);
   const [showAiTrendSummaryDialog, setShowAiTrendSummaryDialog] = useState<boolean>(false);
+
+  const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(true); // For initial modal
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
@@ -73,9 +75,8 @@ export default function HomePage() {
         [filterType]: value,
       };
       if (filterType === 'codingRequirement' && value === 'AI/ML') {
-        newFilters.codingLanguage = 'N/A'; // Automatically set coding language to N/A
+        newFilters.codingLanguage = 'N/A'; 
       } else if (filterType === 'codingRequirement' && value !== 'AI/ML' && prevFilters.codingLanguage === 'N/A' && prevFilters.codingRequirement === 'AI/ML') {
-        // If changing from AI/ML to something else, and language was N/A, clear language filter
         newFilters.codingLanguage = '';
       }
       return newFilters;
@@ -105,7 +106,6 @@ export default function HomePage() {
       tools = tools.filter(tool => tool.codingRequirements.includes(filters.codingRequirement!));
     }
     if (filters.codingLanguage && filters.codingLanguage !== ALL_FILTER_VALUE) {
-        // Ensure "N/A" specifically matches tools that list "N/A" or if the tool can be codeless.
       tools = tools.filter(tool => 
         tool.codingLanguages.includes(filters.codingLanguage!) || 
         (filters.codingLanguage === "N/A" && tool.codingLanguages.includes("N/A"))
@@ -224,70 +224,117 @@ export default function HomePage() {
 
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-grow p-4 md:p-6 lg:p-8">
-        <div className="lg:grid lg:grid-cols-12 lg:gap-8 space-y-6 lg:space-y-0">
-          <div className="lg:col-span-4 xl:col-span-3 space-y-6">
-            <ToolFilters
-              filters={filters}
-              filterOptions={filterOptionsData}
-              onFilterChange={handleFilterChange}
-              onResetFilters={handleResetFilters}
-            />
-            <EffortEstimator
-              inputValues={estimatorInputs}
-              onInputChange={handleEstimatorInputChange}
-              onSubmit={handleGetEstimate}
-              estimation={effortEstimation}
-              isLoading={estimatorLoading}
-              error={estimatorError}
-            />
-          </div>
+    <>
+      <div 
+        className={`flex flex-col min-h-screen ${showInitialReleaseNotes ? 'filter backdrop-blur-sm pointer-events-none' : ''}`}
+      >
+        <Header />
+        <main className="flex-grow p-4 md:p-6 lg:p-8">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8 space-y-6 lg:space-y-0">
+            <div className="lg:col-span-4 xl:col-span-3 space-y-6">
+              <ToolFilters
+                filters={filters}
+                filterOptions={filterOptionsData}
+                onFilterChange={handleFilterChange}
+                onResetFilters={handleResetFilters}
+              />
+              <EffortEstimator
+                inputValues={estimatorInputs}
+                onInputChange={handleEstimatorInputChange}
+                onSubmit={handleGetEstimate}
+                estimation={effortEstimation}
+                isLoading={estimatorLoading}
+                error={estimatorError}
+              />
+            </div>
 
-          <div className="lg:col-span-8 xl:col-span-9 space-y-6">
-             <ToolResults
-              toolsToDisplay={topThreeTools}
-            />
-            
-            {tool1ForComparison && ( 
-                 <RoiComparisonTable
-                    allTools={mockToolsData}
-                    tool1={tool1ForComparison}
-                    tool2={tool2ForComparison}
-                    tool3={tool3ForComparison}
-                    onTool2Change={handleTool2Change}
-                    onTool3Change={handleTool3Change}
-                    comparisonParameters={comparisonParametersData}
-                 />
-            )}
-            
-            <div className="flex justify-center items-center pt-4 space-x-4">
-              {tool1ForComparison && (
-                <Button 
-                  onClick={() => setShowRoiChartDialog(true)} 
-                  variant="default" 
-                  size="lg" 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                  disabled={toolsForChartDialog.length === 0}
-                >
-                  View ROI Projection Comparison
-                </Button>
+            <div className="lg:col-span-8 xl:col-span-9 space-y-6">
+              <ToolResults
+                toolsToDisplay={topThreeTools}
+              />
+              
+              {tool1ForComparison && ( 
+                  <RoiComparisonTable
+                      allTools={mockToolsData}
+                      tool1={tool1ForComparison}
+                      tool2={tool2ForComparison}
+                      tool3={tool3ForComparison}
+                      onTool2Change={handleTool2Change}
+                      onTool3Change={handleTool3Change}
+                      comparisonParameters={comparisonParametersData}
+                  />
               )}
-              <Button
-                onClick={handleViewAiTrendSummaryClick}
-                variant="default"
-                size="lg"
-                className="bg-accent hover:bg-accent/90 text-accent-foreground"
-                disabled={aiTrendSummaryLoading}
-              >
-                {aiTrendSummaryLoading ? 'Loading Summary...' : 'View AI Trend Summary'}
-              </Button>
+              
+              <div className="flex justify-center items-center pt-4 space-x-4">
+                {tool1ForComparison && (
+                  <Button 
+                    onClick={() => setShowRoiChartDialog(true)} 
+                    variant="default" 
+                    size="lg" 
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                    disabled={toolsForChartDialog.length === 0}
+                  >
+                    View ROI Projection Comparison
+                  </Button>
+                )}
+                <Button
+                  onClick={handleViewAiTrendSummaryClick}
+                  variant="default"
+                  size="lg"
+                  className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                  disabled={aiTrendSummaryLoading}
+                >
+                  {aiTrendSummaryLoading ? 'Loading Summary...' : 'View AI Trend Summary'}
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+        <footer className="flex items-center justify-between p-4 text-sm text-muted-foreground border-t border-border/50 mt-auto bg-background/80 backdrop-blur-sm">
+          <span>V.2.0</span>
+          <div className="flex items-center gap-x-3 sm:gap-x-4">
+              <Link href="https://www.taodigitalsolutions.com/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline">
+                  Privacy Policy
+              </Link>
+              <span className="select-none">|</span>
+              <Link href="https://www.taodigitalsolutions.com/terms-conditions" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline">
+                  Terms of Service
+              </Link>
+          </div>
+          <span className="text-right">
+              Copyright© {currentYear !== null ? currentYear : '....'} Tao Digital Solutions Inc. All rights reserved
+          </span>
+        </footer>
+      </div>
 
+      {/* Initial Release Notes Dialog */}
+      <Dialog open={showInitialReleaseNotes} onOpenChange={(open) => { if (!open) setShowInitialReleaseNotes(false); }}>
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center text-primary">
+              <BookOpenCheck className="mr-2 h-5 w-5 text-accent" />
+              Beacon - Release Notes (V.2.0)
+            </DialogTitle>
+            <DialogDescription>
+              Welcome! Please review the latest updates before proceeding.
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="flex-grow my-4">
+            <ReleaseNotesDisplay />
+          </ScrollArea>
+          <DialogFooter className="mt-auto">
+            <Button 
+              onClick={() => setShowInitialReleaseNotes(false)}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              Acknowledge & Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
+      {/* ROI Chart Dialog */}
       <Dialog open={showRoiChartDialog} onOpenChange={setShowRoiChartDialog}>
         <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
@@ -301,6 +348,7 @@ export default function HomePage() {
         </DialogContent>
       </Dialog>
 
+      {/* AI Trend Summary Dialog */}
       <Dialog open={showAiTrendSummaryDialog} onOpenChange={setShowAiTrendSummaryDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -337,24 +385,6 @@ export default function HomePage() {
           </div>
         </DialogContent>
       </Dialog>
-
-
-      <footer className="flex items-center justify-between p-4 text-sm text-muted-foreground border-t border-border/50 mt-auto bg-background/80 backdrop-blur-sm">
-        <span>V.2.0</span>
-        <div className="flex items-center gap-x-3 sm:gap-x-4">
-            <Link href="https://www.taodigitalsolutions.com/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline">
-                Privacy Policy
-            </Link>
-            <span className="select-none">|</span>
-            <Link href="https://www.taodigitalsolutions.com/terms-conditions" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline">
-                Terms of Service
-            </Link>
-        </div>
-        <span className="text-right">
-            Copyright© {currentYear !== null ? currentYear : '....'} Tao Digital Solutions Inc. All rights reserved
-        </span>
-      </footer>
-    </div>
+    </>
   );
 }
-
