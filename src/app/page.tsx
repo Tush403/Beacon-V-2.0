@@ -333,10 +333,10 @@ export default function HomePage() {
               Welcome! Please review the latest updates before proceeding.
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea className="flex-grow my-4">
+          <ScrollArea className="flex-1 min-h-0">
             <ReleaseNotesDisplay />
           </ScrollArea>
-          <DialogFooter className="mt-auto">
+          <DialogFooter className="mt-auto pt-4"> {/* Added pt-4 for spacing from scroll content */}
             <Button
               onClick={() => setShowInitialReleaseNotes(false)}
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
@@ -400,3 +400,5 @@ export default function HomePage() {
     </>
   );
 }
+
+    
