@@ -97,7 +97,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
           </div>
 
           {/* Messages Area */}
-          <ScrollArea className="flex-grow p-3 space-y-3 min-h-0" ref={scrollAreaRef}>
+          <ScrollArea className="flex-grow p-3 space-y-3 min-h-0" ref={scrollAreaRef}> {/* Added min-h-0 */}
             {messages.map((msg) => (
               <div
                 key={msg.id}
