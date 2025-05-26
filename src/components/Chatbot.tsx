@@ -76,15 +76,22 @@ const Chatbot: React.FC<ChatbotProps> = ({
     return name.substring(0, 2);
   };
 
+  const handleChatWindowScroll = (event: React.WheelEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+  };
+
 
   return (
     <>
       {/* Chat Window */}
       {isOpen && (
-        <div className={cn(
-          "fixed bottom-20 right-4 sm:right-6 md:right-8 w-[calc(100%-2rem)] sm:w-96 md:w-[480px] max-h-[75vh] sm:max-h-[600px] md:max-h-[700px] bg-card text-card-foreground border border-border/50 rounded-xl shadow-2xl flex flex-col transition-all duration-300 ease-out z-50",
-          "animate-in slide-in-from-bottom-12 fade-in-0"
-        )}>
+        <div
+          className={cn(
+            "fixed bottom-20 right-4 sm:right-6 md:right-8 w-[calc(100%-2rem)] sm:w-96 md:w-[480px] max-h-[75vh] sm:max-h-[600px] md:max-h-[700px] bg-card text-card-foreground border border-border/50 rounded-xl shadow-2xl flex flex-col transition-all duration-300 ease-out z-50",
+            "animate-in slide-in-from-bottom-12 fade-in-0"
+          )}
+          onWheel={handleChatWindowScroll} // Add this line
+        >
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b border-border/50 bg-muted/50 rounded-t-xl">
             <div className="flex items-center gap-2">
