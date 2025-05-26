@@ -56,7 +56,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
         scrollViewport.scrollTop = scrollViewport.scrollHeight;
       }
     }
-  }, [messages]);
+  }, [messages, isBotTyping]); // Added isBotTyping to ensure scroll on typing indicator
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -96,7 +96,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
           </div>
 
           {/* Messages Area */}
-          <ScrollArea className="flex-grow p-3 space-y-3" ref={scrollAreaRef}>
+          <ScrollArea className="flex-grow p-3 space-y-3 min-h-0" ref={scrollAreaRef}> {/* Added min-h-0 */}
             {messages.map((msg) => (
               <div
                 key={msg.id}
