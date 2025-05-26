@@ -18,9 +18,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Zap, BookOpenCheck } from 'lucide-react';
-import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay'; // Import the new component
+import { AlertCircle, Zap, BookOpenCheck, Bot, Sparkles } from 'lucide-react'; // Added Bot
+import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay'; 
 import { ScrollArea } from '@/components/ui/scroll-area';
+import Chatbot from '@/components/Chatbot'; // Import Chatbot
+import type { ChatMessage } from '@/components/Chatbot'; // Import ChatMessage type
 
 const initialFilters: Filters = {
   applicationType: "",
@@ -42,6 +44,22 @@ const initialEstimatorInputs: EstimatorInputValues = {
   teamSize: 1,
 };
 
+const initialChatMessages: ChatMessage[] = [
+  {
+    id: 'welcome-1',
+    text: "Hello 👋 Please let us know if we can help you today?",
+    sender: 'bot',
+    timestamp: new Date(),
+    senderName: 'Beacon Concierge',
+    avatarIcon: Bot,
+    quickReplies: [
+      "I have questions about a product",
+      "I want to set up a demo",
+      "I am just looking around"
+    ]
+  }
+];
+
 export default function HomePage() {
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
@@ -62,7 +80,14 @@ export default function HomePage() {
   const [aiTrendSummaryError, setAiTrendSummaryError] = useState<string | null>(null);
   const [showAiTrendSummaryDialog, setShowAiTrendSummaryDialog] = useState<boolean>(false);
 
-  const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(true); // For initial modal
+  const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(true);
+
+  // Chatbot state
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(initialChatMessages);
+  const [chatInputValue, setChatInputValue] = useState('');
+  const [isBotTyping, setIsBotTyping] = useState(false);
+
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
@@ -222,11 +247,93 @@ export default function HomePage() {
     }
   };
 
+  // Chatbot Handlers
+  const toggleChat = useCallback(() => {
+    setIsChatOpen(prev => !prev);
+  }, []);
+
+  const handleChatInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setChatInputValue(e.target.value);
+  }, []);
+
+  const handleSendMessage = useCallback(async () => {
+    if (!chatInputValue.trim()) return;
+
+    const newUserMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      text: chatInputValue,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+
+    setChatMessages(prev => {
+      const lastMessage = prev[prev.length -1];
+      if(lastMessage.quickReplies) {
+        const updatedLastMessage = {...lastMessage, quickReplies: undefined};
+        return [...prev.slice(0, -1), updatedLastMessage, newUserMessage];
+      }
+      return [...prev, newUserMessage];
+    });
+    setChatInputValue('');
+    setIsBotTyping(true);
+
+    // Simulate bot response for now
+    setTimeout(() => {
+      const botResponse: ChatMessage = {
+        id: `bot-${Date.now()}`,
+        text: `I received: "${newUserMessage.text}" (This is a simulated response.)`,
+        sender: 'bot',
+        timestamp: new Date(),
+        senderName: 'Beacon Concierge',
+        avatarIcon: Bot,
+      };
+      setChatMessages(prev => [...prev, botResponse]);
+      setIsBotTyping(false);
+    }, 1500);
+  }, [chatInputValue]);
+
+  const handleQuickReplyClick = useCallback(async (reply: string) => {
+    const newUserMessage: ChatMessage = {
+      id: `user-qr-${Date.now()}`,
+      text: reply,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+    setChatMessages(prev => {
+      const lastMessage = prev[prev.length -1];
+      const updatedLastMessage = {...lastMessage, quickReplies: undefined};
+      return [...prev.slice(0, -1), updatedLastMessage, newUserMessage];
+    });
+    setIsBotTyping(true);
+
+     // Simulate bot response for now
+    setTimeout(() => {
+        let responseText = "How can I assist you further with that?";
+        if (reply === "I have questions about a product") {
+            responseText = "Sure! Which product are you curious about, or what features are you looking for?";
+        } else if (reply === "I want to set up a demo") {
+            responseText = "Great! I can point you to our demo request page. Would you like the link?";
+        } else if (reply === "I am just looking around") {
+            responseText = "No problem! Take your time. If anything catches your eye or you have a question, I'm here to help.";
+        }
+      const botResponse: ChatMessage = {
+        id: `bot-qr-${Date.now()}`,
+        text: responseText,
+        sender: 'bot',
+        timestamp: new Date(),
+        senderName: 'Beacon Concierge',
+        avatarIcon: Bot,
+      };
+      setChatMessages(prev => [...prev, botResponse]);
+      setIsBotTyping(false);
+    }, 1000);
+  }, []);
+
 
   return (
     <>
       <div 
-        className={`flex flex-col min-h-screen ${showInitialReleaseNotes ? 'filter backdrop-blur-sm pointer-events-none' : ''}`}
+        className={`flex flex-col min-h-screen ${showInitialReleaseNotes || isChatOpen ? 'filter backdrop-blur-sm pointer-events-none' : ''}`}
       >
         <Header />
         <main className="flex-grow p-4 md:p-6 lg:p-8">
@@ -385,6 +492,19 @@ export default function HomePage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Chatbot */}
+      <Chatbot
+        isOpen={isChatOpen}
+        onToggle={toggleChat}
+        messages={chatMessages}
+        inputValue={chatInputValue}
+        onInputChange={handleChatInputChange}
+        onSendMessage={handleSendMessage}
+        onQuickReplyClick={handleQuickReplyClick}
+        isBotTyping={isBotTyping}
+      />
     </>
   );
 }
+
