@@ -81,7 +81,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
       {/* Chat Window */}
       {isOpen && (
         <div className={cn(
-          "fixed bottom-20 right-4 sm:right-6 md:right-8 w-[calc(100%-2rem)] sm:w-96 max-h-[70vh] sm:max-h-[500px] bg-card text-card-foreground border border-border/50 rounded-xl shadow-2xl flex flex-col transition-all duration-300 ease-out z-50",
+          "fixed bottom-20 right-4 sm:right-6 md:right-8 w-[calc(100%-2rem)] sm:w-96 md:w-[448px] max-h-[70vh] sm:max-h-[560px] md:max-h-[600px] bg-card text-card-foreground border border-border/50 rounded-xl shadow-2xl flex flex-col transition-all duration-300 ease-out z-50",
           "animate-in slide-in-from-bottom-12 fade-in-0"
         )}>
           {/* Header */}
@@ -179,7 +179,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
                 onChange={onInputChange}
                 onKeyDown={handleKeyDown}
                 className="flex-grow bg-card border-border/70 focus-visible:ring-accent"
-                disabled={isBotTyping || (messages.length > 0 && messages[messages.length-1].quickReplies && messages[messages.length-1].quickReplies!.length > 0)}
+                disabled={isBotTyping}
               />
               <Button 
                 size="icon" 
