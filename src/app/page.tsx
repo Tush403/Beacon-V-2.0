@@ -19,7 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Zap, BookOpenCheck, Bot, Sparkles } from 'lucide-react';
+import { AlertCircle, Zap, BookOpenCheck, Bot as BotIcon } from 'lucide-react'; // Renamed Bot to BotIcon
 import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Chatbot from '@/components/Chatbot';
@@ -46,20 +46,10 @@ const initialEstimatorInputs: EstimatorInputValues = {
   teamSize: 1,
 };
 
+// Updated initial chat messages to be simpler, as the new UI has a visual greeting
 const initialChatMessages: ChatMessage[] = [
-  {
-    id: 'welcome-1',
-    text: "Hello 👋 I'm Beacon Assistant. How can I help you today?",
-    sender: 'bot',
-    timestamp: new Date(),
-    senderName: 'Beacon Assistant',
-    avatarIcon: Bot,
-    quickReplies: [
-      "What is Beacon?",
-      "Tell me about Playwright",
-      "How do I choose a tool?"
-    ]
-  }
+   // The first message can be added by the AI after user interaction, or be a very brief system message.
+   // For now, let's start with an empty array, and the AI can send the first substantial message.
 ];
 
 export default function HomePage() {
@@ -100,7 +90,6 @@ export default function HomePage() {
     } else {
       document.body.style.overflow = '';
     }
-    // Cleanup function to restore scroll on component unmount
     return () => {
       document.body.style.overflow = '';
     };
@@ -115,7 +104,7 @@ export default function HomePage() {
       if (filterType === 'codingRequirement' && value === 'AI/ML') {
         newFilters.codingLanguage = 'N/A';
       } else if (filterType === 'codingRequirement' && value !== 'AI/ML' && prevFilters.codingLanguage === 'N/A' && prevFilters.codingRequirement === 'AI/ML') {
-        newFilters.codingLanguage = ''; // Reset if changing from AI/ML and language was N/A
+        newFilters.codingLanguage = ''; 
       }
       return newFilters;
     });
@@ -275,12 +264,12 @@ export default function HomePage() {
       sender,
       timestamp: new Date(),
       senderName: sender === 'bot' ? 'Beacon Assistant' : undefined,
-      avatarIcon: sender === 'bot' ? Bot : undefined,
+      avatarIcon: sender === 'bot' ? BotIcon : undefined,
     };
 
     setChatMessages(prev => {
       const lastMessage = prev[prev.length -1];
-      if(lastMessage?.quickReplies) { // Check if lastMessage exists
+      if(lastMessage?.quickReplies) { 
         const updatedLastMessage = {...lastMessage, quickReplies: undefined};
         return [...prev.slice(0, -1), updatedLastMessage, newMessage];
       }
@@ -292,7 +281,7 @@ export default function HomePage() {
       setIsBotTyping(true);
 
       const historyForAI = chatMessages
-        .slice(-5) // Send last 5 messages for context
+        .slice(-5) 
         .map(msg => ({ sender: msg.sender, text: msg.text }));
 
       const aiInput: ChatbotFlowInput = { currentUserInput: text, history: historyForAI };
@@ -306,7 +295,7 @@ export default function HomePage() {
           sender: 'bot',
           timestamp: new Date(),
           senderName: 'Beacon Assistant',
-          avatarIcon: Bot,
+          avatarIcon: BotIcon,
           isError: true,
         };
         setChatMessages(prev => [...prev, errorMessage]);
@@ -317,7 +306,7 @@ export default function HomePage() {
           sender: 'bot',
           timestamp: new Date(),
           senderName: 'Beacon Assistant',
-          avatarIcon: Bot,
+          avatarIcon: BotIcon,
         };
         setChatMessages(prev => [...prev, botResponse]);
       }
@@ -508,4 +497,3 @@ export default function HomePage() {
     </>
   );
 }
-
