@@ -9,7 +9,7 @@ import ToolResults from '@/components/ToolResults';
 import RoiChart from '@/components/RoiChart';
 import EffortEstimator from '@/components/EffortEstimator';
 import RoiComparisonTable from '@/components/RoiComparisonTable';
-import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
+import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput, ComparisonParameter } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
 import { estimateEffort as estimateEffortAction, generateTestTypeSummary, askBeaconAssistant } from '@/actions/aiActions';
@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Zap, BookOpenCheck, Bot, Sparkles } from 'lucide-react';
-import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay'; 
+import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Chatbot from '@/components/Chatbot';
 import type { ChatMessage } from '@/components/Chatbot';
@@ -94,6 +94,18 @@ export default function HomePage() {
     setCurrentYear(new Date().getFullYear());
   }, []);
 
+  useEffect(() => {
+    if (isChatOpen || showInitialReleaseNotes) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    // Cleanup function to restore scroll on component unmount
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isChatOpen, showInitialReleaseNotes]);
+
   const handleFilterChange = useCallback(<K extends keyof Filters>(filterType: K, value: Filters[K]) => {
     setFilters(prevFilters => {
       const newFilters = {
@@ -101,9 +113,9 @@ export default function HomePage() {
         [filterType]: value,
       };
       if (filterType === 'codingRequirement' && value === 'AI/ML') {
-        newFilters.codingLanguage = 'N/A'; 
+        newFilters.codingLanguage = 'N/A';
       } else if (filterType === 'codingRequirement' && value !== 'AI/ML' && prevFilters.codingLanguage === 'N/A' && prevFilters.codingRequirement === 'AI/ML') {
-        newFilters.codingLanguage = '';
+        newFilters.codingLanguage = ''; // Reset if changing from AI/ML and language was N/A
       }
       return newFilters;
     });
@@ -115,7 +127,7 @@ export default function HomePage() {
     setToolForCol2Id(null);
     setToolForCol3Id(null);
   }, []);
-  
+
   const filteredToolsForDisplay = useMemo(() => {
     let tools = mockToolsData;
 
@@ -132,8 +144,8 @@ export default function HomePage() {
       tools = tools.filter(tool => tool.codingRequirements.includes(filters.codingRequirement!));
     }
     if (filters.codingLanguage && filters.codingLanguage !== ALL_FILTER_VALUE) {
-      tools = tools.filter(tool => 
-        tool.codingLanguages.includes(filters.codingLanguage!) || 
+      tools = tools.filter(tool =>
+        tool.codingLanguages.includes(filters.codingLanguage!) ||
         (filters.codingLanguage === "N/A" && tool.codingLanguages.includes("N/A"))
       );
     }
@@ -143,7 +155,7 @@ export default function HomePage() {
     if (filters.reportingAnalytics && filters.reportingAnalytics !== ALL_FILTER_VALUE) {
       tools = tools.filter(tool => tool.reportingAnalytics.includes(filters.reportingAnalytics!));
     }
-    
+
     return tools.sort((a, b) => b.score - a.score);
   }, [filters]);
 
@@ -184,7 +196,7 @@ export default function HomePage() {
         : value,
     }));
   }, []);
-  
+
 
   const handleGetEstimate = useCallback(async () => {
     if (estimatorInputs.teamSize <= 0) {
@@ -209,7 +221,7 @@ export default function HomePage() {
       setEstimatorLoading(false);
     }
   }, [estimatorInputs]);
-  
+
   const toolsForChartDialog = useMemo(() => {
     return [tool1ForComparison, tool2ForComparison, tool3ForComparison].filter(Boolean) as Tool[];
   }, [tool1ForComparison, tool2ForComparison, tool3ForComparison]);
@@ -282,7 +294,7 @@ export default function HomePage() {
       const historyForAI = chatMessages
         .slice(-5) // Send last 5 messages for context
         .map(msg => ({ sender: msg.sender, text: msg.text }));
-      
+
       const aiInput: ChatbotFlowInput = { currentUserInput: text, history: historyForAI };
       const result = await askBeaconAssistant(aiInput);
 
@@ -323,7 +335,7 @@ export default function HomePage() {
 
   return (
     <>
-      <div 
+      <div
         className={cn(
           'flex flex-col min-h-screen',
           (showInitialReleaseNotes || isChatOpen) && 'filter backdrop-blur-sm pointer-events-none'
@@ -353,8 +365,8 @@ export default function HomePage() {
               <ToolResults
                 toolsToDisplay={topThreeTools}
               />
-              
-              {tool1ForComparison && ( 
+
+              {tool1ForComparison && (
                   <RoiComparisonTable
                       allTools={mockToolsData}
                       tool1={tool1ForComparison}
@@ -365,13 +377,13 @@ export default function HomePage() {
                       comparisonParameters={comparisonParametersData}
                   />
               )}
-              
+
               <div className="flex justify-center items-center pt-4 space-x-4">
                 {tool1ForComparison && (
-                  <Button 
-                    onClick={() => setShowRoiChartDialog(true)} 
-                    variant="default" 
-                    size="lg" 
+                  <Button
+                    onClick={() => setShowRoiChartDialog(true)}
+                    variant="default"
+                    size="lg"
                     className="bg-primary hover:bg-primary/90 text-primary-foreground"
                     disabled={toolsForChartDialog.length === 0}
                   >
@@ -423,7 +435,7 @@ export default function HomePage() {
             <ReleaseNotesDisplay />
           </ScrollArea>
           <DialogFooter className="mt-auto">
-            <Button 
+            <Button
               onClick={() => setShowInitialReleaseNotes(false)}
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
             >
@@ -496,3 +508,4 @@ export default function HomePage() {
     </>
   );
 }
+
