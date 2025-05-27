@@ -20,7 +20,7 @@ import { Settings, Palette, Mail, Search, LogIn, Menu, Sun, Moon, ChevronLeft, B
 import { cn } from '@/lib/utils';
 import { mockToolsData } from '@/lib/data';
 import type { Tool } from '@/lib/types';
-import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay'; // Import the new component
+import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
 
 interface SettingsSheetProps {
   onOpenChange: (open: boolean) => void;
@@ -33,8 +33,10 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
   const [searchResults, setSearchResults] = useState<Tool[]>([]);
 
   useEffect(() => {
+    // Determine initial dark mode state from localStorage or system preference
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark' || (!savedTheme && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    const systemPrefersDark = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
       document.documentElement.classList.add('dark');
       setIsDarkMode(true);
     } else {
@@ -48,10 +50,10 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
       const lowerCaseSearchTerm = searchTerm.toLowerCase();
       const results = mockToolsData.filter(tool =>
         tool.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-        tool.strengths.some(s => s.toLowerCase().includes(lowerCaseSearchTerm)) ||
-        tool.weaknesses.some(w => w.toLowerCase().includes(lowerCaseSearchTerm)) ||
-        tool.applicationTypes.some(at => at.toLowerCase().includes(lowerCaseSearchTerm)) ||
-        tool.testTypes.some(tt => tt.toLowerCase().includes(lowerCaseSearchTerm))
+        (tool.strengths && tool.strengths.some(s => s.toLowerCase().includes(lowerCaseSearchTerm))) ||
+        (tool.weaknesses && tool.weaknesses.some(w => w.toLowerCase().includes(lowerCaseSearchTerm))) ||
+        (tool.applicationTypes && tool.applicationTypes.some(at => at.toLowerCase().includes(lowerCaseSearchTerm))) ||
+        (tool.testTypes && tool.testTypes.some(tt => tt.toLowerCase().includes(lowerCaseSearchTerm)))
       );
       setSearchResults(results);
     } else {
@@ -73,56 +75,49 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
 
   const handleOptionClick = (optionName: string) => {
     console.log(`${optionName} clicked. Placeholder action.`);
-     // handleSheetOpenChange(false); // Close sheet after action
+     // handleSheetOpenChange(false); // Close sheet after action for some options if needed
+  };
+
+  const navigateBackToMain = () => {
+    setCurrentView('main');
+    setSearchTerm('');
+    setSearchResults([]);
   };
 
   const SearchToolContent: React.FC = () => (
-    <div className="flex flex-col h-full">
-      <Button
-        variant="ghost"
-        className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md mb-2 sticky top-0 bg-card z-10 -mt-4 pt-4 -mx-4 px-4 shadow-sm"
-        onClick={() => {
-          setCurrentView('main');
-          setSearchTerm(''); 
-          setSearchResults([]); 
-        }}
-      >
-        <ChevronLeft className="mr-2 h-5 w-5 text-muted-foreground" />
-        Back to Menu
-      </Button>
-      <div className="flex-1 overflow-y-auto -mx-4 px-4 space-y-4">
-        <Input
-          type="text"
-          placeholder="Search tools by name, feature, type..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-background/80 border-border/70 sticky top-[calc(2.5rem+8px)] z-10 shadow-sm"
-        />
-        <div className="pt-2">
-          {searchTerm.trim() !== '' && searchResults.length === 0 && (
-            <p className="text-sm text-muted-foreground text-center py-4">No tools found matching your search.</p>
-          )}
-          {searchResults.length > 0 && (
-            <ScrollArea className="h-[calc(100vh-220px)]">
-              <ul className="space-y-1">
-                {searchResults.map(tool => (
-                  <li key={tool.id} className="p-2.5 hover:bg-muted/50 rounded-md cursor-pointer border-b border-border/30 transition-colors"
-                    onClick={() => {
-                      console.log("Selected tool:", tool.name);
-                      handleSheetOpenChange(false); 
-                    }}
-                  >
-                    <div className="font-medium text-foreground">{tool.name}</div>
-                    <div className="text-xs text-muted-foreground">Score: {tool.score.toFixed(1)}</div>
-                  </li>
-                ))}
-              </ul>
-            </ScrollArea>
-          )}
-          {searchTerm.trim() === '' && (
-            <p className="text-sm text-muted-foreground text-center py-4">Type to search for tools.</p>
-          )}
-        </div>
+    // The "Back to Menu" button is removed from here, handled by SheetTitle
+    <div className="flex flex-col h-full pt-2 space-y-4">
+      <Input
+        type="text"
+        placeholder="Search tools by name, feature, type..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="bg-background/80 border-border/70 shadow-sm" // Removed sticky, header handles back
+      />
+      <div className="flex-1 overflow-y-auto">
+        {searchTerm.trim() !== '' && searchResults.length === 0 && (
+          <p className="text-sm text-muted-foreground text-center py-4">No tools found matching your search.</p>
+        )}
+        {searchResults.length > 0 && (
+          <ScrollArea className="h-[calc(100vh-250px)]"> {/* Adjusted height assumption */}
+            <ul className="space-y-1">
+              {searchResults.map(tool => (
+                <li key={tool.id} className="p-2.5 hover:bg-muted/50 rounded-md cursor-pointer border-b border-border/30 transition-colors"
+                  onClick={() => {
+                    console.log("Selected tool:", tool.name);
+                    handleSheetOpenChange(false); 
+                  }}
+                >
+                  <div className="font-medium text-foreground">{tool.name}</div>
+                  <div className="text-xs text-muted-foreground">Score: {tool.score.toFixed(1)}</div>
+                </li>
+              ))}
+            </ul>
+          </ScrollArea>
+        )}
+        {searchTerm.trim() === '' && (
+          <p className="text-sm text-muted-foreground text-center py-4">Type to search for tools.</p>
+        )}
       </div>
     </div>
   );
@@ -132,9 +127,7 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
     <Sheet onOpenChange={(open) => {
       handleSheetOpenChange(open);
       if (!open) { 
-        setCurrentView('main'); 
-        setSearchTerm('');
-        setSearchResults([]);
+        navigateBackToMain(); // Reset to main view when sheet closes
       }
     }}>
       <SheetTrigger asChild>
@@ -146,29 +139,26 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
       <SheetContent side="right" className="w-[350px] sm:w-[400px] flex flex-col bg-card text-card-foreground p-0">
         <SheetHeader className="p-6 pb-2 border-b">
            <SheetTitle className="flex items-center text-xl text-primary">
-            <Menu className="mr-2 h-6 w-6 text-accent" />
+            {currentView === 'main' ? (
+              <Menu className="mr-2 h-6 w-6 text-accent" />
+            ) : (
+              <Button variant="ghost" size="icon" className="mr-2 -ml-2 h-8 w-8 text-primary hover:bg-primary/10" onClick={navigateBackToMain}>
+                <ChevronLeft className="h-5 w-5" />
+                <span className="sr-only">Back to Menu</span>
+              </Button>
+            )}
             {currentView === 'main' && 'Beacon Menu'}
             {currentView === 'releaseNotes' && 'Acknowledgement'}
             {currentView === 'searchTool' && 'Search Tools'}
           </SheetTitle>
-          {currentView === 'main' && (
-            <SheetDescription>
-              App options, information, and tool search.
-            </SheetDescription>
-          )}
-           {currentView === 'releaseNotes' && (
-            <SheetDescription>
-              Latest updates and fixes for Beacon.
-            </SheetDescription>
-          )}
-           {currentView === 'searchTool' && (
-            <SheetDescription>
-              Find specific tools quickly.
-            </SheetDescription>
-          )}
+          <SheetDescription>
+            {currentView === 'main' && 'App options, information, and tool search.'}
+            {currentView === 'releaseNotes' && 'Latest updates and fixes for Beacon.'}
+            {currentView === 'searchTool' && 'Find specific tools quickly.'}
+          </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 p-4 space-y-1 overflow-y-auto">
+        <div className={cn("flex-1 overflow-y-auto", currentView === 'main' ? "p-4 space-y-1" : "p-0")}>
           {currentView === 'main' && (
             <>
               <Button 
@@ -203,22 +193,19 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
           )}
 
           {currentView === 'releaseNotes' && (
+            // The "Back to Menu" button is removed from here, handled by SheetTitle
             <div className="flex flex-col h-full">
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md mb-2 sticky top-0 bg-card z-10 -mt-4 pt-4 -mx-4 px-4 shadow-sm"
-                onClick={() => setCurrentView('main')}
-              >
-                <ChevronLeft className="mr-2 h-5 w-5 text-muted-foreground" />
-                Back to Menu
-              </Button>
-              <ScrollArea className="flex-1 overflow-y-auto -mx-4 px-4">
+              <ScrollArea className="flex-1 overflow-y-auto p-4">
                 <ReleaseNotesDisplay />
               </ScrollArea>
             </div>
           )}
 
-          {currentView === 'searchTool' && <SearchToolContent />}
+          {currentView === 'searchTool' && (
+            <div className="flex flex-col h-full p-4 pt-0"> {/* Add padding here if SearchToolContent expects it */}
+              <SearchToolContent />
+            </div>
+          )}
         </div>
 
         <SheetFooter className="p-6 pt-4 border-t border-border">
