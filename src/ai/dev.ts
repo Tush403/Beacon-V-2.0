@@ -4,4 +4,4 @@ config();
 
 import '@/ai/flows/generate-test-type-summary.ts';
 import '@/ai/flows/estimate-effort-flow.ts';
-// Chatbot flow import removed
+import '@/ai/flows/chatbot-flow.ts'; // Re-added chatbot flow import

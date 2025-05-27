@@ -1,5 +1,6 @@
 
 import type { GenerateTestTypeSummaryInput as AiTrendSummaryInput } from '@/ai/flows/generate-test-type-summary';
+import type { ElementType } from 'react'; // Added ElementType for avatarIcon
 
 export type ApplicationType = "Web" | "Mobile" | "API" | "Desktop" | "Backend";
 export type TestType = "UI Testing" | "API Testing" | "Performance Testing" | "Security Testing" | "Unit Testing" | "E2E Testing";
@@ -10,14 +11,14 @@ export type PricingModel = "Free" | "Freemium" | "Subscription" | "One-time Purc
 export type ReportingAnalytics = "Basic" | "Advanced" | "Customizable" | "Integration-friendly" | "Real-time";
 
 export interface RoiTimePoint {
-  month: number; // Representing the period, e.g., 1 for Month 1
-  roi: number;   // The ROI value for that period
+  month: number; 
+  roi: number;   
 }
 
 export interface Tool {
   id: string;
   name: string;
-  score: number; // e.g., 8.9
+  score: number; 
   logoUrl?: string;
   dataAiHint?: string;
   applicationTypes: ApplicationType[];
@@ -92,8 +93,19 @@ export interface EffortEstimationOutput {
   explanation: string;
 }
 
-// For ROI Comparison Table
 export interface ComparisonParameter {
   key: keyof Tool;
   label: string;
+}
+
+// Chatbot Message Type
+export interface ChatMessage {
+  id: string;
+  text: string;
+  sender: 'user' | 'bot' | 'system';
+  timestamp: Date;
+  quickReplies?: string[];
+  avatarIcon?: ElementType; // For custom icons like <Bot />
+  senderName?: string;
+  isError?: boolean;
 }
