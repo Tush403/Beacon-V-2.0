@@ -36,12 +36,13 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
     // Determine initial dark mode state from localStorage or system preference
     const savedTheme = localStorage.getItem('theme');
     const systemPrefersDark = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+    const initialIsDarkMode = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
+    
+    setIsDarkMode(initialIsDarkMode);
+    if (initialIsDarkMode) {
       document.documentElement.classList.add('dark');
-      setIsDarkMode(true);
     } else {
       document.documentElement.classList.remove('dark');
-      setIsDarkMode(false);
     }
   }, []);
 
@@ -71,11 +72,23 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
+    handleSheetOpenChange(false); // Close sheet after toggling theme
   };
 
   const handleOptionClick = (optionName: string) => {
-    console.log(`${optionName} clicked. Placeholder action.`);
-     // handleSheetOpenChange(false); // Close sheet after action for some options if needed
+    if (optionName === 'Write Us') {
+      // Using a placeholder email. Replace with your actual support email.
+      window.location.href = 'mailto:support@example.com?subject=Inquiry about Beacon App';
+      console.log('Attempting to open email client for Write Us...');
+      handleSheetOpenChange(false); // Close sheet after attempting to open email
+    } else if (optionName === 'Sign In/Sign Up') {
+      console.log(`${optionName} clicked. Placeholder action.`);
+      handleSheetOpenChange(false); // Close sheet for now
+    } else {
+      console.log(`${optionName} clicked. Placeholder action.`);
+      // Decide if other generic options should also close the sheet
+      // handleSheetOpenChange(false); 
+    }
   };
 
   const navigateBackToMain = () => {
@@ -85,26 +98,26 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
   };
 
   const SearchToolContent: React.FC = () => (
-    // The "Back to Menu" button is removed from here, handled by SheetTitle
     <div className="flex flex-col h-full pt-2 space-y-4">
       <Input
         type="text"
         placeholder="Search tools by name, feature, type..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="bg-background/80 border-border/70 shadow-sm" // Removed sticky, header handles back
+        className="bg-background/80 border-border/70 shadow-sm"
       />
       <div className="flex-1 overflow-y-auto">
         {searchTerm.trim() !== '' && searchResults.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-4">No tools found matching your search.</p>
         )}
         {searchResults.length > 0 && (
-          <ScrollArea className="h-[calc(100vh-250px)]"> {/* Adjusted height assumption */}
+          <ScrollArea className="h-[calc(100%-4rem)]"> {/* Adjust height based on input field */}
             <ul className="space-y-1">
               {searchResults.map(tool => (
                 <li key={tool.id} className="p-2.5 hover:bg-muted/50 rounded-md cursor-pointer border-b border-border/30 transition-colors"
                   onClick={() => {
                     console.log("Selected tool:", tool.name);
+                    // Potentially navigate to tool details or perform other action
                     handleSheetOpenChange(false); 
                   }}
                 >
@@ -158,7 +171,10 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
           </SheetDescription>
         </SheetHeader>
 
-        <div className={cn("flex-1 overflow-y-auto", currentView === 'main' ? "p-4 space-y-1" : "p-0")}>
+        <div className={cn("flex-1 overflow-y-auto", 
+          currentView === 'main' ? "p-4 space-y-1" : 
+          (currentView === 'releaseNotes' || currentView === 'searchTool') ? "p-0" : ""
+        )}>
           {currentView === 'main' && (
             <>
               <Button 
@@ -193,7 +209,6 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
           )}
 
           {currentView === 'releaseNotes' && (
-            // The "Back to Menu" button is removed from here, handled by SheetTitle
             <div className="flex flex-col h-full">
               <ScrollArea className="flex-1 overflow-y-auto p-4">
                 <ReleaseNotesDisplay />
@@ -202,7 +217,7 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
           )}
 
           {currentView === 'searchTool' && (
-            <div className="flex flex-col h-full p-4 pt-0"> {/* Add padding here if SearchToolContent expects it */}
+            <div className="flex flex-col h-full p-4 pt-0">
               <SearchToolContent />
             </div>
           )}
@@ -221,3 +236,4 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
 };
 
 export default SettingsSheet;
+
