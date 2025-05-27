@@ -14,13 +14,13 @@ import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParam
 import { ALL_FILTER_VALUE } from '@/lib/constants';
 import { estimateEffort as estimateEffortAction, generateTestTypeSummary } from '@/actions/aiActions';
 import type { GenerateTestTypeSummaryOutput, GenerateTestTypeSummaryInput } from '@/ai/flows/generate-test-type-summary';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"; // Removed DialogClose as it's part of DialogContent now
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Zap, BookOpenCheck } from 'lucide-react'; 
 import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
-import { ScrollArea } from '@/components/ui/scroll-area';
+// ScrollArea is no longer imported here for the initial release notes
 import { cn } from '@/lib/utils';
 
 const initialFilters: Filters = {
@@ -76,7 +76,7 @@ export default function HomePage() {
       document.body.style.overflow = '';
     }
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = ''; // Cleanup on unmount
     };
   }, [showInitialReleaseNotes]);
 
@@ -240,7 +240,7 @@ export default function HomePage() {
       <div
         className={cn(
           'flex flex-col min-h-screen',
-          showInitialReleaseNotes && 'filter backdrop-blur-sm pointer-events-none'
+          (showInitialReleaseNotes) && 'filter backdrop-blur-sm pointer-events-none'
         )}
       >
         <Header />
@@ -279,29 +279,28 @@ export default function HomePage() {
                       comparisonParameters={comparisonParametersData}
                   />
               )}
-
-              <div className="flex justify-center items-center pt-4 space-x-4">
-                {tool1ForComparison && (
+               {tool1ForComparison && ( // Only show buttons if there's a primary tool
+                <div className="flex justify-center items-center pt-4 space-x-4">
+                    <Button
+                      onClick={() => setShowRoiChartDialog(true)}
+                      variant="default"
+                      size="lg"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                      disabled={toolsForChartDialog.length === 0}
+                    >
+                      View ROI Projection Comparison
+                    </Button>
                   <Button
-                    onClick={() => setShowRoiChartDialog(true)}
+                    onClick={handleViewAiTrendSummaryClick}
                     variant="default"
                     size="lg"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                    disabled={toolsForChartDialog.length === 0}
+                    className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                    disabled={aiTrendSummaryLoading}
                   >
-                    View ROI Projection Comparison
+                    {aiTrendSummaryLoading ? 'Loading Summary...' : 'View AI Trend Summary'}
                   </Button>
-                )}
-                <Button
-                  onClick={handleViewAiTrendSummaryClick}
-                  variant="default"
-                  size="lg"
-                  className="bg-accent hover:bg-accent/90 text-accent-foreground"
-                  disabled={aiTrendSummaryLoading}
-                >
-                  {aiTrendSummaryLoading ? 'Loading Summary...' : 'View AI Trend Summary'}
-                </Button>
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </main>
@@ -333,10 +332,10 @@ export default function HomePage() {
               Welcome! Please review the latest updates before proceeding.
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 overflow-y-auto">
             <ReleaseNotesDisplay />
-          </ScrollArea>
-          <DialogFooter className="mt-auto pt-4"> {/* Added pt-4 for spacing from scroll content */}
+          </div>
+          <DialogFooter className="mt-auto pt-4">
             <Button
               onClick={() => setShowInitialReleaseNotes(false)}
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
@@ -400,5 +399,3 @@ export default function HomePage() {
     </>
   );
 }
-
-    
