@@ -38,16 +38,6 @@ const chatbotGenkitFlow = ai.defineFlow(
     outputSchema: ChatbotOutputSchema,
   },
   async (input) => {
-    const model = ai.getGenerativeModel({
-      model: 'gemini-1.5-flash-latest', // Using a capable model
-      // Consider adding safety settings if sensitive topics might arise
-      // config: {
-      //   safetySettings: [
-      //     { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-      //   ],
-      // },
-    });
-
     // Construct the prompt with history
     const messages = [];
     if (input.history) {
@@ -69,12 +59,19 @@ Example good response: "For UI testing on the web, Playwright and Cypress are ex
 `;
 
     try {
-      const result = await model.generate({
+      const result = await ai.generate({
+        model: 'googleai/gemini-1.5-flash-latest', // Using a capable model, with provider prefix
         system: systemInstruction,
         messages: messages,
+        // Consider adding safety settings if sensitive topics might arise
+        // config: {
+        //   safetySettings: [
+        //     { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+        //   ],
+        // },
       });
 
-      const responseText = result.text;
+      const responseText = result.text; // Correct for Genkit v1.x
       
       if (!responseText) {
         throw new Error("AI did not return a text response.");
