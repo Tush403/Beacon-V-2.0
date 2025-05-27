@@ -9,19 +9,19 @@ import ToolResults from '@/components/ToolResults';
 import RoiChart from '@/components/RoiChart';
 import EffortEstimator from '@/components/EffortEstimator';
 import RoiComparisonTable from '@/components/RoiComparisonTable';
-import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput, ComparisonParameter, ChatMessage as ChatMessageType } from '@/lib/types'; // Added ChatMessageType
+import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput, ComparisonParameter, ChatMessage as ChatMessageType } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
-import { estimateEffort as estimateEffortAction, generateTestTypeSummary } from '@/actions/aiActions'; // Removed askBeaconAssistant import for now
+import { estimateEffort as estimateEffortAction, generateTestTypeSummary, askBeaconAssistant } from '@/actions/aiActions';
 import type { GenerateTestTypeSummaryOutput, GenerateTestTypeSummaryInput } from '@/ai/flows/generate-test-type-summary';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Zap, BookOpenCheck, Bot } from 'lucide-react'; 
+import { AlertCircle, Zap, BookOpenCheck, Bot, User } from 'lucide-react'; // Added User icon
 import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
 import { cn } from '@/lib/utils';
-import Chatbot from '@/components/Chatbot'; // Re-added Chatbot import
+import Chatbot from '@/components/Chatbot';
 
 const initialFilters: Filters = {
   applicationType: "",
@@ -47,24 +47,15 @@ const initialEstimatorInputs: EstimatorInputValues = {
 const initialChatMessages: ChatMessageType[] = [
   {
     id: 'welcome-1',
-    text: 'Hi there!',
+    text: "Hello 👋 I'm Beacon Assistant. How can I help you today?",
     sender: 'bot',
     timestamp: new Date(),
     senderName: 'Beacon Assistant',
     avatarIcon: Bot,
-  },
-  {
-    id: 'welcome-2',
-    text: 'How can we help you today?',
-    sender: 'bot',
-    timestamp: new Date(Date.now() + 100), // ensure different timestamp
-    senderName: 'Beacon Assistant',
-    avatarIcon: Bot,
     quickReplies: [
       "Learn more about Beacon",
-      "Learn test automation",
+      "How do I choose a tool?",
       "Get technical support",
-      "Talk to Sales/Request a Demo",
     ],
   },
 ];
@@ -104,7 +95,7 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    if (showInitialReleaseNotes || isChatOpen) { // Updated condition
+    if (showInitialReleaseNotes || isChatOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -112,7 +103,7 @@ export default function HomePage() {
     return () => {
       document.body.style.overflow = ''; // Cleanup on unmount
     };
-  }, [showInitialReleaseNotes, isChatOpen]); // Updated dependencies
+  }, [showInitialReleaseNotes, isChatOpen]);
 
   const handleFilterChange = useCallback(<K extends keyof Filters>(filterType: K, value: Filters[K]) => {
     setFilters(prevFilters => {
@@ -231,7 +222,8 @@ export default function HomePage() {
   }, [estimatorInputs]);
 
   const toolsForChartDialog = useMemo(() => {
-    return [tool1ForComparison, tool2ForComparison, tool3ForComparison].filter(Boolean) as Tool[];
+    const selectedTools = [tool1ForComparison, tool2ForComparison, tool3ForComparison].filter(Boolean) as Tool[];
+    return selectedTools.filter(tool => tool.roiProjection && tool.roiProjection.length > 0);
   }, [tool1ForComparison, tool2ForComparison, tool3ForComparison]);
 
   const currentTestTypeForSummary = useMemo(() => {
@@ -270,6 +262,7 @@ export default function HomePage() {
 
   // Chatbot handlers
   const toggleChat = useCallback(() => setIsChatOpen(prev => !prev), []);
+  
   const handleChatInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setChatInputValue(e.target.value);
   }, []);
@@ -286,26 +279,28 @@ export default function HomePage() {
     };
     setChatMessages(prev => [...prev, newMessage]);
     
-    // For Phase 1, AI logic will be added here later.
-    // For now, if it's a user message, simulate a bot reply after a delay.
     if (sender === 'user' && !options.isError) {
       setIsBotTyping(true);
-      // Simulate AI response
-      setTimeout(() => {
-        const botReply: ChatMessageType = {
-          id: Date.now().toString() + Math.random().toString(),
-          text: `I received: "${text}". I'm still learning!`,
-          sender: 'bot',
-          timestamp: new Date(),
-          avatarIcon: Bot,
-          senderName: 'Beacon Assistant',
-        };
-        setChatMessages(prev => [...prev, botReply]);
-        setIsBotTyping(false);
-      }, 1500);
-    }
-  }, []);
+      try {
+        const historyForAI = chatMessages
+          .slice(-5) // Send last 5 messages as history
+          .map(msg => ({ role: msg.sender === 'bot' ? 'model' : 'user', content: msg.text }));
 
+        const aiResult = await askBeaconAssistant({ userMessage: text, history: historyForAI });
+
+        if ('error' in aiResult) {
+          processAndAddMessage(aiResult.error, 'bot', { isError: true, senderName: 'Error' });
+        } else {
+          processAndAddMessage(aiResult.botResponse, 'bot');
+        }
+      } catch (error) {
+        console.error("Error calling AI assistant:", error);
+        processAndAddMessage("Sorry, I'm having trouble connecting right now. Please try again later.", 'bot', { isError: true, senderName: 'Error' });
+      } finally {
+        setIsBotTyping(false);
+      }
+    }
+  }, [chatMessages]); // Added chatMessages to dependency array
 
   const handleSendMessage = useCallback(() => {
     if (!chatInputValue.trim()) return;
@@ -326,7 +321,7 @@ export default function HomePage() {
         index === prevMessages.length - 1 ? { ...msg, quickReplies: undefined } : msg
       )
     );
-    processAndAddMessage(reply, 'user', { text: reply });
+    processAndAddMessage(reply, 'user', { text: reply }); // Use the reply as text for the user message
   }, [processAndAddMessage]);
 
   return (
@@ -334,7 +329,7 @@ export default function HomePage() {
       <div
         className={cn(
           'flex flex-col min-h-screen',
-          (showInitialReleaseNotes || isChatOpen) && 'filter backdrop-blur-sm pointer-events-none' // Updated condition
+          (showInitialReleaseNotes || isChatOpen) && 'filter backdrop-blur-sm pointer-events-none'
         )}
       >
         <Header />
@@ -374,7 +369,7 @@ export default function HomePage() {
                   />
               )}
                {tool1ForComparison && ( 
-                <div className="flex justify-center items-center pt-4 space-x-4">
+                <div className="flex flex-wrap justify-center items-center pt-4 gap-4">
                     <Button
                       onClick={() => setShowRoiChartDialog(true)}
                       variant="default"
@@ -444,11 +439,12 @@ export default function HomePage() {
         <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle className="text-xl text-primary">ROI Projection Comparison</DialogTitle>
+            <DialogDescription>Projected Return on Investment (ROI) for selected tools over 6 months.</DialogDescription>
           </DialogHeader>
           {toolsForChartDialog.length > 0 ? (
               <RoiChart tools={toolsForChartDialog} />
           ) : (
-              <p className="text-muted-foreground text-center py-8">No tools selected in the comparison table to display ROI projection.</p>
+              <p className="text-muted-foreground text-center py-8">No tools selected in the comparison table with ROI data to display projection.</p>
           )}
         </DialogContent>
       </Dialog>
@@ -506,3 +502,4 @@ export default function HomePage() {
   );
 }
 
+    
