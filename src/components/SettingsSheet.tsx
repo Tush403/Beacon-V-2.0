@@ -77,8 +77,7 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
 
   const handleOptionClick = (optionName: string) => {
     if (optionName === 'Write Us') {
-      // Using a placeholder email. Replace with your actual support email.
-      window.location.href = 'mailto:support@example.com?subject=Inquiry about Beacon App';
+      window.location.href = 'mailto:tushardshinde21@gmail.com?subject=Inquiry about Beacon App';
       console.log('Attempting to open email client for Write Us...');
       handleSheetOpenChange(false); // Close sheet after attempting to open email
     } else if (optionName === 'Sign In/Sign Up') {
@@ -86,8 +85,6 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
       handleSheetOpenChange(false); // Close sheet for now
     } else {
       console.log(`${optionName} clicked. Placeholder action.`);
-      // Decide if other generic options should also close the sheet
-      // handleSheetOpenChange(false); 
     }
   };
 
@@ -96,6 +93,14 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
     setSearchTerm('');
     setSearchResults([]);
   };
+
+  const ReleaseNotesContent: React.FC = () => (
+    <ScrollArea className="flex-1 h-full">
+      <div className="p-4">
+        <ReleaseNotesDisplay />
+      </div>
+    </ScrollArea>
+  );
 
   const SearchToolContent: React.FC = () => (
     <div className="flex flex-col h-full pt-2 space-y-4">
@@ -117,7 +122,6 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
                 <li key={tool.id} className="p-2.5 hover:bg-muted/50 rounded-md cursor-pointer border-b border-border/30 transition-colors"
                   onClick={() => {
                     console.log("Selected tool:", tool.name);
-                    // Potentially navigate to tool details or perform other action
                     handleSheetOpenChange(false); 
                   }}
                 >
@@ -140,7 +144,7 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
     <Sheet onOpenChange={(open) => {
       handleSheetOpenChange(open);
       if (!open) { 
-        navigateBackToMain(); // Reset to main view when sheet closes
+        setCurrentView('main'); // Reset to main view when sheet closes
       }
     }}>
       <SheetTrigger asChild>
@@ -210,9 +214,7 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
 
           {currentView === 'releaseNotes' && (
             <div className="flex flex-col h-full">
-              <ScrollArea className="flex-1 overflow-y-auto p-4">
-                <ReleaseNotesDisplay />
-              </ScrollArea>
+              <ReleaseNotesContent />
             </div>
           )}
 
@@ -236,4 +238,3 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ onOpenChange: handleSheet
 };
 
 export default SettingsSheet;
-
