@@ -9,19 +9,20 @@ import ToolResults from '@/components/ToolResults';
 import RoiChart from '@/components/RoiChart';
 import EffortEstimator from '@/components/EffortEstimator';
 import RoiComparisonTable from '@/components/RoiComparisonTable';
-import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput, ChatMessage as ChatMessageType } from '@/lib/types';
+import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
-import { estimateEffort as estimateEffortAction, generateTestTypeSummary, submitFeedback } from '@/actions/aiActions';
+import { estimateEffort as estimateEffortAction, generateTestTypeSummary } from '@/actions/aiActions';
 import type { GenerateTestTypeSummaryOutput, GenerateTestTypeSummaryInput } from '@/ai/flows/generate-test-type-summary';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Zap, BookOpenCheck, Bot, User } from 'lucide-react';
+import { AlertCircle, Zap, BookOpenCheck, User } from 'lucide-react';
 import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
 import { cn } from '@/lib/utils';
-import Chatbot from '@/components/Chatbot';
+import BackToTopButton from '@/components/BackToTopButton'; // Import the new component
+
 
 const initialFilters: Filters = {
   applicationType: "",
@@ -42,17 +43,6 @@ const initialEstimatorInputs: EstimatorInputValues = {
   usesCiCd: false,
   teamSize: 1,
 };
-
-const initialChatMessages: ChatMessageType[] = [
-  {
-    id: 'feedback-welcome-1',
-    text: "Hi there! Please share your feedback or questions below (max 250 characters).",
-    sender: 'bot',
-    timestamp: new Date(),
-    senderName: 'Beacon Support',
-    avatarIcon: Bot,
-  },
-];
 
 
 export default function HomePage() {
@@ -77,26 +67,21 @@ export default function HomePage() {
 
   const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(true);
 
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState<ChatMessageType[]>(initialChatMessages);
-  const [chatInputValue, setChatInputValue] = useState('');
-  const [isSendingFeedback, setIsSendingFeedback] = useState(false);
-
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
   }, []);
 
   useEffect(() => {
-    if (showInitialReleaseNotes || isChatOpen) {
+    if (showInitialReleaseNotes) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = ''; // Ensure reset on component unmount
     };
-  }, [showInitialReleaseNotes, isChatOpen]);
+  }, [showInitialReleaseNotes]);
 
   const handleFilterChange = useCallback(<K extends keyof Filters>(filterType: K, value: Filters[K]) => {
     setFilters(prevFilters => {
@@ -107,7 +92,7 @@ export default function HomePage() {
       if (filterType === 'codingRequirement' && value === 'AI/ML') {
         newFilters.codingLanguage = 'N/A';
       } else if (filterType === 'codingRequirement' && value !== 'AI/ML' && prevFilters.codingLanguage === 'N/A' && prevFilters.codingRequirement === 'AI/ML') {
-        newFilters.codingLanguage = '';
+        newFilters.codingLanguage = ''; // Clear language if no longer AI/ML
       }
       return newFilters;
     });
@@ -244,8 +229,8 @@ export default function HomePage() {
       } else {
         setAiTrendSummary(result);
       }
-    } catch (e) {
-      setAiTrendSummaryError("An unexpected error occurred while fetching the summary.");
+    } catch (e: any) {
+      setAiTrendSummaryError(e.message || "An unexpected error occurred while fetching the summary.");
       console.error(e);
     } finally {
       setAiTrendSummaryLoading(false);
@@ -253,62 +238,13 @@ export default function HomePage() {
     }
   };
 
-  const toggleChat = useCallback(() => setIsChatOpen(prev => !prev), []);
-
-  const handleChatInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setChatInputValue(e.target.value);
-  }, []);
-
-  const handleSendMessage = useCallback(async () => {
-    if (!chatInputValue.trim() || isSendingFeedback) return;
-
-    const userMessage: ChatMessageType = {
-      id: Date.now().toString() + Math.random().toString(),
-      text: chatInputValue,
-      sender: 'user',
-      timestamp: new Date(),
-      avatarIcon: User,
-      senderName: 'You',
-    };
-    setChatMessages(prev => [...prev, userMessage]);
-    const currentInput = chatInputValue;
-    setChatInputValue('');
-    setIsSendingFeedback(true);
-
-    const result = await submitFeedback({ message: currentInput });
-    setIsSendingFeedback(false);
-
-    if (result.success) {
-      const botConfirmationMessage: ChatMessageType = {
-        id: Date.now().toString() + (Math.random() + 1).toString(),
-        text: "Thank you for your feedback! It has been submitted.",
-        sender: 'bot',
-        timestamp: new Date(),
-        avatarIcon: Bot,
-        senderName: 'Beacon Support',
-      };
-      setChatMessages(prev => [...prev, botConfirmationMessage]);
-    } else {
-      const botErrorMessage: ChatMessageType = {
-        id: Date.now().toString() + (Math.random() + 2).toString(),
-        text: result.error || "Sorry, we couldn't submit your feedback at this time. Please try again later.",
-        sender: 'bot',
-        timestamp: new Date(),
-        avatarIcon: Bot,
-        senderName: 'Beacon Support',
-        isError: true,
-      };
-      setChatMessages(prev => [...prev, botErrorMessage]);
-    }
-  }, [chatInputValue, isSendingFeedback]);
-
 
   return (
     <>
       <div
         className={cn(
           'flex flex-col min-h-screen',
-          (showInitialReleaseNotes || isChatOpen) && 'filter backdrop-blur-sm pointer-events-none'
+          (showInitialReleaseNotes) && 'filter backdrop-blur-sm pointer-events-none'
         )}
       >
         <Header />
@@ -332,7 +268,7 @@ export default function HomePage() {
             </div>
 
             <div className="lg:col-span-8 xl:col-span-9 space-y-6">
-              <ToolResults
+               <ToolResults
                 toolsToDisplay={topThreeTools}
               />
 
@@ -464,17 +400,8 @@ export default function HomePage() {
           </div>
         </DialogContent>
       </Dialog>
-
-      <Chatbot
-        isOpen={isChatOpen}
-        onToggle={toggleChat}
-        messages={chatMessages}
-        inputValue={chatInputValue}
-        onInputChange={handleChatInputChange}
-        onSendMessage={handleSendMessage}
-        isSending={isSendingFeedback}
-        initialPlaceholder="Type your feedback (max 250 chars)..."
-      />
+      
+      <BackToTopButton />
     </>
   );
 }
