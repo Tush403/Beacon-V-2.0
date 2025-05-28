@@ -10,7 +10,6 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  // SheetTrigger, // No longer using internal trigger
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -32,7 +31,15 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
   const [currentView, setCurrentView] = useState<'main' | 'releaseNotes' | 'searchTool'>(initialView);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<Tool[]>([]);
-  // isDarkMode and handleThemeToggle are removed as theme toggle is now in Header
+  
+  const handleSheetOpenChange = (sheetOpen: boolean) => {
+    onOpenChange(sheetOpen);
+    if (!sheetOpen) {
+      setCurrentView('main'); 
+      setSearchTerm('');
+      setSearchResults([]);
+    }
+  };
 
   useEffect(() => {
     if (open && initialView && currentView !== initialView) {
@@ -63,10 +70,12 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
 
 
   const handleOptionClick = (optionName: string) => {
-    // "Write Us" and "Theme" are handled by header now.
     if (optionName === 'Sign In/Sign Up') {
       console.log(`${optionName} clicked. Placeholder action.`);
-      onOpenChange(false); // Close sheet for now
+      handleSheetOpenChange(false);
+    } else if (optionName === 'Write Us') {
+      window.location.href = 'mailto:tushardshinde21@gmail.com?subject=Inquiry about Beacon App';
+      handleSheetOpenChange(false);
     } else {
       console.log(`${optionName} clicked. Placeholder action.`);
     }
@@ -79,11 +88,9 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
   };
 
   const ReleaseNotesView: React.FC = () => (
-    <div className="flex flex-col h-full">
-      <ScrollArea className="flex-1 h-full p-4">
-        <ReleaseNotesDisplay />
-      </ScrollArea>
-    </div>
+    <ScrollArea className="flex-1 h-full p-4">
+      <ReleaseNotesDisplay />
+    </ScrollArea>
   );
 
   const SearchToolView: React.FC = () => (
@@ -100,13 +107,15 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
           <p className="text-sm text-muted-foreground text-center py-4">No tools found matching your search.</p>
         )}
         {searchResults.length > 0 && (
-          <ScrollArea className="h-[calc(100%-4rem)]"> {/* Adjust height based on input field */}
-            <ul className="space-y-1">
+          <ScrollArea className="h-[calc(100%-2rem)]"> {/* Adjust height considering the input field */}
+            <ul className="space-y-1 pr-2">
               {searchResults.map(tool => (
-                <li key={tool.id} className="p-2.5 hover:bg-muted/50 rounded-md cursor-pointer border-b border-border/30 transition-colors"
+                <li 
+                  key={tool.id} 
+                  className="p-2.5 hover:bg-muted/50 rounded-md cursor-pointer border-b border-border/30 transition-colors"
                   onClick={() => {
                     console.log("Selected tool:", tool.name);
-                    onOpenChange(false); 
+                    handleSheetOpenChange(false); 
                   }}
                 >
                   <div className="font-medium text-foreground">{tool.name}</div>
@@ -125,15 +134,7 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
 
 
   return (
-    <Sheet open={open} onOpenChange={(sheetOpen) => {
-      onOpenChange(sheetOpen);
-      if (!sheetOpen) { 
-        setCurrentView('main'); // Reset to main view when sheet closes
-        setSearchTerm('');
-        setSearchResults([]);
-      }
-    }}>
-      {/* SheetTrigger is now handled by Header.tsx */}
+    <Sheet open={open} onOpenChange={handleSheetOpenChange}>
       <SheetContent side="right" className="w-[350px] sm:w-[400px] flex flex-col bg-card text-card-foreground p-0">
         <SheetHeader className="p-6 pb-2 border-b">
            <SheetTitle className="flex items-center text-xl text-primary">
@@ -170,9 +171,6 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
                 <BookOpenCheck className="mr-3 h-5 w-5 text-muted-foreground" />
                 Acknowledgement
               </Button>
-              {/* Theme toggle removed, now in header */}
-              {/* <Separator className="my-2" /> */}
-              {/* Write Us removed, now in header */}
               <Separator className="my-2" />
               <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => setCurrentView('searchTool')}>
                 <Search className="mr-3 h-5 w-5 text-muted-foreground" />
