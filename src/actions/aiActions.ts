@@ -9,6 +9,8 @@ import type { EstimateEffortInput, EstimateEffortOutput } from '@/ai/flows/estim
 import { z } from 'zod';
 import type { SubmitFeedbackInput, SubmitFeedbackOutput } from '@/lib/types';
 
+import fs from 'fs/promises';
+import path from 'path';
 
 export async function generateTestTypeSummary(input: GenerateTestTypeSummaryInput): Promise<GenerateTestTypeSummaryOutput | { error: string }> {
   try {
@@ -41,34 +43,51 @@ const FeedbackSchema = z.object({
   message: z.string().min(1, "Feedback message cannot be empty.").max(250, "Feedback message cannot exceed 250 characters."),
 });
 
+const FEEDBACK_DIR = path.join(process.cwd(), 'data');
+const FEEDBACK_FILE_PATH = path.join(FEEDBACK_DIR, 'feedback_log.jsonl');
+
+async function ensureFeedbackLogExists() {
+  try {
+    await fs.mkdir(FEEDBACK_DIR, { recursive: true });
+  } catch (error) {
+    console.error("Failed to create feedback directory:", error);
+    // We can still proceed, appendFile will create the file if dir exists
+  }
+}
+
 export async function submitFeedback(input: SubmitFeedbackInput): Promise<SubmitFeedbackOutput> {
   try {
     FeedbackSchema.parse(input); // Validate input
 
     const feedbackText = input.message;
-    const recipientEmail = "tushardshinde21@gmail.com";
+    const recipientEmail = "tushardshinde21@gmail.com"; // Intended recipient
     const subject = "Beacon App Feedback";
 
-    // --- Placeholder for Actual Email Sending ---
-    // In a real application, you would integrate an email sending service here.
-    // For example, using SendGrid, AWS SES, Resend, or a Firebase Extension.
-    //
-    // Example (conceptual, requires setup and API keys):
-    // import { Resend } from 'resend';
-    // const resend = new Resend(process.env.RESEND_API_KEY);
-    // await resend.emails.send({
-    //   from: 'Beacon App <feedback@yourdomain.com>',
-    //   to: recipientEmail,
-    //   subject: subject,
-    //   html: `<p>Feedback received:</p><p>${feedbackText}</p>`,
-    // });
-
+    // --- Console Logging (as before) ---
     console.log("--- FEEDBACK SUBMISSION (MOCK EMAIL) ---");
     console.log(`Intended Recipient: ${recipientEmail}`);
     console.log(`Subject: ${subject}`);
     console.log(`Message: ${feedbackText}`);
     console.log("---------------------------------------");
     console.log("NOTE: This is a mock email logging. To send actual emails, integrate an email service in this Server Action.");
+    console.log("DEVELOPMENT NOTE: Feedback is also being logged to data/feedback_log.jsonl");
+
+    // --- Append to Local File (for easier dev access) ---
+    // IMPORTANT: This file-based logging is for development/local use ONLY.
+    // It's not suitable for production environments.
+    await ensureFeedbackLogExists();
+    const feedbackEntry = {
+      timestamp: new Date().toISOString(),
+      message: feedbackText,
+      intendedRecipient: recipientEmail,
+      subject: subject
+    };
+    try {
+      await fs.appendFile(FEEDBACK_FILE_PATH, JSON.stringify(feedbackEntry) + '\n');
+    } catch (fileError) {
+      console.error("Failed to write feedback to local file:", fileError);
+      // Don't fail the whole operation for this, but log the error.
+    }
 
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1000));
