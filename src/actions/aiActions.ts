@@ -7,8 +7,7 @@ import type { GenerateTestTypeSummaryInput, GenerateTestTypeSummaryOutput } from
 import { estimateEffortFlow as estimateEffortGenkitFlow } from '@/ai/flows/estimate-effort-flow';
 import type { EstimateEffortInput, EstimateEffortOutput } from '@/ai/flows/estimate-effort-flow';
 
-import { chatbotFlow as chatbotGenkitFlow } from '@/ai/flows/chatbot-flow'; // Re-added chatbot flow
-import type { ChatbotInput, ChatbotOutput } from '@/ai/flows/chatbot-flow'; // Re-added chatbot types
+// Chatbot flow and types are removed as it's being replaced by a feedback bot
 
 export async function generateTestTypeSummary(input: GenerateTestTypeSummaryInput): Promise<GenerateTestTypeSummaryOutput | { error: string }> {
   try {
@@ -37,17 +36,4 @@ export async function estimateEffort(input: EstimateEffortInput): Promise<Estima
   }
 }
 
-// Re-added askBeaconAssistant function
-export async function askBeaconAssistant(input: ChatbotInput): Promise<ChatbotOutput | { error: string }> {
-  try {
-    const result = await chatbotGenkitFlow(input);
-    return result;
-  } catch (error: any) {
-    console.error("Error in askBeaconAssistant action:", error);
-    if (error.issues && Array.isArray(error.issues)) {
-      const messages = error.issues.map((issue: any) => `${issue.path.join('.')} - ${issue.message}`).join('; ');
-      return { error: `AI processing error: ${messages}` };
-    }
-    return { error: error.message || "Failed to get a response from the assistant. Please try again." };
-  }
-}
+// askBeaconAssistant function is removed

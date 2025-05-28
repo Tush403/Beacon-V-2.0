@@ -6,11 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { X, SendHorizontal, User, Bot as BotIcon } from 'lucide-react'; // Renamed imported Bot to BotIcon to avoid conflict
+import { X, SendHorizontal, User, Bot as BotIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { ChatMessage as ChatMessageType } from '@/lib/types'; // Ensure ChatMessageType is imported
+import type { ChatMessage as ChatMessageType } from '@/lib/types';
 
-// Interface for props from page.tsx
 interface ChatbotProps {
   isOpen: boolean;
   onToggle: () => void;
@@ -18,8 +17,8 @@ interface ChatbotProps {
   inputValue: string;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSendMessage: () => void;
-  onQuickReplyClick: (reply: string) => void;
-  isBotTyping?: boolean;
+  // onQuickReplyClick is no longer needed for simple feedback bot
+  // isBotTyping is no longer needed
   initialPlaceholder?: string;
 }
 
@@ -30,9 +29,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
   inputValue,
   onInputChange,
   onSendMessage,
-  onQuickReplyClick,
-  isBotTyping,
-  initialPlaceholder = "Choose an option or type a message...",
+  initialPlaceholder = "Type your feedback (max 250 chars)...",
 }) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -51,16 +48,12 @@ const Chatbot: React.FC<ChatbotProps> = ({
         scrollViewport.scrollTop = scrollViewport.scrollHeight;
       }
     }
-  }, [messages, isBotTyping]);
+  }, [messages]);
 
   useEffect(() => {
-    const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
-    if (lastMessage && lastMessage.sender === 'bot' && lastMessage.quickReplies && lastMessage.quickReplies.length > 0) {
-      setCurrentPlaceholder("Choose an option");
-    } else {
-      setCurrentPlaceholder("Type your message...");
-    }
-  }, [messages]);
+    // Placeholder might not need to change dynamically anymore
+    setCurrentPlaceholder(initialPlaceholder);
+  }, [initialPlaceholder]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -88,21 +81,14 @@ const Chatbot: React.FC<ChatbotProps> = ({
           <div className="bg-primary text-primary-foreground p-4 flex items-center space-x-3 rounded-t-xl relative">
             <div className="flex -space-x-3">
               <Avatar className="h-9 w-9 border-2 border-primary-foreground/50 ring-2 ring-primary">
-                <AvatarImage src="https://placehold.co/40x40/7C3AED/FFFFFF.png?text=B" alt="Bot Avatar 1" data-ai-hint="bot avatar purple" />
-                <AvatarFallback>B</AvatarFallback>
-              </Avatar>
-              <Avatar className="h-9 w-9 border-2 border-primary-foreground/50 ring-2 ring-primary">
-                <AvatarImage src="https://placehold.co/40x40/3B82F6/FFFFFF.png?text=A" alt="Bot Avatar 2" data-ai-hint="bot avatar blue"/>
-                <AvatarFallback>A</AvatarFallback>
-              </Avatar>
-               <Avatar className="h-9 w-9 border-2 border-primary-foreground/50 ring-2 ring-primary">
-                 <AvatarImage src="https://placehold.co/40x40/10B981/FFFFFF.png?text=C" alt="Bot Avatar 3" data-ai-hint="bot avatar green"/>
-                <AvatarFallback>C</AvatarFallback>
+                <AvatarFallback className="bg-primary/80 text-primary-foreground">
+                  <BotIcon className="h-5 w-5" />
+                </AvatarFallback>
               </Avatar>
             </div>
             <div>
-              <h3 className="text-lg font-semibold">Hi there 👋</h3>
-              <p className="text-sm opacity-90">How can we help?</p>
+              <h3 className="text-lg font-semibold">Feedback & Support</h3>
+              <p className="text-sm opacity-90">We'd love to hear from you!</p>
             </div>
             <Button variant="ghost" size="icon" onClick={onToggle} className="absolute top-2 right-2 text-primary-foreground hover:bg-primary-foreground/10 h-8 w-8">
               <X className="h-5 w-5" />
@@ -112,7 +98,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
 
           <div className="flex flex-col flex-grow bg-card min-h-0">
             <ScrollArea className="flex-grow min-h-0" ref={scrollAreaRef}>
-              <div className="p-3 space-y-3"> {/* Ensure this div exists for proper scrolling */}
+              <div className="p-3 space-y-3">
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
@@ -133,8 +119,8 @@ const Chatbot: React.FC<ChatbotProps> = ({
                         "p-2.5 rounded-lg max-w-[85%] break-words shadow-sm text-sm",
                         msg.sender === 'user'
                           ? 'bg-primary text-primary-foreground rounded-br-none'
-                          : msg.isError 
-                            ? 'bg-destructive/20 text-destructive-foreground rounded-bl-none border border-destructive/30' 
+                          : msg.isError
+                            ? 'bg-destructive/20 text-destructive-foreground rounded-bl-none border border-destructive/30'
                             : 'bg-muted text-foreground rounded-bl-none border border-border/30',
                         msg.sender === 'system' && 'bg-transparent text-xs text-center text-muted-foreground italic w-full max-w-full shadow-none border-none p-1'
                       )}
@@ -145,21 +131,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
                          </p>
                       )}
                        <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                      {msg.quickReplies && msg.quickReplies.length > 0 && msg.sender === 'bot' && !msg.isError && (
-                        <div className="mt-2.5 flex flex-col items-start space-y-1.5">
-                          {msg.quickReplies.map((reply, index) => (
-                            <Button
-                              key={index}
-                              variant="outline"
-                              size="sm"
-                              className="bg-card hover:bg-primary/10 text-primary border-primary/70 hover:border-primary h-auto py-1.5 px-3 rounded-full text-xs"
-                              onClick={() => onQuickReplyClick(reply)}
-                            >
-                              {reply}
-                            </Button>
-                          ))}
-                        </div>
-                      )}
+                      {/* Quick replies are removed for feedback bot */}
                     </div>
                      {msg.sender === 'user' && (
                       <Avatar className="h-7 w-7 self-start shrink-0">
@@ -170,22 +142,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
                     )}
                   </div>
                 ))}
-                {isBotTyping && (
-                  <div className="flex items-center gap-2 justify-start">
-                    <Avatar className="h-7 w-7 self-start shrink-0">
-                      <AvatarFallback className="bg-primary/80 text-primary-foreground">
-                        <BotIcon className="h-4 w-4" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="p-2.5 rounded-lg bg-muted text-foreground rounded-bl-none border border-border/30 shadow-sm">
-                      <div className="flex space-x-1 items-center">
-                        <span className="h-1.5 w-1.5 bg-foreground/50 rounded-full animate-pulse [animation-delay:-0.3s]"></span>
-                        <span className="h-1.5 w-1.5 bg-foreground/50 rounded-full animate-pulse [animation-delay:-0.15s]"></span>
-                        <span className="h-1.5 w-1.5 bg-foreground/50 rounded-full animate-pulse"></span>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                {/* Bot typing indicator is removed */}
               </div>
             </ScrollArea>
 
@@ -199,14 +156,14 @@ const Chatbot: React.FC<ChatbotProps> = ({
                   onChange={onInputChange}
                   onKeyDown={handleKeyDown}
                   className="flex-grow bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none text-sm h-8"
-                  disabled={isBotTyping}
+                  maxLength={250}
                 />
-                <Button 
-                  size="icon" 
-                  onClick={onSendMessage} 
-                  disabled={!inputValue.trim() || isBotTyping}
+                <Button
+                  size="icon"
+                  onClick={onSendMessage}
+                  disabled={!inputValue.trim()}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-8 h-8"
-                  aria-label="Send message"
+                  aria-label="Send feedback"
                 >
                   <SendHorizontal className="h-4 w-4" />
                 </Button>
@@ -221,7 +178,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
         size="icon"
         className="fixed bottom-4 right-4 sm:right-6 md:right-8 h-14 w-14 rounded-full shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground z-50"
         onClick={onToggle}
-        aria-label={isOpen ? "Close AI Assistant" : "Open AI Assistant"}
+        aria-label={isOpen ? "Close Feedback" : "Open Feedback"}
       >
         {isOpen ? <X className="h-7 w-7" /> : <BotIcon className="h-7 w-7" />}
       </Button>

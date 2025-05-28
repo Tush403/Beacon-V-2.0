@@ -12,16 +12,16 @@ import RoiComparisonTable from '@/components/RoiComparisonTable';
 import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput, ComparisonParameter, ChatMessage as ChatMessageType } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
-import { estimateEffort as estimateEffortAction, generateTestTypeSummary, askBeaconAssistant } from '@/actions/aiActions';
+import { estimateEffort as estimateEffortAction, generateTestTypeSummary } from '@/actions/aiActions'; // Removed askBeaconAssistant
 import type { GenerateTestTypeSummaryOutput, GenerateTestTypeSummaryInput } from '@/ai/flows/generate-test-type-summary';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Zap, BookOpenCheck, Bot, User } from 'lucide-react'; // Added User icon
+import { AlertCircle, Zap, BookOpenCheck, Bot, User } from 'lucide-react';
 import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
 import { cn } from '@/lib/utils';
-import Chatbot from '@/components/Chatbot';
+import Chatbot from '@/components/Chatbot'; // Renamed back to Chatbot for consistency
 
 const initialFilters: Filters = {
   applicationType: "",
@@ -43,20 +43,15 @@ const initialEstimatorInputs: EstimatorInputValues = {
   teamSize: 1,
 };
 
-// Chatbot initial messages
+// Feedback bot initial message
 const initialChatMessages: ChatMessageType[] = [
   {
-    id: 'welcome-1',
-    text: "Hello 👋 I'm Beacon Assistant. How can I help you today?",
+    id: 'feedback-welcome-1',
+    text: "Hi there! Please share your feedback or questions below (max 250 characters). We'll open your email client so you can send it to us.",
     sender: 'bot',
     timestamp: new Date(),
-    senderName: 'Beacon Assistant',
+    senderName: 'Beacon Support',
     avatarIcon: Bot,
-    quickReplies: [
-      "Learn more about Beacon",
-      "How do I choose a tool?",
-      "Get technical support",
-    ],
   },
 ];
 
@@ -83,11 +78,11 @@ export default function HomePage() {
 
   const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(true);
 
-  // Chatbot states
+  // Feedback bot states
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessageType[]>(initialChatMessages);
   const [chatInputValue, setChatInputValue] = useState('');
-  const [isBotTyping, setIsBotTyping] = useState(false);
+  // isBotTyping is removed
 
 
   useEffect(() => {
@@ -101,7 +96,7 @@ export default function HomePage() {
       document.body.style.overflow = '';
     }
     return () => {
-      document.body.style.overflow = ''; // Cleanup on unmount
+      document.body.style.overflow = '';
     };
   }, [showInitialReleaseNotes, isChatOpen]);
 
@@ -114,7 +109,7 @@ export default function HomePage() {
       if (filterType === 'codingRequirement' && value === 'AI/ML') {
         newFilters.codingLanguage = 'N/A';
       } else if (filterType === 'codingRequirement' && value !== 'AI/ML' && prevFilters.codingLanguage === 'N/A' && prevFilters.codingRequirement === 'AI/ML') {
-        newFilters.codingLanguage = ''; 
+        newFilters.codingLanguage = '';
       }
       return newFilters;
     });
@@ -260,69 +255,63 @@ export default function HomePage() {
     }
   };
 
-  // Chatbot handlers
+  // Feedback bot handlers
   const toggleChat = useCallback(() => setIsChatOpen(prev => !prev), []);
-  
+
   const handleChatInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setChatInputValue(e.target.value);
   }, []);
 
-  const processAndAddMessage = useCallback(async (text: string, sender: 'user' | 'bot', options: Partial<ChatMessageType> = {}) => {
-    const newMessage: ChatMessageType = {
-      id: Date.now().toString() + Math.random().toString(),
-      text,
-      sender,
-      timestamp: new Date(),
-      avatarIcon: sender === 'bot' ? Bot : User,
-      senderName: sender === 'bot' ? 'Beacon Assistant' : 'You',
-      ...options,
-    };
-    setChatMessages(prev => [...prev, newMessage]);
-    
-    if (sender === 'user' && !options.isError) {
-      setIsBotTyping(true);
-      try {
-        const historyForAI = chatMessages
-          .slice(-5) // Send last 5 messages as history
-          .map(msg => ({ role: msg.sender === 'bot' ? 'model' : 'user', content: msg.text }));
-
-        const aiResult = await askBeaconAssistant({ userMessage: text, history: historyForAI });
-
-        if ('error' in aiResult) {
-          processAndAddMessage(aiResult.error, 'bot', { isError: true, senderName: 'Error' });
-        } else {
-          processAndAddMessage(aiResult.botResponse, 'bot');
-        }
-      } catch (error) {
-        console.error("Error calling AI assistant:", error);
-        processAndAddMessage("Sorry, I'm having trouble connecting right now. Please try again later.", 'bot', { isError: true, senderName: 'Error' });
-      } finally {
-        setIsBotTyping(false);
-      }
-    }
-  }, [chatMessages]); // Added chatMessages to dependency array
-
   const handleSendMessage = useCallback(() => {
     if (!chatInputValue.trim()) return;
-    // Remove quick replies from the last message if any
-    setChatMessages(prevMessages => 
-      prevMessages.map((msg, index) => 
-        index === prevMessages.length - 1 ? { ...msg, quickReplies: undefined } : msg
-      )
-    );
-    processAndAddMessage(chatInputValue, 'user');
-    setChatInputValue('');
-  }, [chatInputValue, processAndAddMessage]);
 
-  const handleQuickReplyClick = useCallback((reply: string) => {
-     // Remove quick replies from the last message
-     setChatMessages(prevMessages => 
-      prevMessages.map((msg, index) => 
-        index === prevMessages.length - 1 ? { ...msg, quickReplies: undefined } : msg
-      )
-    );
-    processAndAddMessage(reply, 'user', { text: reply }); // Use the reply as text for the user message
-  }, [processAndAddMessage]);
+    const userMessage: ChatMessageType = {
+      id: Date.now().toString() + Math.random().toString(),
+      text: chatInputValue,
+      sender: 'user',
+      timestamp: new Date(),
+      avatarIcon: User,
+      senderName: 'You',
+    };
+    setChatMessages(prev => [...prev, userMessage]);
+
+    const feedbackText = chatInputValue.trim();
+    const recipientEmail = "tushardshinde21@gmail.com";
+    const subject = encodeURIComponent("Beacon App Feedback");
+    const body = encodeURIComponent(feedbackText);
+    const mailtoLink = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
+
+    try {
+        // Attempt to open mail client
+        window.location.href = mailtoLink;
+
+        const botConfirmationMessage: ChatMessageType = {
+            id: Date.now().toString() + (Math.random() + 1).toString(),
+            text: "Thank you for your feedback! Your email client should now be open for you to send it. If it didn't open, please copy your feedback and email us directly.",
+            sender: 'bot',
+            timestamp: new Date(),
+            avatarIcon: Bot,
+            senderName: 'Beacon Support',
+          };
+        setChatMessages(prev => [...prev, botConfirmationMessage]);
+
+    } catch (error) {
+        console.error("Failed to open mailto link:", error);
+        const botErrorMessage: ChatMessageType = {
+            id: Date.now().toString() + (Math.random() + 2).toString(),
+            text: "Sorry, we couldn't automatically open your email client. Please copy your feedback and email us at " + recipientEmail,
+            sender: 'bot',
+            timestamp: new Date(),
+            avatarIcon: Bot,
+            senderName: 'Beacon Support',
+            isError: true,
+          };
+        setChatMessages(prev => [...prev, botErrorMessage]);
+    }
+
+    setChatInputValue('');
+  }, [chatInputValue]);
+
 
   return (
     <>
@@ -368,7 +357,7 @@ export default function HomePage() {
                       comparisonParameters={comparisonParametersData}
                   />
               )}
-               {tool1ForComparison && ( 
+               {tool1ForComparison && (
                 <div className="flex flex-wrap justify-center items-center pt-4 gap-4">
                     <Button
                       onClick={() => setShowRoiChartDialog(true)}
@@ -486,7 +475,7 @@ export default function HomePage() {
         </DialogContent>
       </Dialog>
 
-      {/* Chatbot Component */}
+      {/* Feedback Bot Component */}
       <Chatbot
         isOpen={isChatOpen}
         onToggle={toggleChat}
@@ -494,12 +483,9 @@ export default function HomePage() {
         inputValue={chatInputValue}
         onInputChange={handleChatInputChange}
         onSendMessage={handleSendMessage}
-        onQuickReplyClick={handleQuickReplyClick}
-        isBotTyping={isBotTyping}
-        initialPlaceholder="Choose an option or type your message..."
+        // Removed props not needed for feedback bot
+        initialPlaceholder="Type your feedback (max 250 chars)..."
       />
     </>
   );
 }
-
-    

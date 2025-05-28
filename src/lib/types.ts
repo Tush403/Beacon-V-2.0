@@ -1,6 +1,6 @@
 
 import type { GenerateTestTypeSummaryInput as AiTrendSummaryInput } from '@/ai/flows/generate-test-type-summary';
-import type { ElementType } from 'react'; // Added ElementType for avatarIcon
+import type { ElementType } from 'react';
 
 export type ApplicationType = "Web" | "Mobile" | "API" | "Desktop" | "Backend";
 export type TestType = "UI Testing" | "API Testing" | "Performance Testing" | "Security Testing" | "Unit Testing" | "E2E Testing";
@@ -11,14 +11,14 @@ export type PricingModel = "Free" | "Freemium" | "Subscription" | "One-time Purc
 export type ReportingAnalytics = "Basic" | "Advanced" | "Customizable" | "Integration-friendly" | "Real-time";
 
 export interface RoiTimePoint {
-  month: number; 
-  roi: number;   
+  month: number;
+  roi: number;
 }
 
 export interface Tool {
   id: string;
   name: string;
-  score: number; 
+  score: number;
   logoUrl?: string;
   dataAiHint?: string;
   applicationTypes: ApplicationType[];
@@ -28,12 +28,12 @@ export interface Tool {
   codingLanguages: CodingLanguage[];
   pricingModels: PricingModel[];
   reportingAnalytics: ReportingAnalytics[];
-  
+
   strengths: string[];
   weaknesses: string[];
-  pdfLink: string; 
-  websiteUrl: string; 
-  
+  pdfLink: string;
+  websiteUrl: string;
+
   roiProjection: RoiTimePoint[];
 
   initialSetupTime: string;
@@ -98,14 +98,14 @@ export interface ComparisonParameter {
   label: string;
 }
 
-// Chatbot Message Type
+// ChatMessage type for feedback bot
 export interface ChatMessage {
   id: string;
   text: string;
   sender: 'user' | 'bot' | 'system';
   timestamp: Date;
-  quickReplies?: string[];
-  avatarIcon?: ElementType; // For custom icons like <Bot />
+  quickReplies?: never; // Quick replies are not used for the feedback bot
+  avatarIcon?: ElementType;
   senderName?: string;
   isError?: boolean;
 }
