@@ -6,24 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { MessageSquare, X, SendHorizontal, User, Bot as BotIcon, Edit3 } from 'lucide-react';
+import { X, SendHorizontal, User, Bot as BotIcon } from 'lucide-react'; // Renamed imported Bot to BotIcon to avoid conflict
 import { cn } from '@/lib/utils';
+import type { ChatMessage as ChatMessageType } from '@/lib/types'; // Ensure ChatMessageType is imported
 
-export interface ChatMessage {
-  id: string;
-  text: string;
-  sender: 'user' | 'bot' | 'system';
-  timestamp: Date;
-  quickReplies?: string[];
-  avatarIcon?: React.ElementType;
-  senderName?: string;
-  isError?: boolean;
-}
-
+// Interface for props from page.tsx
 interface ChatbotProps {
   isOpen: boolean;
   onToggle: () => void;
-  messages: ChatMessage[];
+  messages: ChatMessageType[];
   inputValue: string;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSendMessage: () => void;
@@ -63,7 +54,6 @@ const Chatbot: React.FC<ChatbotProps> = ({
   }, [messages, isBotTyping]);
 
   useEffect(() => {
-    // Update placeholder if the last message has quick replies
     const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
     if (lastMessage && lastMessage.sender === 'bot' && lastMessage.quickReplies && lastMessage.quickReplies.length > 0) {
       setCurrentPlaceholder("Choose an option");
@@ -80,14 +70,6 @@ const Chatbot: React.FC<ChatbotProps> = ({
       }
     }
   };
-  
-  const getInitials = (name: string) => {
-    const parts = name.split(' ');
-    if (parts.length > 1) {
-      return parts[0][0] + parts[parts.length - 1][0];
-    }
-    return name.substring(0, 2).toUpperCase();
-  };
 
   const handleChatWindowScroll = (event: React.WheelEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -95,30 +77,42 @@ const Chatbot: React.FC<ChatbotProps> = ({
 
   return (
     <>
-      {/* Chat Window */}
       {isOpen && (
         <div
           className={cn(
-            "fixed bottom-20 right-4 sm:right-6 md:right-8 w-[calc(100%-2rem)] sm:w-96 md:w-[360px] max-h-[70vh] sm:max-h-[500px] md:max-h-[600px] bg-card text-card-foreground border border-border/50 rounded-xl shadow-2xl flex flex-col transition-all duration-300 ease-out z-50 overflow-hidden",
+            "fixed bottom-20 right-4 sm:right-6 md:right-8 w-[calc(100%-2rem)] sm:w-96 md:w-[380px] max-h-[70vh] sm:max-h-[560px] md:max-h-[600px] bg-card text-card-foreground border border-border/50 rounded-xl shadow-2xl flex flex-col transition-all duration-300 ease-out z-50 overflow-hidden",
             "animate-in slide-in-from-bottom-12 fade-in-0"
           )}
           onWheel={handleChatWindowScroll}
         >
-          {/* Header Section (Katalon Style) */}
-          <div className="bg-primary text-primary-foreground p-3 flex items-center space-x-3 rounded-t-xl">
-            <Avatar className="h-9 w-9 border-2 border-primary-foreground/50">
-              {/* Placeholder for a more specific bot avatar */}
-              <AvatarFallback className="bg-primary-foreground text-primary">
-                <BotIcon className="h-5 w-5" />
-              </AvatarFallback>
-            </Avatar>
-            <h3 className="text-lg font-semibold">Beacon Assistant</h3>
+          <div className="bg-primary text-primary-foreground p-4 flex items-center space-x-3 rounded-t-xl relative">
+            <div className="flex -space-x-3">
+              <Avatar className="h-9 w-9 border-2 border-primary-foreground/50 ring-2 ring-primary">
+                <AvatarImage src="https://placehold.co/40x40/7C3AED/FFFFFF.png?text=B" alt="Bot Avatar 1" data-ai-hint="bot avatar purple" />
+                <AvatarFallback>B</AvatarFallback>
+              </Avatar>
+              <Avatar className="h-9 w-9 border-2 border-primary-foreground/50 ring-2 ring-primary">
+                <AvatarImage src="https://placehold.co/40x40/3B82F6/FFFFFF.png?text=A" alt="Bot Avatar 2" data-ai-hint="bot avatar blue"/>
+                <AvatarFallback>A</AvatarFallback>
+              </Avatar>
+               <Avatar className="h-9 w-9 border-2 border-primary-foreground/50 ring-2 ring-primary">
+                 <AvatarImage src="https://placehold.co/40x40/10B981/FFFFFF.png?text=C" alt="Bot Avatar 3" data-ai-hint="bot avatar green"/>
+                <AvatarFallback>C</AvatarFallback>
+              </Avatar>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">Hi there 👋</h3>
+              <p className="text-sm opacity-90">How can we help?</p>
+            </div>
+            <Button variant="ghost" size="icon" onClick={onToggle} className="absolute top-2 right-2 text-primary-foreground hover:bg-primary-foreground/10 h-8 w-8">
+              <X className="h-5 w-5" />
+              <span className="sr-only">Close chat</span>
+            </Button>
           </div>
 
-          {/* Messages Area & Input */}
           <div className="flex flex-col flex-grow bg-card min-h-0">
             <ScrollArea className="flex-grow min-h-0" ref={scrollAreaRef}>
-              <div className="p-4 space-y-3">
+              <div className="p-3 space-y-3"> {/* Ensure this div exists for proper scrolling */}
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
@@ -195,7 +189,6 @@ const Chatbot: React.FC<ChatbotProps> = ({
               </div>
             </ScrollArea>
 
-            {/* Input Area */}
             <div className="p-3 border-t border-border/30 bg-card rounded-b-xl">
               <div className="flex items-center gap-2 bg-background rounded-full p-1 border border-input shadow-sm">
                 <Input
@@ -206,7 +199,7 @@ const Chatbot: React.FC<ChatbotProps> = ({
                   onChange={onInputChange}
                   onKeyDown={handleKeyDown}
                   className="flex-grow bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none text-sm h-8"
-                  disabled={isBotTyping && !(messages.length > 0 && messages[messages.length -1].quickReplies && messages[messages.length-1].quickReplies.length > 0) } // Only disable if bot typing and no quick replies
+                  disabled={isBotTyping}
                 />
                 <Button 
                   size="icon" 
@@ -223,15 +216,14 @@ const Chatbot: React.FC<ChatbotProps> = ({
         </div>
       )}
 
-      {/* FAB to toggle chat */}
       <Button
         variant="default"
         size="icon"
         className="fixed bottom-4 right-4 sm:right-6 md:right-8 h-14 w-14 rounded-full shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground z-50"
         onClick={onToggle}
-        aria-label="Toggle Chat"
+        aria-label={isOpen ? "Close AI Assistant" : "Open AI Assistant"}
       >
-        {isOpen ? <X className="h-7 w-7" /> : <MessageSquare className="h-7 w-7" />}
+        {isOpen ? <X className="h-7 w-7" /> : <BotIcon className="h-7 w-7" />}
       </Button>
     </>
   );
