@@ -5,8 +5,8 @@ import React, { useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { X, SendHorizontal, User, Bot as BotIcon } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { X, SendHorizontal, User, Bot as BotIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ChatMessage as ChatMessageType } from '@/lib/types';
 
@@ -17,8 +17,7 @@ interface ChatbotProps {
   inputValue: string;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSendMessage: () => void;
-  // onQuickReplyClick is no longer needed for simple feedback bot
-  // isBotTyping is no longer needed
+  isSending: boolean; // Changed from isBotTyping
   initialPlaceholder?: string;
 }
 
@@ -29,11 +28,11 @@ const Chatbot: React.FC<ChatbotProps> = ({
   inputValue,
   onInputChange,
   onSendMessage,
+  isSending, // Changed from isBotTyping
   initialPlaceholder = "Type your feedback (max 250 chars)...",
 }) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [currentPlaceholder, setCurrentPlaceholder] = React.useState(initialPlaceholder);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -48,17 +47,12 @@ const Chatbot: React.FC<ChatbotProps> = ({
         scrollViewport.scrollTop = scrollViewport.scrollHeight;
       }
     }
-  }, [messages]);
-
-  useEffect(() => {
-    // Placeholder might not need to change dynamically anymore
-    setCurrentPlaceholder(initialPlaceholder);
-  }, [initialPlaceholder]);
+  }, [messages, isSending]); // Added isSending to dependencies
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if (inputValue.trim()) {
+      if (inputValue.trim() && !isSending) {
         onSendMessage();
       }
     }
@@ -131,7 +125,6 @@ const Chatbot: React.FC<ChatbotProps> = ({
                          </p>
                       )}
                        <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                      {/* Quick replies are removed for feedback bot */}
                     </div>
                      {msg.sender === 'user' && (
                       <Avatar className="h-7 w-7 self-start shrink-0">
@@ -142,7 +135,12 @@ const Chatbot: React.FC<ChatbotProps> = ({
                     )}
                   </div>
                 ))}
-                {/* Bot typing indicator is removed */}
+                {isSending && (
+                  <div className="flex items-center justify-center p-2 text-xs text-muted-foreground">
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Sending feedback...
+                  </div>
+                )}
               </div>
             </ScrollArea>
 
@@ -151,21 +149,22 @@ const Chatbot: React.FC<ChatbotProps> = ({
                 <Input
                   ref={inputRef}
                   type="text"
-                  placeholder={currentPlaceholder}
+                  placeholder={initialPlaceholder}
                   value={inputValue}
                   onChange={onInputChange}
                   onKeyDown={handleKeyDown}
                   className="flex-grow bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none text-sm h-8"
                   maxLength={250}
+                  disabled={isSending}
                 />
                 <Button
                   size="icon"
                   onClick={onSendMessage}
-                  disabled={!inputValue.trim()}
+                  disabled={!inputValue.trim() || isSending}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-8 h-8"
                   aria-label="Send feedback"
                 >
-                  <SendHorizontal className="h-4 w-4" />
+                  {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <SendHorizontal className="h-4 w-4" />}
                 </Button>
               </div>
             </div>

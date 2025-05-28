@@ -9,10 +9,10 @@ import ToolResults from '@/components/ToolResults';
 import RoiChart from '@/components/RoiChart';
 import EffortEstimator from '@/components/EffortEstimator';
 import RoiComparisonTable from '@/components/RoiComparisonTable';
-import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput, ComparisonParameter, ChatMessage as ChatMessageType } from '@/lib/types';
+import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput, ChatMessage as ChatMessageType } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
-import { estimateEffort as estimateEffortAction, generateTestTypeSummary } from '@/actions/aiActions'; // Removed askBeaconAssistant
+import { estimateEffort as estimateEffortAction, generateTestTypeSummary, submitFeedback } from '@/actions/aiActions';
 import type { GenerateTestTypeSummaryOutput, GenerateTestTypeSummaryInput } from '@/ai/flows/generate-test-type-summary';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,7 @@ import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/component
 import { AlertCircle, Zap, BookOpenCheck, Bot, User } from 'lucide-react';
 import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
 import { cn } from '@/lib/utils';
-import Chatbot from '@/components/Chatbot'; // Renamed back to Chatbot for consistency
+import Chatbot from '@/components/Chatbot';
 
 const initialFilters: Filters = {
   applicationType: "",
@@ -43,11 +43,10 @@ const initialEstimatorInputs: EstimatorInputValues = {
   teamSize: 1,
 };
 
-// Feedback bot initial message
 const initialChatMessages: ChatMessageType[] = [
   {
     id: 'feedback-welcome-1',
-    text: "Hi there! Please share your feedback or questions below (max 250 characters). We'll open your email client so you can send it to us.",
+    text: "Hi there! Please share your feedback or questions below (max 250 characters).",
     sender: 'bot',
     timestamp: new Date(),
     senderName: 'Beacon Support',
@@ -78,11 +77,10 @@ export default function HomePage() {
 
   const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(true);
 
-  // Feedback bot states
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessageType[]>(initialChatMessages);
   const [chatInputValue, setChatInputValue] = useState('');
-  // isBotTyping is removed
+  const [isSendingFeedback, setIsSendingFeedback] = useState(false);
 
 
   useEffect(() => {
@@ -255,15 +253,14 @@ export default function HomePage() {
     }
   };
 
-  // Feedback bot handlers
   const toggleChat = useCallback(() => setIsChatOpen(prev => !prev), []);
 
   const handleChatInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setChatInputValue(e.target.value);
   }, []);
 
-  const handleSendMessage = useCallback(() => {
-    if (!chatInputValue.trim()) return;
+  const handleSendMessage = useCallback(async () => {
+    if (!chatInputValue.trim() || isSendingFeedback) return;
 
     const userMessage: ChatMessageType = {
       id: Date.now().toString() + Math.random().toString(),
@@ -274,43 +271,36 @@ export default function HomePage() {
       senderName: 'You',
     };
     setChatMessages(prev => [...prev, userMessage]);
-
-    const feedbackText = chatInputValue.trim();
-    const recipientEmail = "tushardshinde21@gmail.com";
-    const subject = encodeURIComponent("Beacon App Feedback");
-    const body = encodeURIComponent(feedbackText);
-    const mailtoLink = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
-
-    try {
-        // Attempt to open mail client
-        window.location.href = mailtoLink;
-
-        const botConfirmationMessage: ChatMessageType = {
-            id: Date.now().toString() + (Math.random() + 1).toString(),
-            text: "Thank you for your feedback! Your email client should now be open for you to send it. If it didn't open, please copy your feedback and email us directly.",
-            sender: 'bot',
-            timestamp: new Date(),
-            avatarIcon: Bot,
-            senderName: 'Beacon Support',
-          };
-        setChatMessages(prev => [...prev, botConfirmationMessage]);
-
-    } catch (error) {
-        console.error("Failed to open mailto link:", error);
-        const botErrorMessage: ChatMessageType = {
-            id: Date.now().toString() + (Math.random() + 2).toString(),
-            text: "Sorry, we couldn't automatically open your email client. Please copy your feedback and email us at " + recipientEmail,
-            sender: 'bot',
-            timestamp: new Date(),
-            avatarIcon: Bot,
-            senderName: 'Beacon Support',
-            isError: true,
-          };
-        setChatMessages(prev => [...prev, botErrorMessage]);
-    }
-
+    const currentInput = chatInputValue;
     setChatInputValue('');
-  }, [chatInputValue]);
+    setIsSendingFeedback(true);
+
+    const result = await submitFeedback({ message: currentInput });
+    setIsSendingFeedback(false);
+
+    if (result.success) {
+      const botConfirmationMessage: ChatMessageType = {
+        id: Date.now().toString() + (Math.random() + 1).toString(),
+        text: "Thank you for your feedback! It has been submitted.",
+        sender: 'bot',
+        timestamp: new Date(),
+        avatarIcon: Bot,
+        senderName: 'Beacon Support',
+      };
+      setChatMessages(prev => [...prev, botConfirmationMessage]);
+    } else {
+      const botErrorMessage: ChatMessageType = {
+        id: Date.now().toString() + (Math.random() + 2).toString(),
+        text: result.error || "Sorry, we couldn't submit your feedback at this time. Please try again later.",
+        sender: 'bot',
+        timestamp: new Date(),
+        avatarIcon: Bot,
+        senderName: 'Beacon Support',
+        isError: true,
+      };
+      setChatMessages(prev => [...prev, botErrorMessage]);
+    }
+  }, [chatInputValue, isSendingFeedback]);
 
 
   return (
@@ -475,7 +465,6 @@ export default function HomePage() {
         </DialogContent>
       </Dialog>
 
-      {/* Feedback Bot Component */}
       <Chatbot
         isOpen={isChatOpen}
         onToggle={toggleChat}
@@ -483,7 +472,7 @@ export default function HomePage() {
         inputValue={chatInputValue}
         onInputChange={handleChatInputChange}
         onSendMessage={handleSendMessage}
-        // Removed props not needed for feedback bot
+        isSending={isSendingFeedback}
         initialPlaceholder="Type your feedback (max 250 chars)..."
       />
     </>

@@ -109,3 +109,14 @@ export interface ChatMessage {
   senderName?: string;
   isError?: boolean;
 }
+
+// Input for the feedback submission action
+export interface SubmitFeedbackInput {
+  message: string;
+}
+
+// Output for the feedback submission action
+export interface SubmitFeedbackOutput {
+  success: boolean;
+  error?: string;
+}
