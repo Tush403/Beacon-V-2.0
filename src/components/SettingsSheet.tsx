@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Sheet,
   SheetClose,
@@ -11,14 +11,23 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Settings, Palette, Mail, Search, LogIn, Menu as MenuIcon, Sun, Moon, ChevronLeft, BookOpenCheck } from 'lucide-react';
+import { Settings, Palette, Mail, Search, LogIn, Menu as MenuIcon, Sun, Moon, ChevronLeft, BookOpenCheck, Star, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { mockToolsData } from '@/lib/data';
-import type { Tool } from '@/lib/types';
+import { mockToolsData } from '@/lib/data'; // Assuming mockToolsData is here
+import type { Tool } from '@/lib/types'; // Assuming Tool type is here
 import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
 
 interface SettingsSheetProps {
@@ -29,18 +38,54 @@ interface SettingsSheetProps {
 
 const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initialView = 'main' }) => {
   const [currentView, setCurrentView] = useState<'main' | 'releaseNotes' | 'searchTool'>(initialView);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<Tool[]>([]);
-  
+
+  const [selectedToolForPopup, setSelectedToolForPopup] = useState<Tool | null>(null);
+  const [showToolPopup, setShowToolPopup] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme');
+      const initialIsDarkMode = savedTheme === 'dark' || 
+                                (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      setIsDarkMode(initialIsDarkMode);
+      if (initialIsDarkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  }, []);
+
+  const handleThemeToggle = useCallback(() => {
+    const newIsDarkMode = !isDarkMode;
+    setIsDarkMode(newIsDarkMode);
+    if (newIsDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+    // handleSheetOpenChange(false); // Optionally close sheet after theme change
+  }, [isDarkMode]);
+
+
   const handleSheetOpenChange = (sheetOpen: boolean) => {
-    onOpenChange(sheetOpen);
+    onOpenChange(sheetOpen); // Propagate to parent (Header.tsx)
     if (!sheetOpen) {
-      setCurrentView('main'); 
+      // Reset internal state when sheet is closed
+      setCurrentView('main');
       setSearchTerm('');
       setSearchResults([]);
+      setShowToolPopup(false); 
+      setSelectedToolForPopup(null);
     }
   };
-
+  
+  // Effect to update currentView if initialView prop changes while sheet is open
   useEffect(() => {
     if (open && initialView && currentView !== initialView) {
       setCurrentView(initialView);
@@ -81,19 +126,21 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
     }
   };
 
-  const navigateBackToMain = () => {
-    setCurrentView('main');
-    setSearchTerm('');
-    setSearchResults([]);
+  const navigateToView = (view: 'main' | 'releaseNotes' | 'searchTool') => {
+    setCurrentView(view);
+    if (view !== 'searchTool') {
+      setSearchTerm('');
+      setSearchResults([]);
+    }
   };
 
-  const ReleaseNotesView: React.FC = () => (
-    <ScrollArea className="flex-1 h-full p-4">
+  const ReleaseNotesContent: React.FC = () => (
+    <ScrollArea className="flex-1 h-full p-4"> {/* Added padding here */}
       <ReleaseNotesDisplay />
     </ScrollArea>
   );
 
-  const SearchToolView: React.FC = () => (
+  const SearchToolContent: React.FC = () => (
     <div className="flex flex-col h-full p-4 pt-2 space-y-4">
       <Input
         type="text"
@@ -102,20 +149,20 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
         onChange={(e) => setSearchTerm(e.target.value)}
         className="bg-background/80 border-border/70 shadow-sm"
       />
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 min-h-0"> {/* Ensure this container can shrink */}
         {searchTerm.trim() !== '' && searchResults.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-4">No tools found matching your search.</p>
         )}
         {searchResults.length > 0 && (
-          <ScrollArea className="h-[calc(100%-2rem)]"> {/* Adjust height considering the input field */}
+          <ScrollArea className="h-full"> {/* Use h-full for ScrollArea */}
             <ul className="space-y-1 pr-2">
               {searchResults.map(tool => (
                 <li 
                   key={tool.id} 
                   className="p-2.5 hover:bg-muted/50 rounded-md cursor-pointer border-b border-border/30 transition-colors"
                   onClick={() => {
-                    console.log("Selected tool:", tool.name);
-                    handleSheetOpenChange(false); 
+                    setSelectedToolForPopup(tool);
+                    setShowToolPopup(true);
                   }}
                 >
                   <div className="font-medium text-foreground">{tool.name}</div>
@@ -132,14 +179,13 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
     </div>
   );
 
-
   return (
     <Sheet open={open} onOpenChange={handleSheetOpenChange}>
       <SheetContent side="right" className="w-[350px] sm:w-[400px] flex flex-col bg-card text-card-foreground p-0">
-        <SheetHeader className="p-6 pb-2 border-b">
-           <SheetTitle className="flex items-center text-xl text-primary">
+        <SheetHeader className="p-6 pb-2 border-b border-border">
+          <SheetTitle className="flex items-center text-xl text-primary">
             {currentView !== 'main' && (
-              <Button variant="ghost" size="icon" className="mr-2 -ml-2 h-8 w-8 text-primary hover:bg-primary/10" onClick={navigateBackToMain}>
+              <Button variant="ghost" size="icon" className="mr-2 -ml-2 h-8 w-8 text-primary hover:bg-primary/10" onClick={() => navigateToView('main')}>
                 <ChevronLeft className="h-5 w-5" />
                 <span className="sr-only">Back to Menu</span>
               </Button>
@@ -158,21 +204,30 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
         </SheetHeader>
 
         <div className={cn("flex-1 overflow-y-auto", 
-          currentView === 'main' ? "p-4 space-y-1" : 
-          (currentView === 'releaseNotes' || currentView === 'searchTool') ? "p-0" : ""
+            currentView === 'main' ? "p-4 space-y-1" : "p-0" // No padding for sub-views, they handle their own
         )}>
           {currentView === 'main' && (
             <>
               <Button 
                 variant="ghost" 
                 className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md"
-                onClick={() => setCurrentView('releaseNotes')}
+                onClick={() => navigateToView('releaseNotes')}
               >
                 <BookOpenCheck className="mr-3 h-5 w-5 text-muted-foreground" />
                 Acknowledgement
               </Button>
               <Separator className="my-2" />
-              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => setCurrentView('searchTool')}>
+              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={handleThemeToggle}>
+                {isDarkMode ? <Sun className="mr-3 h-5 w-5 text-muted-foreground" /> : <Moon className="mr-3 h-5 w-5 text-muted-foreground" />}
+                {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              </Button>
+              <Separator className="my-2" />
+              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => handleOptionClick('Write Us')}>
+                <Mail className="mr-3 h-5 w-5 text-muted-foreground" />
+                Write Us
+              </Button>
+              <Separator className="my-2" />
+              <Button variant="ghost" className="w-full justify-start text-left py-2 px-3 text-sm font-normal hover:bg-accent/10 rounded-md" onClick={() => navigateToView('searchTool')}>
                 <Search className="mr-3 h-5 w-5 text-muted-foreground" />
                 Search Tool
               </Button>
@@ -184,13 +239,8 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
             </>
           )}
 
-          {currentView === 'releaseNotes' && (
-             <ReleaseNotesView />
-          )}
-
-          {currentView === 'searchTool' && (
-            <SearchToolView />
-          )}
+          {currentView === 'releaseNotes' && <ReleaseNotesContent />}
+          {currentView === 'searchTool' && <SearchToolContent />}
         </div>
 
         <SheetFooter className="p-6 pt-4 border-t border-border">
@@ -201,8 +251,70 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
           </SheetClose>
         </SheetFooter>
       </SheetContent>
+
+      {/* Tool Details Popup Dialog */}
+      {selectedToolForPopup && (
+        <Dialog open={showToolPopup} onOpenChange={(open) => {
+          setShowToolPopup(open);
+          if (!open) {
+            setSelectedToolForPopup(null); // Clear selected tool when dialog closes
+          }
+        }}>
+          <DialogContent className="sm:max-w-lg bg-card text-card-foreground border-border shadow-xl rounded-lg">
+            <DialogHeader className="p-4 border-b border-border">
+              <DialogTitle className="flex items-center text-lg text-primary">
+                {/* Placeholder for tool icon - could use selectedToolForPopup.logoUrl if available and configured */}
+                <Star className="mr-2 h-5 w-5 text-accent" /> 
+                {selectedToolForPopup.name}
+              </DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground">
+                Overall Score: {selectedToolForPopup.score.toFixed(1)}/10
+              </DialogDescription>
+            </DialogHeader>
+            <div className="p-4 space-y-4 text-sm max-h-[60vh] overflow-y-auto">
+              <div>
+                <h4 className="font-semibold text-foreground mb-1 flex items-center">
+                  <CheckCircle2 className="mr-2 h-4 w-4 text-positive" /> Key Strengths:
+                </h4>
+                <ul className="list-disc list-inside pl-5 text-muted-foreground space-y-0.5">
+                  {selectedToolForPopup.strengths.slice(0, 3).map((s, i) => <li key={`s-${i}`}>{s}</li>)} 
+                  {selectedToolForPopup.strengths.length > 3 && <li className="italic">...and more</li>}
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1 flex items-center">
+                  <XCircle className="mr-2 h-4 w-4 text-destructive" /> Key Weaknesses:
+                </h4>
+                <ul className="list-disc list-inside pl-5 text-muted-foreground space-y-0.5">
+                  {selectedToolForPopup.weaknesses.slice(0, 3).map((w, i) => <li key={`w-${i}`}>{w}</li>)}
+                  {selectedToolForPopup.weaknesses.length > 3 && <li className="italic">...and more</li>}
+                </ul>
+              </div>
+              <Separator className="my-3"/>
+              <div>
+                <p><strong className="text-foreground/90">Primary Application Types:</strong> {selectedToolForPopup.applicationTypes.slice(0,2).join(', ')}</p>
+                <p><strong className="text-foreground/90">Primary Test Types:</strong> {selectedToolForPopup.testTypes.slice(0,2).join(', ')}</p>
+              </div>
+            </div>
+            <DialogFooter className="p-4 border-t border-border sm:justify-between gap-2">
+              {selectedToolForPopup.websiteUrl && (
+                <Button variant="outline" asChild className="w-full sm:w-auto">
+                  <a href={selectedToolForPopup.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
+                    <ExternalLink className="mr-2 h-4 w-4" /> Visit Website
+                  </a>
+                </Button>
+              )}
+              <DialogClose asChild>
+                <Button type="button" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">Close</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </Sheet>
   );
 };
 
 export default SettingsSheet;
+
+    
