@@ -2,10 +2,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck } from 'lucide-react';
+import { Cog, Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck } from 'lucide-react'; // Added Cog
 import SettingsSheet from './SettingsSheet';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button'; // Ensure Button is imported
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -57,9 +57,7 @@ const Header: React.FC = () => {
     setIsSettingsSheetOpen(true);
   };
 
-  // This function is no longer directly called by the BookOpenCheck icon for main settings menu.
-  // Kept if SettingsSheet needs to be opened to 'main' view by other means, though current setup only uses 'searchTool'.
-  const handleOpenSettingsMenu = () => {
+  const handleOpenSettingsMenu = () => { // This is triggered by BookOpenCheck icon now
     setSettingsSheetInitialView('main');
     setIsSettingsSheetOpen(true);
   };
@@ -68,44 +66,7 @@ const Header: React.FC = () => {
     <>
       <header className="bg-gradient-to-r from-[hsl(255,65%,50%)] to-[hsl(295,75%,70%)] text-primary-foreground shadow-lg backdrop-blur-md bg-opacity-90 sticky top-0 z-50 px-4 md:px-8 py-3 flex items-center justify-between">
         <Link href="https://www.taodigitalsolutions.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-x-2 sm:gap-x-3 group">
-          <svg
-            className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground transition-transform duration-300 ease-in-out group-hover:scale-110"
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <g id="pixel-part">
-              <rect x="10" y="30" width="10" height="10" fill="#0D47A1" />
-              <rect x="20" y="20" width="10" height="10" fill="#0D47A1" />
-              <rect x="20" y="40" width="10" height="10" fill="#1976D2" />
-              <rect x="30" y="10" width="10" height="10" fill="#0D47A1" />
-              <rect x="30" y="30" width="10" height="10" fill="#1976D2" />
-              <rect x="30" y="50" width="10" height="10" fill="#90CAF9" />
-              <rect x="40" y="20" width="10" height="10" fill="#1976D2" />
-              <rect x="40" y="40" width="10" height="10" fill="#90CAF9" />
-              <rect x="40" y="60" width="10" height="10" fill="#FFB74D" />
-              <rect x="50" y="30" width="10" height="10" fill="#90CAF9" />
-              <rect x="50" y="50" width="10" height="10" fill="#FFB74D" />
-              <rect x="50" y="70" width="10" height="10" fill="#81C784" />
-            </g>
-            <g
-              id="gear-part"
-              transform="translate(55, 35)"
-              className="animate-spin-slow origin-[0px_0px]"
-            >
-              <path
-                d="M0 -25C13.8071 -25 25 -13.8071 25 0C25 13.8071 13.8071 25 0 25V20C11.0457 20 20 11.0457 20 0C20 -11.0457 11.0457 -20 0 -20V-25Z"
-                fill="currentColor"
-              />
-              <path d="M-3 -28 L3 -28 L3 -22 L-3 -22 Z" fill="currentColor" />
-              <path d="M26.86 -9.5 L22.5 -4.5 L18.14 -9.5 Z" transform="rotate(30 0 0)" fill="currentColor" />
-              <path d="M26.86 -9.5 L22.5 -4.5 L18.14 -9.5 Z" transform="rotate(60 0 0)" fill="currentColor" />
-              <path d="M26.86 -9.5 L22.5 -4.5 L18.14 -9.5 Z" transform="rotate(90 0 0)" fill="currentColor" />
-              <path d="M26.86 -9.5 L22.5 -4.5 L18.14 -9.5 Z" transform="rotate(120 0 0)" fill="currentColor" />
-              <path d="M-3 28 L3 28 L3 22 L-3 22 Z" transform="rotate(180 0 0)" fill="currentColor" />
-            </g>
-          </svg>
+          <Cog className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground animate-spin-slow" aria-hidden="true" />
           <div>
             <span className="block text-xl sm:text-2xl font-bold tracking-tight text-primary-foreground">
               TAO DIGITAL
@@ -155,7 +116,6 @@ const Header: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* SettingsSheet is still here for the Search functionality */}
       <SettingsSheet
         open={isSettingsSheetOpen}
         onOpenChange={setIsSettingsSheetOpen}
