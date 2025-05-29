@@ -135,12 +135,12 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
   };
 
   const ReleaseNotesContent: React.FC = () => (
-    <ScrollArea className="flex-1 h-full p-4"> {/* Added padding here */}
+    <ScrollArea className="h-full p-4">
       <ReleaseNotesDisplay />
     </ScrollArea>
   );
 
-  const SearchToolContent: React.FC = () => (
+  const SearchToolView: React.FC = () => (
     <div className="flex flex-col h-full p-4 pt-2 space-y-4">
       <Input
         type="text"
@@ -149,12 +149,12 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
         onChange={(e) => setSearchTerm(e.target.value)}
         className="bg-background/80 border-border/70 shadow-sm"
       />
-      <div className="flex-1 min-h-0"> {/* Ensure this container can shrink */}
+      <div className="flex-1 min-h-0">
         {searchTerm.trim() !== '' && searchResults.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-4">No tools found matching your search.</p>
         )}
         {searchResults.length > 0 && (
-          <ScrollArea className="h-full"> {/* Use h-full for ScrollArea */}
+          <ScrollArea className="h-full">
             <ul className="space-y-1 pr-2">
               {searchResults.map(tool => (
                 <li 
@@ -185,7 +185,20 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
         <SheetHeader className="p-6 pb-2 border-b border-border">
           <SheetTitle className="flex items-center text-xl text-primary">
             {currentView !== 'main' && (
-              <Button variant="ghost" size="icon" className="mr-2 -ml-2 h-8 w-8 text-primary hover:bg-primary/10" onClick={() => navigateToView('main')}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="mr-2 -ml-2 h-8 w-8 text-primary hover:bg-primary/10"
+                onClick={() => {
+                  setCurrentView('main');
+                  if (currentView === 'searchTool') {
+                    setSearchTerm('');
+                    setSearchResults([]);
+                    setShowToolPopup(false); 
+                    setSelectedToolForPopup(null);
+                  }
+                }}
+              >
                 <ChevronLeft className="h-5 w-5" />
                 <span className="sr-only">Back to Menu</span>
               </Button>
@@ -204,7 +217,7 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
         </SheetHeader>
 
         <div className={cn("flex-1 overflow-y-auto", 
-            currentView === 'main' ? "p-4 space-y-1" : "p-0" // No padding for sub-views, they handle their own
+            (currentView === 'main') ? "p-4 space-y-1" : "p-0" 
         )}>
           {currentView === 'main' && (
             <>
@@ -240,7 +253,7 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
           )}
 
           {currentView === 'releaseNotes' && <ReleaseNotesContent />}
-          {currentView === 'searchTool' && <SearchToolContent />}
+          {currentView === 'searchTool' && <SearchToolView />}
         </div>
 
         <SheetFooter className="p-6 pt-4 border-t border-border">
@@ -263,7 +276,6 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
           <DialogContent className="sm:max-w-lg bg-card text-card-foreground border-border shadow-xl rounded-lg">
             <DialogHeader className="p-4 border-b border-border">
               <DialogTitle className="flex items-center text-lg text-primary">
-                {/* Placeholder for tool icon - could use selectedToolForPopup.logoUrl if available and configured */}
                 <Star className="mr-2 h-5 w-5 text-accent" /> 
                 {selectedToolForPopup.name}
               </DialogTitle>
