@@ -1,12 +1,13 @@
 
-"use client"; // Add this because useEffect is used
+"use client"; 
 
 import type {Metadata} from 'next';
 import {Geist, Geist_Mono} from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import CookieConsentBanner from '@/components/CookieConsentBanner'; // Import the banner
-import React, { useEffect } from 'react'; // Import useEffect
+import CookieConsentBanner from '@/components/CookieConsentBanner'; 
+import React, { useEffect } from 'react'; 
+import { usePathname, useRouter } from 'next/navigation'; // Added useRouter and usePathname
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -18,31 +19,40 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-// export const metadata: Metadata = { // Cannot export metadata from a client component
-//   title: 'Beacon - Automatic Tool Picker',
-//   description: 'Beacon: Find the best test automation tools tailored to your needs.',
-// };
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
+  const pathname = usePathname();
+
   useEffect(() => {
     // Apply theme from localStorage on initial client load
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
-      // Default to light theme or if 'light' is explicitly saved
       document.documentElement.classList.remove('dark');
     }
   }, []);
 
+  useEffect(() => {
+    // Check if the current navigation was a reload
+    // This check needs to be client-side only.
+    if (typeof window !== 'undefined' && window.performance) {
+      const navigationEntries = window.performance.getEntriesByType("navigation");
+      if (navigationEntries.length > 0 && (navigationEntries[0] as PerformanceNavigationTiming).type === "reload") {
+        if (pathname !== '/') {
+          router.push('/');
+        }
+      }
+    }
+  }, [pathname, router]); // Rerun if pathname or router changes, though primarily for initial check
+
   return (
     <html lang="en">
       <head>
-        {/* Metadata can be placed directly in head for client components or managed differently */}
         <title>Beacon - Automatic Tool Picker</title>
         <meta name="description" content="Beacon: Find the best test automation tools tailored to your needs." />
       </head>
