@@ -18,8 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Zap, BookOpenCheck, User } from 'lucide-react';
-import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
+import { AlertCircle, Zap, User } from 'lucide-react'; // Removed BookOpenCheck as it's not directly used here anymore for initial popup
 import { cn } from '@/lib/utils';
 import BackToTopButton from '@/components/BackToTopButton';
 
@@ -65,23 +64,12 @@ export default function DashboardPage() {
   const [aiTrendSummaryError, setAiTrendSummaryError] = useState<string | null>(null);
   const [showAiTrendSummaryDialog, setShowAiTrendSummaryDialog] = useState<boolean>(false);
 
-  const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(true);
-
+  // Removed showInitialReleaseNotes and related useEffect for blurring background
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
   }, []);
 
-  useEffect(() => {
-    if (showInitialReleaseNotes) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = ''; // Ensure reset on component unmount
-    };
-  }, [showInitialReleaseNotes]);
 
   const handleFilterChange = useCallback(<K extends keyof Filters>(filterType: K, value: Filters[K]) => {
     setFilters(prevFilters => {
@@ -241,12 +229,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <div
-        className={cn(
-          'flex flex-col min-h-screen',
-          (showInitialReleaseNotes) && 'filter backdrop-blur-sm pointer-events-none'
-        )}
-      >
+      <div className="flex flex-col min-h-screen"> {/* Removed conditional blurring classes */}
         <Header />
         <main className="flex-grow p-4 md:p-6 lg:p-8">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8 space-y-6 lg:space-y-0">
@@ -325,30 +308,7 @@ export default function DashboardPage() {
         </footer>
       </div>
 
-      <Dialog open={showInitialReleaseNotes} onOpenChange={(open) => { if (!open) setShowInitialReleaseNotes(false); }}>
-        <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="flex items-center text-primary">
-              <BookOpenCheck className="mr-2 h-5 w-5 text-accent" />
-              Beacon - Release Notes (V.2.0)
-            </DialogTitle>
-            <DialogDescription>
-              Welcome! Please review the latest updates before proceeding.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex-1 min-h-0 overflow-y-auto">
-            <ReleaseNotesDisplay />
-          </div>
-          <DialogFooter className="mt-auto pt-4">
-            <Button
-              onClick={() => setShowInitialReleaseNotes(false)}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-              Acknowledge & Continue
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Initial Release Notes Dialog Removed */}
 
       <Dialog open={showRoiChartDialog} onOpenChange={setShowRoiChartDialog}>
         <DialogContent className="sm:max-w-4xl">
@@ -400,10 +360,8 @@ export default function DashboardPage() {
           </div>
         </DialogContent>
       </Dialog>
-      
+
       <BackToTopButton />
     </>
   );
 }
-
-    
