@@ -18,7 +18,17 @@ interface RoiComparisonTableProps {
   comparisonParameters: ComparisonParameter[];
 }
 
-const CLEAR_TOOL_VALUE = "--clear-selection--"; // Special value for clearing selection
+const CLEAR_TOOL_VALUE = "--clear-selection--";
+
+const getToolDisplayValue = (tool: Tool | null, parameterKey: keyof Tool): string => {
+  if (!tool) return 'N/A';
+  const value = tool[parameterKey];
+  // Ensure that strengths and weaknesses which are arrays are joined, otherwise just convert to string
+  if (parameterKey === 'strengths' || parameterKey === 'weaknesses') {
+    return Array.isArray(value) ? value.join(', ') : String(value);
+  }
+  return Array.isArray(value) ? value.join(', ') : String(value);
+};
 
 const RoiComparisonTable: React.FC<RoiComparisonTableProps> = ({
   allTools,
@@ -64,19 +74,6 @@ const RoiComparisonTable: React.FC<RoiComparisonTableProps> = ({
     </div>
   );
 
-  const renderToolDataCell = (tool: Tool | null, parameterKey: keyof Tool) => {
-    const value = tool ? tool[parameterKey] : 'N/A';
-    const displayValue = Array.isArray(value) ? value.join(', ') : String(value);
-    return (
-      <div className={cn(
-        "p-3 border-b border-border text-sm",
-        !tool && "text-muted-foreground italic"
-      )}>
-        {displayValue}
-      </div>
-    );
-  };
-
   if (!tool1) {
     return (
         <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm text-card-foreground animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-200 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
@@ -113,10 +110,18 @@ const RoiComparisonTable: React.FC<RoiComparisonTableProps> = ({
           {/* Data Rows */}
           {comparisonParameters.map((param) => (
             <React.Fragment key={param.key}>
-              <div className="p-3 font-medium bg-muted/20 border-b border-r border-border text-foreground/80 whitespace-nowrap">{param.label}</div>
-              <div className="border-r border-border">{renderToolDataCell(tool1, param.key)}</div>
-              <div className="border-r border-border">{renderToolDataCell(tool2, param.key)}</div>
-              <div>{renderToolDataCell(tool3, param.key)}</div>
+              <div className="p-3 font-medium bg-muted/20 border-b border-r border-border text-foreground/80 whitespace-nowrap flex items-start">
+                {param.label}
+              </div>
+              <div className={cn("p-3 border-b border-r border-border text-sm flex items-start", !tool1 && "text-muted-foreground italic")}>
+                <span>{getToolDisplayValue(tool1, param.key)}</span>
+              </div>
+              <div className={cn("p-3 border-b border-r border-border text-sm flex items-start", !tool2 && "text-muted-foreground italic")}>
+                <span>{getToolDisplayValue(tool2, param.key)}</span>
+              </div>
+              <div className={cn("p-3 border-b border-border text-sm flex items-start", !tool3 && "text-muted-foreground italic")}>
+                <span>{getToolDisplayValue(tool3, param.key)}</span>
+              </div>
             </React.Fragment>
           ))}
         </div>
