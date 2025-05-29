@@ -1,6 +1,5 @@
 
-import type { NextPage } from 'next';
-import Head from 'next/head';
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import { 
   ListChecks, 
@@ -59,14 +58,15 @@ const TaoDigitalLogo: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
+export const metadata: Metadata = {
+  title: 'TAO Quality Engineering Broadcast',
+  description: 'Newsletter for TAO Quality Engineering',
+};
 
-const NewsletterPage: NextPage = () => {
+export default function NewsletterPage() {
   return (
     <>
-      <Head>
-        <title>TAO Quality Engineering Broadcast</title>
-        <meta name="description" content="Newsletter for TAO Quality Engineering" />
-      </Head>
+      {/* <Head> component removed */}
       <div className="min-h-screen bg-gray-100">
         {/* Newsletter Header */}
         <header className="bg-yellow-400 text-black p-4 text-center">
@@ -238,8 +238,4 @@ const NewsletterPage: NextPage = () => {
       </div>
     </>
   );
-};
-
-export default NewsletterPage;
-
-    
+}
