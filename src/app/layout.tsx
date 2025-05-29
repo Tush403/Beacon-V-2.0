@@ -7,7 +7,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import CookieConsentBanner from '@/components/CookieConsentBanner'; 
 import React, { useEffect } from 'react'; 
-import { usePathname, useRouter } from 'next/navigation'; // Added useRouter and usePathname
+// Removed useRouter and usePathname as they are no longer used
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -24,8 +24,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const router = useRouter();
-  const pathname = usePathname();
+  // Removed router and pathname declarations
 
   useEffect(() => {
     // Apply theme from localStorage on initial client load
@@ -37,18 +36,7 @@ export default function RootLayout({
     }
   }, []);
 
-  useEffect(() => {
-    // Check if the current navigation was a reload
-    // This check needs to be client-side only.
-    if (typeof window !== 'undefined' && window.performance) {
-      const navigationEntries = window.performance.getEntriesByType("navigation");
-      if (navigationEntries.length > 0 && (navigationEntries[0] as PerformanceNavigationTiming).type === "reload") {
-        if (pathname !== '/') {
-          router.push('/');
-        }
-      }
-    }
-  }, [pathname, router]); // Rerun if pathname or router changes, though primarily for initial check
+  // Removed the useEffect block that handled refresh redirection
 
   return (
     <html lang="en">
