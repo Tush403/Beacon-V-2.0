@@ -2,8 +2,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Cog, Menu, Headphones, Sun, Moon, Search as SearchIcon } from 'lucide-react';
-import SettingsSheet from './SettingsSheet'; // Assuming SettingsSheet is in the same directory
+import { Cog, Menu, Mail, Sun, Moon, Search as SearchIcon } from 'lucide-react'; // Changed Headphones to Mail
+import SettingsSheet from './SettingsSheet'; 
 
 const Header: React.FC = () => {
   const [isSettingsSheetOpen, setIsSettingsSheetOpen] = useState(false);
@@ -11,11 +11,10 @@ const Header: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    // Determine initial dark mode state from localStorage or system preference
     const savedTheme = localStorage.getItem('theme');
-    const initialIsDarkMode = savedTheme === 'dark';
+    const initialIsDarkMode = savedTheme === 'dark' || 
+                              (!savedTheme && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     setIsDarkMode(initialIsDarkMode);
-    // Ensure the class is on html element if not already handled by RootLayout effect
     if (initialIsDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
@@ -35,8 +34,8 @@ const Header: React.FC = () => {
     }
   };
 
-  const handleWriteUs = () => {
-    window.location.href = 'mailto:tushardshinde21@gmail.com?subject=Inquiry about Beacon App';
+  const handleContactUs = () => {
+    window.open('https://www.taodigitalsolutions.com/contact-us-lead-generation-form', '_blank');
   };
 
   const handleOpenSearch = () => {
@@ -45,7 +44,7 @@ const Header: React.FC = () => {
   };
   
   const handleOpenSettingsMenu = () => {
-    setSettingsSheetInitialView('main'); // Default to main view
+    setSettingsSheetInitialView('main'); 
     setIsSettingsSheetOpen(true);
   };
 
@@ -71,9 +70,8 @@ const Header: React.FC = () => {
             Beacon
           </h1>
           
-          {/* New Header Icons */}
-          <Button variant="ghost" size="icon" onClick={handleWriteUs} className="text-primary-foreground hover:bg-white/10" aria-label="Write to us">
-            <Headphones className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={handleContactUs} className="text-primary-foreground hover:bg-white/10" aria-label="Contact Us">
+            <Mail className="h-5 w-5" />
           </Button>
           <Button variant="ghost" size="icon" onClick={handleThemeToggle} className="text-primary-foreground hover:bg-white/10" aria-label="Toggle theme">
             {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -82,7 +80,6 @@ const Header: React.FC = () => {
             <SearchIcon className="h-5 w-5" />
           </Button>
           
-          {/* Settings Menu Button/Sheet Trigger */}
           <Button variant="ghost" size="icon" onClick={handleOpenSettingsMenu} className="text-primary-foreground hover:bg-white/10" aria-label="Open app menu">
             <Menu className="h-5 w-5" />
           </Button>
@@ -97,8 +94,7 @@ const Header: React.FC = () => {
   );
 };
 
-// Minimal Button component stub if not globally available or for clarity
-// In a real app, ensure Button component is correctly imported and used.
+// Minimal Button component stub
 const Button = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string; size?: string; "aria-label"?: string }
