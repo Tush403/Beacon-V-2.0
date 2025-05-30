@@ -19,7 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Zap } from 'lucide-react';
+import { AlertCircle, Zap, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import BackToTopButton from '@/components/BackToTopButton';
 import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
@@ -46,16 +46,11 @@ const initialEstimatorInputs: EstimatorInputValues = {
 };
 
 interface DashboardPageProps {
-  // Pages in App Router receive params and searchParams.
-  // Even if not used, defining them can be good practice.
   params: { [key: string]: string | string[] | undefined };
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export default function DashboardPage({ params, searchParams }: DashboardPageProps) {
-  // params and searchParams are destructured but not used in the component logic.
-  // This explicit definition is for Next.js App Router page component signature.
-
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
 
@@ -75,11 +70,15 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
   const [aiTrendSummaryError, setAiTrendSummaryError] = useState<string | null>(null);
   const [showAiTrendSummaryDialog, setShowAiTrendSummaryDialog] = useState<boolean>(false);
 
-  const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(false); // Set to false to disable initial popup
+  const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(false);
 
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
+    // Check if we should show initial release notes (e.g., once per version)
+    // For now, always show it on first load of dashboard for demonstration.
+    // In a real app, you'd check localStorage for `acknowledged_version_2.0` etc.
+    // setShowInitialReleaseNotes(true); // Removed to stop it from showing always after first nav
   }, []);
 
   useEffect(() => {
@@ -90,7 +89,7 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
       body.style.overflow = '';
     }
     return () => {
-      body.style.overflow = ''; // Cleanup on unmount
+      body.style.overflow = '';
     };
   }, [showInitialReleaseNotes, showRoiChartDialog, showAiTrendSummaryDialog]);
 
@@ -104,7 +103,7 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
       if (filterType === 'codingRequirement' && value === 'AI/ML') {
         newFilters.codingLanguage = 'N/A';
       } else if (filterType === 'codingRequirement' && value !== 'AI/ML' && prevFilters.codingLanguage === 'N/A' && prevFilters.codingRequirement === 'AI/ML') {
-        newFilters.codingLanguage = '';
+        newFilters.codingLanguage = ''; // Reset if changing from AI/ML
       }
       return newFilters;
     });
@@ -217,7 +216,7 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
   }, [tool1ForComparison, tool2ForComparison, tool3ForComparison]);
 
   const currentTestTypeForSummary = useMemo(() => {
-    return filters.testType || "UI Testing";
+    return filters.testType && filters.testType !== ALL_FILTER_VALUE ? filters.testType : "UI Testing";
   }, [filters.testType]);
 
   const handleViewAiTrendSummaryClick = async () => {
@@ -250,6 +249,10 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
     }
   };
 
+  const showFab = (tool1ForComparison || tool2ForComparison || tool3ForComparison) &&
+                  !showInitialReleaseNotes &&
+                  !showRoiChartDialog &&
+                  !showAiTrendSummaryDialog;
 
   return (
     <>
@@ -293,7 +296,7 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
                       comparisonParameters={comparisonParametersData}
                   />
               )}
-              {/* ROI Chart is now shown in a dialog, triggered by FloatingActionButtons */}
+              {/* ROI Chart moved to dialog, triggered by FloatingActionButtons */}
             </div>
           </div>
         </main>
@@ -314,11 +317,11 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
         </footer>
       </div>
 
-      {(tool1ForComparison || tool2ForComparison || tool3ForComparison) && (
+      {showFab && (
         <FloatingActionButtons
           onViewRoiClick={() => setShowRoiChartDialog(true)}
-          isRoiDisabled={toolsForChartDialog.length === 0}
           onViewAiSummaryClick={handleViewAiTrendSummaryClick}
+          isRoiDisabled={toolsForChartDialog.length === 0}
           isAiSummaryDisabled={aiTrendSummaryLoading}
         />
       )}

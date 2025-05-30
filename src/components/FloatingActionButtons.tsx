@@ -3,56 +3,66 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, Zap } from 'lucide-react';
+import { TrendingUp, Zap, Briefcase } from 'lucide-react'; // Briefcase as example for "Portfolio"
 import { cn } from '@/lib/utils';
 
 interface FloatingActionButtonsProps {
   onViewRoiClick: () => void;
-  isRoiDisabled: boolean;
   onViewAiSummaryClick: () => void;
-  isAiSummaryDisabled: boolean;
+  // Removed isPortfolioDisabled, assumed always enabled or handled by parent
+  // Removed onPortfolioClick as it's not in the current UI request
+  isRoiDisabled?: boolean;
+  isAiSummaryDisabled?: boolean;
+  // isVisible prop removed
 }
 
-const FloatingActionButtons: React.FC<FloatingActionButtonsProps> = ({
+export default function FloatingActionButtons({
   onViewRoiClick,
-  isRoiDisabled,
   onViewAiSummaryClick,
+  isRoiDisabled,
   isAiSummaryDisabled,
-}) => {
+  // isVisible prop removed from destructuring
+}: FloatingActionButtonsProps) {
   return (
     <div
       className={cn(
-        "fixed top-1/2 -translate-y-1/2 right-4 z-50",
-        "flex flex-col items-end gap-3 p-2", // Added padding to container
-        "bg-card/70 backdrop-blur-md shadow-2xl rounded-full border border-border/30" // Pill/cylinder container styling
+        "fixed top-1/2 -translate-y-1/2 right-4 md:right-6 z-30 flex flex-col gap-2 items-center",
+        "p-1.5 sm:p-2 bg-card/80 backdrop-blur-sm shadow-xl rounded-full"
+        // Removed: !isVisible && "hidden"
       )}
     >
       <Button
-        onClick={onViewRoiClick}
         variant="default"
-        size="lg" // Using lg for better touch target if buttons become more compact
-        className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg w-auto px-4 group transition-all duration-300 ease-in-out transform hover:scale-105"
+        size="icon"
+        onClick={onViewRoiClick}
         disabled={isRoiDisabled}
-        aria-label="View ROI Projection Comparison"
+        className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-10 w-10 sm:h-12 sm:w-12 shadow-md"
+        aria-label="View ROI Projection"
       >
-        <TrendingUp className="h-5 w-5 mr-0 sm:mr-2 transition-all duration-300" />
-        <span className="hidden sm:inline">ROI Projection</span>
-        <span className="sm:hidden">ROI</span>
+        <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6" />
       </Button>
       <Button
-        onClick={onViewAiSummaryClick}
         variant="default"
-        size="lg"
-        className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full shadow-lg w-auto px-4 group transition-all duration-300 ease-in-out transform hover:scale-105"
+        size="icon"
+        onClick={onViewAiSummaryClick}
         disabled={isAiSummaryDisabled}
+        className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full h-10 w-10 sm:h-12 sm:w-12 shadow-md"
         aria-label="View AI Trend Summary"
       >
-        <Zap className="h-5 w-5 mr-0 sm:mr-2 transition-all duration-300" />
-        <span className="hidden sm:inline">AI Summary</span>
-        <span className="sm:hidden">AI</span>
+        <Zap className="h-5 w-5 sm:h-6 sm:w-6" />
       </Button>
+      {/* Portfolio button placeholder - can be re-enabled if needed
+      <Button
+        variant="outline"
+        size="icon"
+        // onClick={onPortfolioClick}
+        // disabled={isPortfolioDisabled}
+        className="border-primary/50 text-primary hover:bg-primary/10 hover:text-primary-foreground rounded-full h-10 w-10 sm:h-12 sm:w-12 shadow-md"
+        aria-label="View Portfolio"
+      >
+        <Briefcase className="h-5 w-5 sm:h-6 sm:w-6" />
+      </Button>
+      */}
     </div>
   );
-};
-
-export default FloatingActionButtons;
+}
