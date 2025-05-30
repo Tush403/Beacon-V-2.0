@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Cog, Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck, Menu as MenuIcon } from 'lucide-react'; // MenuIcon for settings trigger
+import { Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck, Menu as MenuIcon } from 'lucide-react';
 import SettingsSheet from './SettingsSheet';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,6 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import ReleaseNotesDisplay from './ReleaseNotesDisplay';
-// ScrollArea import removed as it's not directly used here anymore, DialogContent handles its own scroll if needed.
 
 const Header: React.FC = () => {
   const [isSettingsSheetOpen, setIsSettingsSheetOpen] = useState(false);
@@ -25,7 +24,6 @@ const Header: React.FC = () => {
   const [showReleaseNotesDialog, setShowReleaseNotesDialog] = useState(false);
 
   useEffect(() => {
-    // Apply theme from localStorage on initial client load
     const savedTheme = localStorage.getItem('theme');
     const initialIsDarkMode = savedTheme === 'dark' ||
                               (!savedTheme && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -63,22 +61,14 @@ const Header: React.FC = () => {
     setIsSettingsSheetOpen(true);
   };
 
-
   return (
     <>
       <header className="bg-gradient-to-r from-[hsl(255,65%,50%)] to-[hsl(295,75%,70%)] text-primary-foreground shadow-lg backdrop-blur-md bg-opacity-90 sticky top-0 z-50 px-4 md:px-8 py-3 flex items-center justify-between">
-        {/* Left Side: TAO DIGITAL Branding */}
-        <Link href="https://www.taodigitalsolutions.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-x-2 sm:gap-x-3 group">
-          <Cog className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground animate-spin-slow" aria-hidden="true" />
-          <div>
-            <span className="block text-xl sm:text-2xl font-bold tracking-tight text-primary-foreground">
-              TAO DIGITAL
-            </span>
-            <p className="text-xs sm:text-sm text-primary-foreground/80 tracking-wide">
-              Transformation Made Simple
-            </p>
-          </div>
-        </Link>
+        {/* Left Side: TAO DIGITAL Branding - REMOVED */}
+        {/* An empty div or span can be used as a placeholder if flexbox needs a child for justify-between, or adjust justify-end on the right group */}
+        <div> {/* This div ensures the Beacon title and icons are grouped and pushed to the right by justify-between */}
+           {/* This space intentionally left blank or can be used for a different element if needed */}
+        </div>
 
         {/* Right Side: App Title and Action Icons */}
         <div className="flex items-center gap-x-1 sm:gap-x-2">
@@ -99,7 +89,7 @@ const Header: React.FC = () => {
             <BookOpenCheck className="h-5 w-5" />
           </Button>
           <Button variant="ghost" size="icon" onClick={handleOpenSettingsMenu} className="text-primary-foreground hover:bg-white/10" aria-label="Open App Menu">
-            <MenuIcon className="h-5 w-5" />
+            <MenuIcon className="h-5 w-5" /> {/* Changed from Settings to MenuIcon */}
           </Button>
         </div>
       </header>
