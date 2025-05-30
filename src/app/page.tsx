@@ -11,12 +11,12 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-secondary/30 p-4 text-center relative">
       <Image
-        src="https://placehold.co/1920x1080.png"
-        alt="Automatic Tool Picker Illustration"
+        src="/images/landing-background.jpg" // Assuming your image is here
+        alt="Beacon App Background"
         layout="fill"
         objectFit="cover"
         className="z-0"
-        data-ai-hint="tool picker illustration"
+        data-ai-hint="abstract background" // Updated hint
         priority
       />
       <main className="max-w-2xl animate-in fade-in-0 zoom-in-95 duration-500 relative z-10">
@@ -43,3 +43,4 @@ export default function LandingPage() {
     </div>
   );
 }
+
