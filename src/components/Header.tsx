@@ -1,8 +1,8 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Cog, Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck } from 'lucide-react'; // Added Cog
+import React, { useState, useEffect, useCallback } from 'react';
+import { Cog, Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck } from 'lucide-react';
 import SettingsSheet from './SettingsSheet';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,7 @@ const Header: React.FC = () => {
     }
   }, []);
 
-  const handleThemeToggle = () => {
+  const handleThemeToggle = useCallback(() => {
     const newIsDarkMode = !isDarkMode;
     setIsDarkMode(newIsDarkMode);
     if (newIsDarkMode) {
@@ -46,7 +46,7 @@ const Header: React.FC = () => {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
-  };
+  }, [isDarkMode]);
 
   const handleContactUs = () => {
     window.open('https://www.taodigitalsolutions.com/contact-us-lead-generation-form', '_blank');
@@ -57,7 +57,7 @@ const Header: React.FC = () => {
     setIsSettingsSheetOpen(true);
   };
 
-  const handleOpenSettingsMenu = () => { // This is triggered by BookOpenCheck icon now
+  const handleOpenSettingsMenu = () => {
     setSettingsSheetInitialView('main');
     setIsSettingsSheetOpen(true);
   };
@@ -79,7 +79,14 @@ const Header: React.FC = () => {
 
         <div className="flex items-center gap-x-1 sm:gap-x-2">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-primary-foreground">
-            Beacon
+            <span className="inline-flex items-center">
+              <span>Beac</span>
+              <Cog
+                className="h-[0.8em] w-[0.8em] text-primary-foreground animate-spin-slow mx-[2px]"
+                aria-hidden="true"
+              />
+              <span>n</span>
+            </span>
           </h1>
 
           <Button variant="ghost" size="icon" onClick={handleContactUs} className="text-primary-foreground hover:bg-white/10" aria-label="Contact Us">
