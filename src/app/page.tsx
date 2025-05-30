@@ -3,13 +3,23 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-secondary/30 p-4 text-center">
-      <main className="max-w-2xl animate-in fade-in-0 zoom-in-95 duration-500">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-secondary/30 p-4 text-center relative">
+      <Image
+        src="https://placehold.co/1920x1080.png"
+        alt="Automatic Tool Picker Illustration"
+        layout="fill"
+        objectFit="cover"
+        className="z-0"
+        data-ai-hint="tool picker illustration"
+        priority
+      />
+      <main className="max-w-2xl animate-in fade-in-0 zoom-in-95 duration-500 relative z-10">
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-primary mb-6">
           Welcome to Beacon
         </h1>
@@ -27,11 +37,9 @@ export default function LandingPage() {
           </Button>
         </Link>
       </main>
-      <footer className="absolute bottom-8 text-xs text-muted-foreground">
+      <footer className="absolute bottom-8 text-xs text-muted-foreground relative z-10">
         &copy; {new Date().getFullYear()} Tao Digital Solutions Inc. All rights reserved.
       </footer>
     </div>
   );
 }
-
-    
