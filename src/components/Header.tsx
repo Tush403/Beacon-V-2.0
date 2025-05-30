@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck, Menu as MenuIcon } from 'lucide-react';
+import { Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck, Menu as MenuIcon, Cog } from 'lucide-react'; // Added Cog and MenuIcon back temporarily for restoration
 import SettingsSheet from './SettingsSheet';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -56,6 +56,7 @@ const Header: React.FC = () => {
     setIsSettingsSheetOpen(true);
   };
 
+  // This function is no longer triggered by a dedicated button but SettingsSheet can still open to 'main'
   const handleOpenSettingsMenu = () => {
     setSettingsSheetInitialView('main');
     setIsSettingsSheetOpen(true);
@@ -64,10 +65,17 @@ const Header: React.FC = () => {
   return (
     <>
       <header className="bg-gradient-to-r from-[hsl(255,65%,50%)] to-[hsl(295,75%,70%)] text-primary-foreground shadow-lg backdrop-blur-md bg-opacity-90 sticky top-0 z-50 px-4 md:px-8 py-3 flex items-center justify-between">
-        {/* Left Side: TAO DIGITAL Branding - REMOVED */}
-        {/* An empty div or span can be used as a placeholder if flexbox needs a child for justify-between, or adjust justify-end on the right group */}
-        <div> {/* This div ensures the Beacon title and icons are grouped and pushed to the right by justify-between */}
-           {/* This space intentionally left blank or can be used for a different element if needed */}
+        {/* Left Side: TAO DIGITAL Branding */}
+        <div className="flex items-center gap-x-2 sm:gap-x-3">
+          <Cog className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground animate-spin-slow" aria-hidden="true" />
+          <div>
+            <span className="block text-xl sm:text-2xl font-bold tracking-tight text-primary-foreground">
+              TAO DIGITAL
+            </span>
+            <p className="text-xs sm:text-sm text-primary-foreground/80 tracking-wide">
+              Transformation Made Simple
+            </p>
+          </div>
         </div>
 
         {/* Right Side: App Title and Action Icons */}
@@ -88,9 +96,7 @@ const Header: React.FC = () => {
            <Button variant="ghost" size="icon" onClick={() => setShowReleaseNotesDialog(true)} className="text-primary-foreground hover:bg-white/10" aria-label="View Release Notes">
             <BookOpenCheck className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleOpenSettingsMenu} className="text-primary-foreground hover:bg-white/10" aria-label="Open App Menu">
-            <MenuIcon className="h-5 w-5" /> {/* Changed from Settings to MenuIcon */}
-          </Button>
+          {/* Removed the MenuIcon button that opened the main settings view */}
         </div>
       </header>
 
