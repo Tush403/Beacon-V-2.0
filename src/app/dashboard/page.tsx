@@ -9,7 +9,7 @@ import ToolResults from '@/components/ToolResults';
 import RoiChart from '@/components/RoiChart';
 import EffortEstimator from '@/components/EffortEstimator';
 import RoiComparisonTable from '@/components/RoiComparisonTable';
-import FloatingActionButtons from '@/components/FloatingActionButtons'; // New import
+import FloatingActionButtons from '@/components/FloatingActionButtons';
 import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
@@ -22,6 +22,7 @@ import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/component
 import { AlertCircle, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import BackToTopButton from '@/components/BackToTopButton';
+import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
 
 
 const initialFilters: Filters = {
@@ -44,8 +45,17 @@ const initialEstimatorInputs: EstimatorInputValues = {
   teamSize: 1,
 };
 
+interface DashboardPageProps {
+  // Pages in App Router receive params and searchParams.
+  // Even if not used, defining them can be good practice.
+  params: { [key: string]: string | string[] | undefined };
+  searchParams: { [key: string]: string | string[] | undefined };
+}
 
-export default function DashboardPage() {
+export default function DashboardPage({ params, searchParams }: DashboardPageProps) {
+  // params and searchParams are destructured but not used in the component logic.
+  // This explicit definition is for Next.js App Router page component signature.
+
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
 
@@ -65,6 +75,9 @@ export default function DashboardPage() {
   const [aiTrendSummaryError, setAiTrendSummaryError] = useState<string | null>(null);
   const [showAiTrendSummaryDialog, setShowAiTrendSummaryDialog] = useState<boolean>(false);
 
+  const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(false); // Set to false to disable initial popup
+
+
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
   }, []);
@@ -81,8 +94,6 @@ export default function DashboardPage() {
     };
   }, [showInitialReleaseNotes, showRoiChartDialog, showAiTrendSummaryDialog]);
 
-  const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(true);
-
 
   const handleFilterChange = useCallback(<K extends keyof Filters>(filterType: K, value: Filters[K]) => {
     setFilters(prevFilters => {
@@ -93,7 +104,7 @@ export default function DashboardPage() {
       if (filterType === 'codingRequirement' && value === 'AI/ML') {
         newFilters.codingLanguage = 'N/A';
       } else if (filterType === 'codingRequirement' && value !== 'AI/ML' && prevFilters.codingLanguage === 'N/A' && prevFilters.codingRequirement === 'AI/ML') {
-        newFilters.codingLanguage = ''; 
+        newFilters.codingLanguage = '';
       }
       return newFilters;
     });
@@ -282,7 +293,7 @@ export default function DashboardPage() {
                       comparisonParameters={comparisonParametersData}
                   />
               )}
-               {/* Buttons removed from here and moved to FloatingActionButtons */}
+              {/* ROI Chart is now shown in a dialog, triggered by FloatingActionButtons */}
             </div>
           </div>
         </main>
@@ -303,7 +314,6 @@ export default function DashboardPage() {
         </footer>
       </div>
 
-      {/* Floating Action Buttons */}
       {(tool1ForComparison || tool2ForComparison || tool3ForComparison) && (
         <FloatingActionButtons
           onViewRoiClick={() => setShowRoiChartDialog(true)}
@@ -313,7 +323,7 @@ export default function DashboardPage() {
         />
       )}
 
-      <Dialog open={showInitialReleaseNotes} onOpenChange={(open) => { if (!open) setShowInitialReleaseNotes(false); /* Prevent closing by ESC/overlay click */ }}>
+      <Dialog open={showInitialReleaseNotes} onOpenChange={(open) => { if (!open) setShowInitialReleaseNotes(false); }}>
         <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col" onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle className="text-xl text-primary">Beacon - Release Notes (V.2.0)</DialogTitle>
