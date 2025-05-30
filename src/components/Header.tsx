@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Cog, Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck } from 'lucide-react';
+import { Cog, Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck, Menu as MenuIcon } from 'lucide-react'; // MenuIcon for settings trigger
 import SettingsSheet from './SettingsSheet';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import ReleaseNotesDisplay from './ReleaseNotesDisplay';
-import { ScrollArea } from './ui/scroll-area';
+// ScrollArea import removed as it's not directly used here anymore, DialogContent handles its own scroll if needed.
 
 const Header: React.FC = () => {
   const [isSettingsSheetOpen, setIsSettingsSheetOpen] = useState(false);
@@ -25,6 +25,7 @@ const Header: React.FC = () => {
   const [showReleaseNotesDialog, setShowReleaseNotesDialog] = useState(false);
 
   useEffect(() => {
+    // Apply theme from localStorage on initial client load
     const savedTheme = localStorage.getItem('theme');
     const initialIsDarkMode = savedTheme === 'dark' ||
                               (!savedTheme && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -62,9 +63,11 @@ const Header: React.FC = () => {
     setIsSettingsSheetOpen(true);
   };
 
+
   return (
     <>
       <header className="bg-gradient-to-r from-[hsl(255,65%,50%)] to-[hsl(295,75%,70%)] text-primary-foreground shadow-lg backdrop-blur-md bg-opacity-90 sticky top-0 z-50 px-4 md:px-8 py-3 flex items-center justify-between">
+        {/* Left Side: TAO DIGITAL Branding */}
         <Link href="https://www.taodigitalsolutions.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-x-2 sm:gap-x-3 group">
           <Cog className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground animate-spin-slow" aria-hidden="true" />
           <div>
@@ -77,18 +80,12 @@ const Header: React.FC = () => {
           </div>
         </Link>
 
+        {/* Right Side: App Title and Action Icons */}
         <div className="flex items-center gap-x-1 sm:gap-x-2">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-primary-foreground">
-            <span className="inline-flex items-center">
-              <span>Beac</span>
-              <Cog
-                className="h-[0.8em] w-[0.8em] text-primary-foreground animate-spin-slow mx-[2px]"
-                aria-hidden="true"
-              />
-              <span>n</span>
-            </span>
+            Beacon
           </h1>
-
+          {/* Action Icons */}
           <Button variant="ghost" size="icon" onClick={handleContactUs} className="text-primary-foreground hover:bg-white/10" aria-label="Contact Us">
             <Mail className="h-5 w-5" />
           </Button>
@@ -98,12 +95,16 @@ const Header: React.FC = () => {
           <Button variant="ghost" size="icon" onClick={handleOpenSearch} className="text-primary-foreground hover:bg-white/10" aria-label="Search tools">
             <SearchIcon className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setShowReleaseNotesDialog(true)} className="text-primary-foreground hover:bg-white/10" aria-label="View Release Notes">
+           <Button variant="ghost" size="icon" onClick={() => setShowReleaseNotesDialog(true)} className="text-primary-foreground hover:bg-white/10" aria-label="View Release Notes">
             <BookOpenCheck className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={handleOpenSettingsMenu} className="text-primary-foreground hover:bg-white/10" aria-label="Open App Menu">
+            <MenuIcon className="h-5 w-5" />
           </Button>
         </div>
       </header>
 
+      {/* Release Notes Dialog */}
       <Dialog open={showReleaseNotesDialog} onOpenChange={setShowReleaseNotesDialog}>
         <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
           <DialogHeader>
