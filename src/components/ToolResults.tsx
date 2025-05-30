@@ -6,7 +6,7 @@ import type { Tool } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, Star, ExternalLink, Box } from 'lucide-react'; // Changed Wrench to Box
+import { CheckCircle2, XCircle, Star, ExternalLink, Box, Eye } from 'lucide-react';
 import Link from 'next/link';
 
 interface ToolResultsProps {
@@ -61,8 +61,8 @@ const ToolResults: React.FC<ToolResultsProps> = ({
             <TabsContent key={tool.id} value={tool.id} className="mt-0 animate-in fade-in-50 duration-500">
               <Card className="border-primary/20 shadow-lg">
                 <CardHeader className="flex flex-row items-start gap-4 p-4 sm:p-6 bg-muted/20 rounded-t-lg">
-                  <div 
-                    className="p-2 rounded-md bg-primary/10 border border-primary/20 shadow-sm" 
+                  <div
+                    className="p-2 rounded-md bg-primary/10 border border-primary/20 shadow-sm"
                     data-ai-hint={tool.dataAiHint || 'tool related image'}
                   >
                      <Box className="h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin-slow" />
@@ -79,9 +79,10 @@ const ToolResults: React.FC<ToolResultsProps> = ({
                         <CheckCircle2 className="mr-2 h-5 w-5" /> Strengths:
                       </h4>
                       <ul className="list-disc list-inside space-y-1 text-sm text-foreground/90">
-                        {tool.strengths.map((strength, index) => (
+                        {tool.strengths.slice(0, 3).map((strength, index) => ( // Show initial 3
                           <li key={index}>{strength}</li>
                         ))}
+                        {tool.strengths.length > 3 && <li className="italic text-muted-foreground">...and more (see details)</li>}
                       </ul>
                     </div>
                     <div>
@@ -89,30 +90,31 @@ const ToolResults: React.FC<ToolResultsProps> = ({
                         <XCircle className="mr-2 h-5 w-5" /> Weaknesses:
                       </h4>
                       <ul className="list-disc list-inside space-y-1 text-sm text-foreground/90">
-                        {tool.weaknesses.map((weakness, index) => (
+                        {tool.weaknesses.slice(0, 3).map((weakness, index) => ( // Show initial 3
                           <li key={index}>{weakness}</li>
                         ))}
+                        {tool.weaknesses.length > 3 && <li className="italic text-muted-foreground">...and more (see details)</li>}
                       </ul>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm pt-4 border-t border-border/50">
                     <div><strong className="text-foreground/80">Application Types:</strong> {tool.applicationTypes.join(', ')}</div>
                     <div><strong className="text-foreground/80">Test Types:</strong> {tool.testTypes.join(', ')}</div>
-                    <div><strong className="text-foreground/80">Operating Systems:</strong> {tool.operatingSystems.join(', ')}</div>
-                    <div><strong className="text-foreground/80">Coding Languages:</strong> {tool.codingLanguages.join(', ')}</div>
-                    <div><strong className="text-foreground/80">Coding Requirement:</strong> {tool.codingRequirements.join(', ')}</div>
-                    <div><strong className="text-foreground/80">Pricing Model:</strong> {tool.pricingModels.join(', ')}</div>
-                    <div className="sm:col-span-2"><strong className="text-foreground/80">Reporting & Analytics:</strong> {tool.reportingAnalytics.join(', ')}</div>
                   </div>
                 </CardContent>
-                <CardFooter className="p-4 sm:p-6 border-t border-border/50">
+                <CardFooter className="p-4 sm:p-6 border-t border-border/50 flex flex-wrap gap-2 justify-between">
                   {tool.websiteUrl && (
-                    <Button asChild variant="default" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
+                    <Button asChild variant="outline" className="border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground">
                       <Link href={tool.websiteUrl} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="mr-2 h-4 w-4" /> Visit Website
                       </Link>
                     </Button>
                   )}
+                  <Button asChild variant="default" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                    <Link href={`/tool/${tool.id}`}>
+                      <Eye className="mr-2 h-4 w-4" /> View Full Details
+                    </Link>
+                  </Button>
                 </CardFooter>
               </Card>
             </TabsContent>
