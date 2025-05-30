@@ -9,6 +9,7 @@ import ToolResults from '@/components/ToolResults';
 import RoiChart from '@/components/RoiChart';
 import EffortEstimator from '@/components/EffortEstimator';
 import RoiComparisonTable from '@/components/RoiComparisonTable';
+import FloatingActionButtons from '@/components/FloatingActionButtons'; // New import
 import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
@@ -18,7 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Zap, User } from 'lucide-react'; // Removed BookOpenCheck as it's not directly used here anymore for initial popup
+import { AlertCircle, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import BackToTopButton from '@/components/BackToTopButton';
 
@@ -64,11 +65,23 @@ export default function DashboardPage() {
   const [aiTrendSummaryError, setAiTrendSummaryError] = useState<string | null>(null);
   const [showAiTrendSummaryDialog, setShowAiTrendSummaryDialog] = useState<boolean>(false);
 
-  // Removed showInitialReleaseNotes and related useEffect for blurring background
-
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
   }, []);
+
+  useEffect(() => {
+    const body = document.body;
+    if (showInitialReleaseNotes || showRoiChartDialog || showAiTrendSummaryDialog) {
+      body.style.overflow = 'hidden';
+    } else {
+      body.style.overflow = '';
+    }
+    return () => {
+      body.style.overflow = ''; // Cleanup on unmount
+    };
+  }, [showInitialReleaseNotes, showRoiChartDialog, showAiTrendSummaryDialog]);
+
+  const [showInitialReleaseNotes, setShowInitialReleaseNotes] = useState(true);
 
 
   const handleFilterChange = useCallback(<K extends keyof Filters>(filterType: K, value: Filters[K]) => {
@@ -80,7 +93,7 @@ export default function DashboardPage() {
       if (filterType === 'codingRequirement' && value === 'AI/ML') {
         newFilters.codingLanguage = 'N/A';
       } else if (filterType === 'codingRequirement' && value !== 'AI/ML' && prevFilters.codingLanguage === 'N/A' && prevFilters.codingRequirement === 'AI/ML') {
-        newFilters.codingLanguage = ''; // Clear language if no longer AI/ML
+        newFilters.codingLanguage = ''; 
       }
       return newFilters;
     });
@@ -229,7 +242,10 @@ export default function DashboardPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-screen"> {/* Removed conditional blurring classes */}
+      <div className={cn(
+        "flex flex-col min-h-screen",
+        (showInitialReleaseNotes || showRoiChartDialog || showAiTrendSummaryDialog) && "filter backdrop-blur-sm pointer-events-none"
+      )}>
         <Header />
         <main className="flex-grow p-4 md:p-6 lg:p-8">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8 space-y-6 lg:space-y-0">
@@ -266,28 +282,7 @@ export default function DashboardPage() {
                       comparisonParameters={comparisonParametersData}
                   />
               )}
-               {(tool1ForComparison || tool2ForComparison || tool3ForComparison) && (
-                <div className="flex flex-wrap justify-center items-center pt-4 gap-4">
-                    <Button
-                      onClick={() => setShowRoiChartDialog(true)}
-                      variant="default"
-                      size="lg"
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                      disabled={toolsForChartDialog.length === 0}
-                    >
-                      View ROI Projection Comparison
-                    </Button>
-                  <Button
-                    onClick={handleViewAiTrendSummaryClick}
-                    variant="default"
-                    size="lg"
-                    className="bg-accent hover:bg-accent/90 text-accent-foreground"
-                    disabled={aiTrendSummaryLoading}
-                  >
-                    {aiTrendSummaryLoading ? 'Loading Summary...' : 'View AI Trend Summary'}
-                  </Button>
-                </div>
-              )}
+               {/* Buttons removed from here and moved to FloatingActionButtons */}
             </div>
           </div>
         </main>
@@ -308,7 +303,38 @@ export default function DashboardPage() {
         </footer>
       </div>
 
-      {/* Initial Release Notes Dialog Removed */}
+      {/* Floating Action Buttons */}
+      {(tool1ForComparison || tool2ForComparison || tool3ForComparison) && (
+        <FloatingActionButtons
+          onViewRoiClick={() => setShowRoiChartDialog(true)}
+          isRoiDisabled={toolsForChartDialog.length === 0}
+          onViewAiSummaryClick={handleViewAiTrendSummaryClick}
+          isAiSummaryDisabled={aiTrendSummaryLoading}
+        />
+      )}
+
+      <Dialog open={showInitialReleaseNotes} onOpenChange={(open) => { if (!open) setShowInitialReleaseNotes(false); /* Prevent closing by ESC/overlay click */ }}>
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col" onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()}>
+          <DialogHeader>
+            <DialogTitle className="text-xl text-primary">Beacon - Release Notes (V.2.0)</DialogTitle>
+            <DialogDescription>
+              Welcome! Please review the latest updates before proceeding.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <ReleaseNotesDisplay />
+          </div>
+          <DialogFooter className="pt-4 mt-auto">
+            <Button
+              type="button"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              onClick={() => setShowInitialReleaseNotes(false)}
+            >
+              Acknowledge & Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showRoiChartDialog} onOpenChange={setShowRoiChartDialog}>
         <DialogContent className="sm:max-w-4xl">
