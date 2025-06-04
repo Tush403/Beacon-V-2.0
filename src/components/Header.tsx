@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck } from 'lucide-react'; // Removed Cog
+import { Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck } from 'lucide-react';
 import SettingsSheet from './SettingsSheet';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -58,15 +58,16 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="bg-gradient-to-r from-[hsl(255,65%,50%)] to-[hsl(295,75%,70%)] text-primary-foreground shadow-lg backdrop-blur-md bg-opacity-90 sticky top-0 z-50 px-4 md:px-8 py-3 flex items-center justify-between">
+      <header className="bg-background text-foreground shadow-lg sticky top-0 z-50 px-4 md:px-8 py-3 flex items-center justify-between">
         {/* Left Side: TAO DIGITAL Branding */}
         <div className="flex items-center gap-x-2 sm:gap-x-3">
+ <img src="/pdfs/logo.png" alt="TAO Digital Logo" className="h-8 w-8 md:h-10 md:w-10" />
           {/* Cog icon removed from here */}
           <div>
-            <span className="block text-xl sm:text-2xl font-bold tracking-tight text-primary-foreground">
+            <span className="block text-xl sm:text-2xl font-bold tracking-tight">
               TAO DIGITAL
             </span>
-            <p className="text-xs sm:text-sm text-primary-foreground/80 tracking-wide">
+            <p className="text-xs sm:text-sm text-foreground/80 tracking-wide">
               Transformation Made Simple
             </p>
           </div>
@@ -74,20 +75,20 @@ const Header: React.FC = () => {
 
         {/* Right Side: App Title and Action Icons */}
         <div className="flex items-center gap-x-1 sm:gap-x-2">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-primary-foreground">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-primary">
             Beacon
           </h1>
           {/* Action Icons */}
-          <Button variant="ghost" size="icon" onClick={handleContactUs} className="text-primary-foreground hover:bg-white/10" aria-label="Contact Us">
+          <Button variant="ghost" size="icon" onClick={handleContactUs} aria-label="Contact Us">
             <Mail className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleThemeToggle} className="text-primary-foreground hover:bg-white/10" aria-label="Toggle theme">
+          <Button variant="ghost" size="icon" onClick={handleThemeToggle} aria-label="Toggle theme">
             {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleOpenSearch} className="text-primary-foreground hover:bg-white/10" aria-label="Search tools">
+          <Button variant="ghost" size="icon" onClick={handleOpenSearch} aria-label="Search tools">
             <SearchIcon className="h-5 w-5" />
           </Button>
-           <Button variant="ghost" size="icon" onClick={() => setShowReleaseNotesDialog(true)} className="text-primary-foreground hover:bg-white/10" aria-label="View Release Notes">
+           <Button variant="ghost" size="icon" onClick={() => setShowReleaseNotesDialog(true)} aria-label="View Release Notes">
             <BookOpenCheck className="h-5 w-5" />
           </Button>
         </div>

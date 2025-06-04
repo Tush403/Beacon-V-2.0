@@ -11,7 +11,7 @@ import type { Tool } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, CheckCircle2, XCircle, Star, ExternalLink, Users, BarChart3, TrendingUp, Briefcase, ShieldCheck, Zap, Code2, DollarSign, FileText, Clock, Tool as ToolIconLucide, Recycle, Cpu, Users2, Gauge, Layers, BookOpen } from 'lucide-react'; // Layers instead of Coverage
+import { ArrowLeft, CheckCircle2, XCircle, Star, ExternalLink, Users, BarChart3, TrendingUp, Briefcase, ShieldCheck, Zap, Code2, DollarSign, FileText, Clock, Wrench as ToolIconLucide, Recycle, Cpu, Users2, Gauge, Layers, BookOpen } from 'lucide-react'; // Layers instead of Coverage
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from 'lucide-react';
