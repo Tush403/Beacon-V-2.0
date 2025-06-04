@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck, Menu as MenuIcon, Cog } from 'lucide-react'; // Added Cog and MenuIcon back temporarily for restoration
+import { Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck } from 'lucide-react'; // Removed Cog
 import SettingsSheet from './SettingsSheet';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -56,18 +56,12 @@ const Header: React.FC = () => {
     setIsSettingsSheetOpen(true);
   };
 
-  // This function is no longer triggered by a dedicated button but SettingsSheet can still open to 'main'
-  const handleOpenSettingsMenu = () => {
-    setSettingsSheetInitialView('main');
-    setIsSettingsSheetOpen(true);
-  };
-
   return (
     <>
       <header className="bg-gradient-to-r from-[hsl(255,65%,50%)] to-[hsl(295,75%,70%)] text-primary-foreground shadow-lg backdrop-blur-md bg-opacity-90 sticky top-0 z-50 px-4 md:px-8 py-3 flex items-center justify-between">
         {/* Left Side: TAO DIGITAL Branding */}
         <div className="flex items-center gap-x-2 sm:gap-x-3">
-          <Cog className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground animate-spin-slow" aria-hidden="true" />
+          {/* Cog icon removed from here */}
           <div>
             <span className="block text-xl sm:text-2xl font-bold tracking-tight text-primary-foreground">
               TAO DIGITAL
@@ -96,7 +90,6 @@ const Header: React.FC = () => {
            <Button variant="ghost" size="icon" onClick={() => setShowReleaseNotesDialog(true)} className="text-primary-foreground hover:bg-white/10" aria-label="View Release Notes">
             <BookOpenCheck className="h-5 w-5" />
           </Button>
-          {/* Removed the MenuIcon button that opened the main settings view */}
         </div>
       </header>
 
