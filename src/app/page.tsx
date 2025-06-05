@@ -22,7 +22,7 @@ export default function LandingPage() {
         <Link href="/dashboard" passHref>
           <Button
             size="lg"
-            className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-10 py-6 text-lg group"
+            className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 px-10 py-6 text-lg group"
           >
             Get Started
             <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
@@ -35,3 +35,4 @@ export default function LandingPage() {
     </div>
   );
 }
+
