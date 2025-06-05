@@ -59,7 +59,7 @@ const Header: React.FC = () => {
         <>
  <header className="bg-background text-foreground shadow-lg sticky top-0 z-50 px-4 md:px-8 py-3 flex items-center justify-between border-b border-border/50">
       {/* Left Side: TAO DIGITAL Branding and Logo */}
- <div className="flex items-center gap-x-1"> {/* Adjusted gap here */}
+ <div className="flex items-center"> {/* Removed gap-x-1 */}
  <img
  src="https://cdn.prod.website-files.com/653be97c265bbf6bfd4d81b2/6718e85841bac03934ff26a3_TAO_Linkedin_HeaderAsset%20172.png"
  alt="TAO Digital Solutions Logo"
