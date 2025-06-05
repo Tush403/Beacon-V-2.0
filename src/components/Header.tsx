@@ -4,7 +4,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Mail, Sun, Moon, Search as SearchIcon, BookOpenCheck } from 'lucide-react';
 import SettingsSheet from './SettingsSheet';
-// Link import removed as it's not used
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -59,12 +58,17 @@ const Header: React.FC = () => {
   return (
         <>
  <header className="bg-background text-foreground shadow-lg sticky top-0 z-50 px-4 md:px-8 py-3 flex items-center justify-between border-b border-border/50">
-              {/* Left Side: TAO DIGITAL Branding */}
- <div className="flex items-center gap-x-2 sm:gap-x-3">
+      {/* Left Side: TAO DIGITAL Branding and Logo */}
+ <div className="flex items-center gap-x-1"> {/* Adjusted gap here */}
+ <img
+ src="https://cdn.prod.website-files.com/653be97c265bbf6bfd4d81b2/6718e85841bac03934ff26a3_TAO_Linkedin_HeaderAsset%20172.png"
+ alt="TAO Digital Solutions Logo"
+ className="h-8 w-auto" // Adjust height and width as needed
+ />
           <div>
             <span className="block text-xl sm:text-2xl font-bold tracking-tight text-primary">
               TAO DIGITAL
-            </span>
+ </span>
             <p className="text-xs sm:text-sm text-muted-foreground tracking-wide">
               Transformation Made Simple
             </p>
