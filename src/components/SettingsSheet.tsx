@@ -45,6 +45,25 @@ const SettingsSheet: React.FC<SettingsSheetProps> = ({ open, onOpenChange, initi
   const [selectedToolForPopup, setSelectedToolForPopup] = useState<Tool | null>(null);
   const [showToolPopup, setShowToolPopup] = useState(false);
 
+  // Helper function to check if a tool matches the search term
+  const doesToolMatchSearch = useCallback((tool: Tool, lowerCaseSearchTerm: string): boolean => {
+    if (!lowerCaseSearchTerm) return false;
+
+    // Check name
+    if (tool.name.toLowerCase().includes(lowerCaseSearchTerm)) return true;
+
+    // Check searchable array properties (case-insensitive, some match)
+    const searchableArrays = [
+      tool.strengths,
+      tool.weaknesses,
+      tool.applicationTypes,
+      tool.testTypes,
+    ];
+
+    return searchableArrays.some(arr =>
+      arr && arr.some(item => item.toLowerCase().includes(lowerCaseSearchTerm))
+    );
+  }, []);
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme');

@@ -6,7 +6,7 @@ import type { Tool } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, Star, ExternalLink, Box, Eye } from 'lucide-react';
+import { CheckCircle2, XCircle, Star, ExternalLink, Eye } from 'lucide-react'; // Box removed
 import Link from 'next/link';
 
 interface ToolResultsProps {
@@ -61,12 +61,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({
             <TabsContent key={tool.id} value={tool.id} className="mt-0 animate-in fade-in-50 duration-500">
               <Card className="border-primary/20 shadow-lg">
                 <CardHeader className="flex flex-row items-start gap-4 p-4 sm:p-6 bg-muted/20 rounded-t-lg">
-                  <div
-                    className="p-2 rounded-md bg-primary/10 border border-primary/20 shadow-sm"
-                    data-ai-hint={tool.dataAiHint || 'tool related image'}
-                  >
-                     <Box className="h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin-slow" />
-                  </div>
+                  {/* Icon div removed */}
                   <div>
                     <CardTitle className="text-2xl sm:text-3xl text-primary">{tool.name}</CardTitle>
                     <CardDescription className="text-base text-accent font-semibold">Overall Score: {tool.score}/10</CardDescription>

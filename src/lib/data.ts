@@ -3,7 +3,7 @@ import type { Tool, FilterOptions, TrendData, ApplicationType, TestType, Operati
 import { ALL_FILTER_VALUE } from '../lib/constants';
 
 export const ALL_APPLICATION_TYPES: ApplicationType[] = ["Web", "Mobile", "API", "Desktop", "Backend"];
-export const ALL_TEST_TYPES: TestType[] = ["UI Testing", "API Testing", "Performance Testing", "Security Testing", "Unit Testing", "E2E Testing"];
+export const ALL_TEST_TYPES: TestType[] = ["UI Testing", "API Testing", "Performance Testing", "Security Testing", "Unit Testing", "DB Testing"];
 export const ALL_OPERATING_SYSTEMS: OperatingSystem[] = ["Windows", "macOS", "Linux", "Android", "iOS", "Cross-Platform"];
 export const ALL_CODING_REQUIREMENTS: CodingRequirement[] = ["No-Code", "Low-Code", "Scripting", "AI/ML"];
 export const ALL_CODING_LANGUAGES: CodingLanguage[] = ["JavaScript", "Python", "Java", "C#", "Ruby", "Go", "Swift", "Kotlin", "PHP", "N/A"];
@@ -25,11 +25,11 @@ export const mockToolsData: Tool[] = [
   {
     id: "1",
     name: "Selenium",
-    score: 8.7,
+    score: 9.1,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "Selenium logo",
     applicationTypes: ["Web"],
-    testTypes: ["UI Testing", "E2E Testing"],
+    testTypes: ["UI Testing", "DB Testing"],
     operatingSystems: ["Windows", "macOS", "Linux", "Cross-Platform"],
     codingRequirements: ["Scripting"],
     codingLanguages: ["Java", "Python", "C#", "Ruby", "JavaScript"],
@@ -54,13 +54,57 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "Medium - Open source, but skilled resource costs can be high",
   },
   {
-    id: "2",
+    "id": "2",
+    "name": "ZeTA Automation",
+    "score": 9.2,
+    "logoUrl": "https://placehold.co/60x60.png",
+    "dataAiHint": "ZeTA Automation logo",
+    "applicationTypes": ["Web"],
+    "testTypes": ["UI Testing", "API Testing", "Performance Testing", "Security Testing"],
+    "operatingSystems": ["Windows", "macOS"],
+    "codingRequirements": ["AI/ML"],
+    "codingLanguages": ["Java"],
+    "pricingModels": ["Open Source"],
+    "reportingAnalytics": ["Allure", "Custom HTML", "Traceability Support"],
+    "strengths": [
+      "End-to-End Automation Coverage: UI, API, DB, Security, and Performance testing",
+      "Modular Framework: Plug-and-play components and reusable templates",
+      "CI/CD Ready: Supports Jenkins, GitHub Actions, Azure DevOps",
+      "Detailed Reporting: Allure and custom HTML reporting with traceability"
+    ],
+    "weaknesses": [
+      "Moderate Learning Curve: Requires Java and Maven familiarity",
+      "No AI-based Self-Healing: Manual updates needed after app changes",
+      "Initial Setup Complexity: Slightly higher setup time than no-code tools"
+    ],
+    "pdfLink": "/pdfs/zeta-automation-guide.pdf",
+    "websiteUrl": "https://github.com/Tao-Digital-India/zero-touch-automation",
+    "roiProjection": [
+      { "month": 1, "roi": 55 },
+      { "month": 2, "roi": 65 },
+      { "month": 3, "roi": 72 },
+      { "month": 4, "roi": 80 },
+      { "month": 5, "roi": 87 },
+      { "month": 6, "roi": 90 }
+    ],
+    "initialSetupTime": "2-4 days",
+    "maintenanceOverhead": "Low - Utility-driven layers reduce script change impact",
+    "testCreationSpeed": "High - Pre-built templates and plug & play logic",
+    "scriptReusability": "High - Shared libraries & config-driven design",
+    "parallelExecutionSupport": "Excellent - CI-ready with support for parallel runs",
+    "testCaseCreationEffort": "Medium - Template-based creation simplifies effort",
+    "skillRequirement": "Moderate - Java and Maven knowledge preferred",
+    "overallAutomationCoverage": "Very High -Unified coverage across layers (UI, API, DB, Security, Performance)",
+    "totalCostOfOwnership": "Low - Open source; internally managed infrastructure"
+  },
+  {
+    id: "3",
     name: "Playwright",
-    score: 9.2,
+    score: 9.0,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "Playwright logo",
     applicationTypes: ["Web"],
-    testTypes: ["UI Testing", "API Testing", "E2E Testing"],
+    testTypes: ["UI Testing", "API Testing", "DB Testing"],
     operatingSystems: ["Windows", "macOS", "Linux", "Cross-Platform"],
     codingRequirements: ["Scripting"],
     codingLanguages: ["JavaScript", "Python", "Java", "C#"],
@@ -85,13 +129,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "Low to Medium - Open source, good developer experience",
   },
   {
-    id: "3",
+    id: "4",
     name: "Cypress",
     score: 9.0,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "Cypress logo",
     applicationTypes: ["Web"],
-    testTypes: ["UI Testing", "E2E Testing"],
+    testTypes: ["UI Testing", "DB Testing"],
     operatingSystems: ["Windows", "macOS", "Linux"],
     codingRequirements: ["Scripting"],
     codingLanguages: ["JavaScript"],
@@ -116,13 +160,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "Low (Open Source) to Medium (Dashboard)",
   },
   {
-    id: "4",
+    id: "5",
     name: "Testim",
     score: 8.5,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "Testim logo",
     applicationTypes: ["Web"],
-    testTypes: ["UI Testing", "E2E Testing"],
+    testTypes: ["UI Testing", "DB Testing"],
     operatingSystems: ["Cross-Platform"],
     codingRequirements: ["AI/ML", "Low-Code"],
     codingLanguages: ["JavaScript", "N/A"],
@@ -143,11 +187,11 @@ export const mockToolsData: Tool[] = [
     parallelExecutionSupport: "Excellent - Cloud-based parallel execution",
     testCaseCreationEffort: "Very Low - Minimal coding required for most cases",
     skillRequirement: "Low - Suitable for manual testers and less technical users",
-    overallAutomationCoverage: "High - Focus on UI and E2E for web",
+    overallAutomationCoverage: "High - Focus on UI and DB for web",
     totalCostOfOwnership: "High - Subscription-based, depends on scale",
   },
   {
-    id: "5",
+    id: "6",
     name: "Postman",
     score: 9.1,
     logoUrl: "https://placehold.co/60x60.png",
@@ -178,7 +222,7 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "Low (Freemium) to Medium (Team/Enterprise)",
   },
   {
-    id: "6",
+    id: "7",
     name: "JMeter",
     score: 8.3,
     logoUrl: "https://placehold.co/60x60.png",
@@ -209,13 +253,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "Low - Open source, but infra for distributed tests costs",
   },
   {
-    id: "7",
+    id: "8",
     name: "Katalon Studio",
     score: 8.6,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "Katalon Studio logo",
     applicationTypes: ["Web", "Mobile", "API", "Desktop"],
-    testTypes: ["UI Testing", "API Testing", "E2E Testing"],
+    testTypes: ["UI Testing", "API Testing", "DB Testing"],
     operatingSystems: ["Windows", "macOS", "Linux"],
     codingRequirements: ["Low-Code", "Scripting"],
     codingLanguages: ["Java"], // Primarily Groovy, but Java is also supported
@@ -240,13 +284,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "Medium - Freemium with paid enterprise features",
   },
    {
-    id: "8",
+    id: "9",
     name: "Appium",
     score: 8.8,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "Appium logo",
     applicationTypes: ["Mobile"],
-    testTypes: ["UI Testing", "E2E Testing"],
+    testTypes: ["UI Testing", "DB Testing"],
     operatingSystems: ["Android", "iOS", "Cross-Platform"],
     codingRequirements: ["Scripting"],
     codingLanguages: ["Java", "Python", "JavaScript", "Ruby", "C#"],
@@ -271,13 +315,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "Medium - Open source, but device farm/cloud costs",
   },
   {
-    id: "9",
+    id: "10",
     name: "Robot Framework",
     score: 8.4,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "Robot Framework logo",
     applicationTypes: ["Web", "API", "Desktop"],
-    testTypes: ["UI Testing", "API Testing", "E2E Testing"],
+    testTypes: ["UI Testing", "API Testing", "DB Testing"],
     operatingSystems: ["Windows", "macOS", "Linux", "Cross-Platform"],
     codingRequirements: ["Low-Code", "Scripting"],
     codingLanguages: ["Python"],
@@ -302,13 +346,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "Low - Open source, Python ecosystem",
   },
   {
-    id: "10",
+    id: "11",
     name: "TestComplete",
     score: 8.2,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "TestComplete logo",
     applicationTypes: ["Web", "Mobile", "Desktop"],
-    testTypes: ["UI Testing", "E2E Testing"],
+    testTypes: ["UI Testing", "DB Testing"],
     operatingSystems: ["Windows"], // Primarily Windows, with some cross-browser/mobile capabilities
     codingRequirements: ["Low-Code", "Scripting"],
     codingLanguages: ["JavaScript", "Python", "VBScript", "JScript", "DelphiScript"],
@@ -333,13 +377,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "High - Commercial tool with licensing costs",
   },
   {
-    id: "11",
+    id: "12",
     name: "ZapTest",
     score: 7.9,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "ZapTest logo",
     applicationTypes: ["Web", "Mobile", "API", "Desktop", "Backend"],
-    testTypes: ["UI Testing", "API Testing", "Performance Testing", "E2E Testing"],
+    testTypes: ["UI Testing", "API Testing", "Performance Testing", "DB Testing"],
     operatingSystems: ["Windows", "macOS", "Linux", "Android", "iOS", "Cross-Platform"],
     codingRequirements: ["No-Code", "Low-Code"],
     codingLanguages: ["N/A"],
@@ -364,13 +408,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "Medium to High - Subscription, but potential for quick ROI",
   },
   {
-    id: "12",
+    id: "13",
     name: "Ranorex Studio",
     score: 8.1,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "Ranorex logo",
     applicationTypes: ["Web", "Mobile", "Desktop"],
-    testTypes: ["UI Testing", "E2E Testing"],
+    testTypes: ["UI Testing", "DB Testing"],
     operatingSystems: ["Windows"], // Test creation on Windows, execution on other platforms with agents
     codingRequirements: ["Low-Code", "Scripting"],
     codingLanguages: ["C#", "VB.NET"],
@@ -395,13 +439,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "High - Commercial tool",
   },
   {
-    id: "13",
+    id: "14",
     name: "Maestro (Mobile)",
     score: 8.9,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "Maestro mobile logo",
     applicationTypes: ["Mobile"],
-    testTypes: ["UI Testing", "E2E Testing"],
+    testTypes: ["UI Testing", "DB Testing"],
     operatingSystems: ["Android", "iOS", "Cross-Platform"], // Test flows are cross-platform
     codingRequirements: ["No-Code", "Low-Code"], // YAML based flows
     codingLanguages: ["N/A"],
@@ -422,17 +466,17 @@ export const mockToolsData: Tool[] = [
     parallelExecutionSupport: "Good - Via Maestro Cloud or custom scripting",
     testCaseCreationEffort: "Very Low - YAML based",
     skillRequirement: "Low - Basic understanding of YAML and mobile interactions",
-    overallAutomationCoverage: "High - For UI and E2E testing of mobile apps",
+    overallAutomationCoverage: "High - For UI and DB testing of mobile apps",
     totalCostOfOwnership: "Low (Open Source) to Medium (Cloud)",
   },
   {
-    id: "14",
+    id: "15",
     name: "Functionize", // <<<< CHANGED HERE
     score: 9.3, // Example score, adjust as needed
-    logoUrl: "https://placehold.co/60x60.png",
+    logoUrl: "public/Logofunctionize.png",
     dataAiHint: "Functionize logo", // <<<< CHANGED HERE
     applicationTypes: ["Web", "API"], // Example, adjust as needed
-    testTypes: ["UI Testing", "API Testing", "E2E Testing"], // Example, adjust as needed
+    testTypes: ["UI Testing", "API Testing", "DB Testing"], // Example, adjust as needed
     operatingSystems: ["Cross-Platform"],
     codingRequirements: ["AI/ML", "Low-Code"], // Example, adjust as needed
     codingLanguages: ["N/A"],
@@ -442,8 +486,8 @@ export const mockToolsData: Tool[] = [
         "Autonomous testing powered by AI",
         "Natural language test creation and understanding",
         "Self-healing tests that adapt to UI changes",
-        "Reduces test maintenance significantly",
-        "Comprehensive end-to-end testing capabilities"
+        // "Reduces test maintenance significantly",
+        // "Comprehensive end-to-end testing capabilities"
     ],
     weaknesses: [
         "Subscription cost can be a factor for smaller teams",
@@ -467,13 +511,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "Medium to High - Subscription based, but offset by reduced maintenance and high efficiency",
   },
   {
-    id: "15",
+    id: "16",
     name: "TestCraft",
     score: 8.4,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "TestCraft logo",
     applicationTypes: ["Web"],
-    testTypes: ["UI Testing", "E2E Testing"],
+    testTypes: ["UI Testing", "DB Testing"],
     operatingSystems: ["Cross-Platform"],
     codingRequirements: ["AI/ML", "No-Code"],
     codingLanguages: ["N/A"],
@@ -495,13 +539,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "High",
   },
   {
-    id: "16",
+    id: "17",
     name: "ACCELQ",
     score: 8.9,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "ACCELQ logo",
     applicationTypes: ["Web", "Mobile", "API", "Desktop", "Backend"],
-    testTypes: ["UI Testing", "API Testing", "E2E Testing", "Unit Testing"],
+    testTypes: ["UI Testing", "API Testing", "DB Testing", "Unit Testing"],
     operatingSystems: ["Cross-Platform"],
     codingRequirements: ["No-Code", "AI/ML"],
     codingLanguages: ["N/A"],
@@ -523,13 +567,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "High",
   },
   {
-    id: "17",
+    id: "18",
     name: "Mabl",
     score: 8.7,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "Mabl logo",
     applicationTypes: ["Web"],
-    testTypes: ["UI Testing", "E2E Testing", "API Testing"],
+    testTypes: ["UI Testing", "DB Testing", "API Testing"],
     operatingSystems: ["Cross-Platform"],
     codingRequirements: ["Low-Code", "AI/ML"],
     codingLanguages: ["JavaScript", "N/A"],
@@ -551,13 +595,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "High",
   },
   {
-    id: "18",
+    id: "19",
     name: "Puppeteer",
     score: 8.8,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "Puppeteer logo",
     applicationTypes: ["Web", "Backend"], // Can be used for scraping, PDF gen etc.
-    testTypes: ["UI Testing", "E2E Testing", "Unit Testing"], // More for component/integration
+    testTypes: ["UI Testing", "DB Testing", "Unit Testing"], // More for component/integration
     operatingSystems: ["Windows", "macOS", "Linux"],
     codingRequirements: ["Scripting"],
     codingLanguages: ["JavaScript"],
@@ -579,13 +623,13 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "Low",
   },
   {
-    id: "19",
+    id: "20",
     name: "Jest (with Testing Library)",
     score: 9.0,
     logoUrl: "https://placehold.co/60x60.png",
     dataAiHint: "Jest Testing Library logo",
     applicationTypes: ["Web", "Mobile"], // For React/React Native components
-    testTypes: ["Unit Testing", "E2E Testing"], // Primarily for component/integration testing
+    testTypes: ["Unit Testing", "DB Testing"], // Primarily for component/integration testing
     operatingSystems: ["Cross-Platform"],
     codingRequirements: ["Scripting"],
     codingLanguages: ["JavaScript"],
@@ -607,7 +651,7 @@ export const mockToolsData: Tool[] = [
     totalCostOfOwnership: "Low",
   },
   {
-    id: "20",
+    id: "21",
     name: "LoadRunner Enterprise",
     score: 8.0,
     logoUrl: "https://placehold.co/60x60.png",
@@ -677,8 +721,8 @@ export const trendDataPerTestType: TrendData = {
     aiPoweredTool: "GitHub Copilot (assists writing tests)",
     enterpriseReadyTool: "Language-specific frameworks (e.g. NUnit for C#)",
   },
-  "E2E Testing": {
-    testType: "E2E Testing",
+  "DB Testing": {
+    testType: "DB Testing",
     mostWidelyUsedTool: "Selenium",
     trendingTool: "Playwright",
     topRatedTool: "Cypress",
