@@ -2,28 +2,24 @@
 "use client";
 
 import React from 'react';
-// Removed useParams as we'll use params from props
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import Header from '@/components/Header';
-import { mockToolsData } from '@/lib/data';
+//import { mockToolsData } from '@/lib/data';
 import type { Tool } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, CheckCircle2, XCircle, Star, ExternalLink, Users, BarChart3, TrendingUp, Briefcase, ShieldCheck, Zap, Code2, DollarSign, FileText, Clock, Wrench as ToolIconLucide, Recycle, Cpu, Users2, Gauge, Layers, BookOpen } from 'lucide-react'; // Layers instead of Coverage
+import { ArrowLeft, CheckCircle2, XCircle, Star, ExternalLink, Users, BarChart3, TrendingUp, Briefcase, ShieldCheck, Zap, Code2, DollarSign, FileText, Clock, Tool as ToolIconLucide, Recycle, Cpu, Users2, Gauge, Coverage, BookOpen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from 'lucide-react';
 
-interface ToolDetailPageProps {
-  params: { toolId?: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-}
-
-export default function ToolDetailPage({ params, searchParams }: ToolDetailPageProps) {
-  // Use toolId from props.params
-  const toolId = params.toolId;
+// This is a client component, so we can use useParams
+export default function ToolDetailPage() {
+  const params = useParams();
+  const toolId = typeof params.toolId === 'string' ? params.toolId : undefined;
   const [currentYear, setCurrentYear] = React.useState<number | null>(null);
 
   React.useEffect(() => {
@@ -99,7 +95,7 @@ export default function ToolDetailPage({ params, searchParams }: ToolDetailPageP
     { icon: Users2, label: "Parallel Execution Support", value: tool.parallelExecutionSupport },
     { icon: Users, label: "Test Case Creation Effort", value: tool.testCaseCreationEffort },
     { icon: BookOpen, label: "Skill Requirement", value: tool.skillRequirement },
-    { icon: Layers, label: "Overall Automation Coverage", value: tool.overallAutomationCoverage }, // Changed from Coverage
+    { icon: Coverage, label: "Overall Automation Coverage", value: tool.overallAutomationCoverage },
     { icon: BarChart3, label: "Total Cost of Ownership", value: tool.totalCostOfOwnership },
   ];
 
@@ -282,4 +278,10 @@ export default function ToolDetailPage({ params, searchParams }: ToolDetailPageP
   );
 }
 
-    
+// It's good practice to define generateMetadata if you want dynamic titles/descriptions
+// For client components that use `useParams`, you can't directly export `generateMetadata`
+// from the same file. You'd typically have this in a layout.tsx for the segment or handle
+// title updates via `useEffect` and `document.title` if simple, or a more complex client-side
+// metadata management strategy if needed.
+// For now, we'll rely on the RootLayout's default title.
+// A more advanced setup might involve a server component wrapper for this page to use generateMetadata.
