@@ -6,7 +6,7 @@ export type ApplicationType = "Web" | "Mobile" | "API" | "Desktop" | "Backend";
 export type TestType = "UI Testing" | "API Testing" | "Performance Testing" | "Security Testing" | "Unit Testing" | "DB Testing";
 export type OperatingSystem = "Windows" | "macOS" | "Linux" | "Android" | "iOS" | "Cross-Platform";
 export type CodingRequirement = "No-Code" | "Low-Code" | "Scripting" | "AI/ML";
-export type CodingLanguage = "JavaScript" | "Python" | "Java" | "C#" | "Ruby" | "Go" | "Swift" | "Kotlin" | "C" | "N/A" | "VB.NET" | "JScript" | "PHP" | "VBScript"| "DelphiScript";
+export type CodingLanguage = "JavaScript" | "Python" | "Java" | "C#" | "Ruby" | "Go" | "Swift" | "Kotlin" | "C" | "N/A" | "VB.NET" | "JScript" | "PHP" | "VBScript"| "DelphiScript"| "TypeScript";
 export type PricingModel = "Free" | "Freemium" | "Subscription" | "One-time Purchase" | "Open Source";
 export type ReportingAnalytics = "Basic" | "Advanced" | "Customizable" | "Integration-friendly" | "Real-time"| "Auto-healing insights" | "Predictive Analytics"|"Allure"| "Custom HTML"| "Traceability Support";
 

@@ -21,8 +21,10 @@ interface EffortEstimatorProps {
   estimation: EffortEstimationOutput | null;
   isLoading: boolean;
   error: string | null;
-  allTools: Tool[]; // Added to receive the list of tools
+  allTools: Tool[];
 }
+
+const NO_TOOL_SELECTED_VALUE = "__NONE_SELECTED_TOOL__"; // Unique value for "None selected"
 
 const EffortEstimator: React.FC<EffortEstimatorProps> = ({
   inputValues,
@@ -60,14 +62,17 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
           <div>
             <Label htmlFor="automationToolName" className="text-sm font-medium text-foreground/80">Automation Tool</Label>
             <Select
-              value={inputValues.automationToolName}
-              onValueChange={(value) => onInputChange('automationToolName', value)}
+              value={inputValues.automationToolName === "" ? NO_TOOL_SELECTED_VALUE : inputValues.automationToolName}
+              onValueChange={(selectedValue) => {
+                const actualValue = selectedValue === NO_TOOL_SELECTED_VALUE ? "" : selectedValue;
+                onInputChange('automationToolName', actualValue);
+              }}
             >
               <SelectTrigger id="automationToolName" className="mt-1 bg-input/80">
                 <SelectValue placeholder="Select a tool (optional)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None selected / Undecided</SelectItem>
+                <SelectItem value={NO_TOOL_SELECTED_VALUE}>None selected / Undecided</SelectItem>
                 {allTools.map(tool => (
                   <SelectItem key={tool.id} value={tool.name}>
                     {tool.name}
