@@ -6,8 +6,9 @@ import type { Tool } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, Star, ExternalLink, Box, Eye } from 'lucide-react';
+import { CheckCircle2, XCircle, Star, ExternalLink, Eye } from 'lucide-react'; // Removed Box
 import Link from 'next/link';
+import Image from 'next/image'; // Added Image import
 
 interface ToolResultsProps {
   toolsToDisplay: Tool[];
@@ -62,10 +63,16 @@ const ToolResults: React.FC<ToolResultsProps> = ({
               <Card className="border-primary/20 shadow-lg">
                 <CardHeader className="flex flex-row items-start gap-4 p-4 sm:p-6 bg-muted/20 rounded-t-lg">
                   <div
-                    className="p-2 rounded-md bg-primary/10 border border-primary/20 shadow-sm"
-                    data-ai-hint={tool.dataAiHint || 'tool related image'}
+                    className="p-1 rounded-md bg-card border border-border shadow-sm flex-shrink-0" // Adjusted padding and background
                   >
-                     <Box className="h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin-slow" />
+                     <Image
+                        src={tool.logoUrl || "https://placehold.co/60x60.png"}
+                        alt={`${tool.name} logo`}
+                        width={48} // Adjusted size for consistency (sm:h-12 sm:w-12)
+                        height={48}
+                        className="rounded-md object-contain"
+                        data-ai-hint={tool.dataAiHint || "tool logo"}
+                      />
                   </div>
                   <div>
                     <CardTitle className="text-2xl sm:text-3xl text-primary">{tool.name}</CardTitle>
