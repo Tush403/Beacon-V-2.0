@@ -86,6 +86,7 @@ export interface EstimatorInputValues {
   usesFramework: boolean;
   usesCiCd: boolean;
   teamSize: number;
+  automationToolName: string; // Added new field
 }
 
 export interface EffortEstimationOutput {
@@ -108,15 +109,4 @@ export interface ChatMessage {
   avatarIcon?: ElementType;
   senderName?: string;
   isError?: boolean;
-}
-
-// Input for the feedback submission action
-export interface SubmitFeedbackInput {
-  message: string;
-}
-
-// Output for the feedback submission action
-export interface SubmitFeedbackOutput {
-  success: boolean;
-  error?: string;
 }

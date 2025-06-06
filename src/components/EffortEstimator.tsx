@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import type { EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
+import type { EstimatorInputValues, EffortEstimationOutput, Tool } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescript
 import { AlertCircle, Bot, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
 import { Skeleton } from './ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface EffortEstimatorProps {
   inputValues: EstimatorInputValues;
@@ -20,6 +21,7 @@ interface EffortEstimatorProps {
   estimation: EffortEstimationOutput | null;
   isLoading: boolean;
   error: string | null;
+  allTools: Tool[]; // Added to receive the list of tools
 }
 
 const EffortEstimator: React.FC<EffortEstimatorProps> = ({
@@ -29,6 +31,7 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
   estimation,
   isLoading,
   error,
+  allTools,
 }) => {
   const [showResultDialog, setShowResultDialog] = useState(false);
 
@@ -54,6 +57,26 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
           <CardDescription>Provide project details to get an effort estimation.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="automationToolName" className="text-sm font-medium text-foreground/80">Automation Tool</Label>
+            <Select
+              value={inputValues.automationToolName}
+              onValueChange={(value) => onInputChange('automationToolName', value)}
+            >
+              <SelectTrigger id="automationToolName" className="mt-1 bg-input/80">
+                <SelectValue placeholder="Select a tool (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">None selected / Undecided</SelectItem>
+                {allTools.map(tool => (
+                  <SelectItem key={tool.id} value={tool.name}>
+                    {tool.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div>
             <Label htmlFor="complexityLow" className="text-sm font-medium text-foreground/80">Complexity - Low (Test Cases)</Label>
             <Input

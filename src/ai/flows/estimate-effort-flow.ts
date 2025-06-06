@@ -1,7 +1,7 @@
 
 'use server';
 /**
- * @fileOverview Estimates project effort based on complexity, team size, and technical factors.
+ * @fileOverview Estimates project effort based on complexity, team size, technical factors, and selected automation tool.
  *
  * - estimateEffortFlow - A function that handles the effort estimation.
  * - EstimateEffortInput - The input type for the estimateEffortFlow function.
@@ -21,6 +21,7 @@ const EstimateEffortInputSchema = z.object({
   usesFramework: z.boolean().describe('Whether a standard test automation framework is being used (e.g., Selenium, Playwright, Cypress).'),
   usesCiCd: z.boolean().describe('Whether a CI/CD pipeline is integrated for automated testing.'),
   teamSize: z.number().min(1).describe('Number of QA engineers dedicated to test automation.'),
+  automationToolName: z.string().describe('The name of the primary automation tool planned for the project. Empty if no specific tool is selected yet.'),
 });
 export type EstimateEffortInput = z.infer<typeof EstimateEffortInputSchema>;
 
@@ -56,6 +57,7 @@ Consider these factors:
 - Is a standard test automation framework (e.g., Selenium, Playwright, Cypress) being used? {{#if usesFramework}}Yes{{else}}No{{/if}}
 - Is a CI/CD pipeline integrated for automated testing? {{#if usesCiCd}}Yes{{else}}No{{/if}}
 - QA Team Size (dedicated to automation): {{teamSize}} engineers
+- Primary Automation Tool: {{#if automationToolName}}{{automationToolName}}{{else}}Not specified{{/if}}
 
 Base your estimation on common industry heuristics. For example:
 - Low complexity: 0.25-0.5 person-days per test case
@@ -66,6 +68,7 @@ Base your estimation on common industry heuristics. For example:
 - Not using a framework might increase initial setup and scripting time.
 - CI/CD integration adds some initial setup effort but improves long-term efficiency.
 - Team size influences overall timeline but the primary output should be total person-days of effort.
+- The choice of automation tool ({{#if automationToolName}}{{automationToolName}}{{else}}if not specified{{/if}}) can also influence effort. For instance, a mature and widely-adopted tool might offer more readily available resources and pre-built functionalities, potentially reducing effort compared to a newer or less common tool. If 'Not specified', provide a general estimate.
 
 Calculate the total estimated person-days.
 Provide a concise explanation for your estimate, mentioning how the key factors influenced it.
@@ -85,13 +88,6 @@ Focus on providing a numerical estimate for 'estimatedPersonDays' and a textual 
 
 // Exported wrapper function
 export async function estimateEffortFlow(input: EstimateEffortInputType): Promise<EstimateEffortOutputType> {
-  // Ensure input matches the Zod schema, especially teamSize constraint.
-  // The component should also validate this, but as a safeguard:
-  if (input.teamSize <= 0) {
-    // This case should ideally be caught before calling the flow.
-    // However, if it reaches here, return a default or throw.
-    // For now, let the Zod schema in defineFlow handle it or adjust if needed.
-  }
+  // Zod validation, including teamSize constraint and automationToolName, is handled by estimateEffortGenkitFlow
   return estimateEffortGenkitFlow(input);
 }
-

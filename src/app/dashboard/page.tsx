@@ -43,6 +43,7 @@ const initialEstimatorInputs: EstimatorInputValues = {
   usesFramework: false,
   usesCiCd: false,
   teamSize: 1,
+  automationToolName: "", // Added new field
 };
 
 interface DashboardPageProps {
@@ -175,7 +176,7 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
   const handleEstimatorInputChange = useCallback((field: keyof EstimatorInputValues, value: string | number | boolean) => {
     setEstimatorInputs(prevInputs => ({
       ...prevInputs,
-      [field]: typeof value === 'string' && (field === 'complexityLow' || field === 'complexityMedium' || field === 'complexityHigh' || field === 'complexityHighlyComplex' || field === 'teamSize')
+      [field]: typeof value === 'string' && (field === 'complexityLow' || field === 'complexityMedium' || field === 'complexityHigh' || field === 'complexityHighlyComplex' || field === 'teamSize') && field !== 'automationToolName'
         ? parseInt(value, 10) || 0
         : value,
     }));
@@ -273,6 +274,7 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
                 estimation={effortEstimation}
                 isLoading={estimatorLoading}
                 error={estimatorError}
+                allTools={mockToolsData} // Pass all tools for the dropdown
               />
             </div>
 
