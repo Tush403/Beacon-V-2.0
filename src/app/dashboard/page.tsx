@@ -19,7 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Zap, TrendingUp } from 'lucide-react';
+import { AlertCircle, Zap } from 'lucide-react'; // Removed TrendingUp as it's not directly used for an icon here
 import { cn } from '@/lib/utils';
 import BackToTopButton from '@/components/BackToTopButton';
 import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
@@ -75,10 +75,6 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
-    // Check if we should show initial release notes (e.g., once per version)
-    // For now, always show it on first load of dashboard for demonstration.
-    // In a real app, you'd check localStorage for `acknowledged_version_2.0` etc.
-    // setShowInitialReleaseNotes(true); // Removed to stop it from showing always after first nav
   }, []);
 
   useEffect(() => {
@@ -103,7 +99,7 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
       if (filterType === 'codingRequirement' && value === 'AI/ML') {
         newFilters.codingLanguage = 'N/A';
       } else if (filterType === 'codingRequirement' && value !== 'AI/ML' && prevFilters.codingLanguage === 'N/A' && prevFilters.codingRequirement === 'AI/ML') {
-        newFilters.codingLanguage = ''; // Reset if changing from AI/ML
+        newFilters.codingLanguage = ''; 
       }
       return newFilters;
     });
@@ -197,7 +193,7 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
     setEffortEstimation(null);
     try {
       const result = await estimateEffortAction(estimatorInputs);
-      if ('error' in result) {
+      if ('error'in result) {
         setEstimatorError(result.error);
       } else {
         setEffortEstimation(result);
@@ -296,7 +292,6 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
                       comparisonParameters={comparisonParametersData}
                   />
               )}
-              {/* ROI Chart moved to dialog, triggered by FloatingActionButtons */}
             </div>
           </div>
         </main>
@@ -329,7 +324,7 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
       <Dialog open={showInitialReleaseNotes} onOpenChange={(open) => { if (!open) setShowInitialReleaseNotes(false); }}>
         <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col" onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()}>
           <DialogHeader>
-            <DialogTitle className="text-xl text-primary">Beacon - Release Notes (V.2.0)</DialogTitle>
+            <DialogTitle className="text-xl text-primary">ToolWise - Release Notes (V.2.0)</DialogTitle>
             <DialogDescription>
               Welcome! Please review the latest updates before proceeding.
             </DialogDescription>

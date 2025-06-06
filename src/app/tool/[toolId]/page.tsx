@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import Header from '@/components/Header';
-//import { mockToolsData } from '@/lib/data';
+import { mockToolsData } from '@/lib/data'; // Import mockToolsData
 import type { Tool } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -16,7 +16,6 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from 'lucide-react';
 
-// This is a client component, so we can use useParams
 export default function ToolDetailPage() {
   const params = useParams();
   const toolId = typeof params.toolId === 'string' ? params.toolId : undefined;
@@ -41,7 +40,7 @@ export default function ToolDetailPage() {
           (t.applicationTypes.some(at => tool.applicationTypes.includes(at)) ||
            t.testTypes.some(tt => tool.testTypes.includes(tt)))
       )
-      .sort((a,b) => b.score - a.score) // Sort by score
+      .sort((a,b) => b.score - a.score) 
       .slice(0, 3);
   }, [tool]);
 
@@ -277,11 +276,3 @@ export default function ToolDetailPage() {
     </div>
   );
 }
-
-// It's good practice to define generateMetadata if you want dynamic titles/descriptions
-// For client components that use `useParams`, you can't directly export `generateMetadata`
-// from the same file. You'd typically have this in a layout.tsx for the segment or handle
-// title updates via `useEffect` and `document.title` if simple, or a more complex client-side
-// metadata management strategy if needed.
-// For now, we'll rely on the RootLayout's default title.
-// A more advanced setup might involve a server component wrapper for this page to use generateMetadata.
