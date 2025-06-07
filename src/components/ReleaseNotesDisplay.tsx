@@ -30,6 +30,14 @@ const ReleaseNotesDisplay: React.FC = () => (
         </li>
         <li className="flex items-start">
           <CheckCircle2 className="h-4 w-4 mr-2 mt-0.5 text-green-600 flex-shrink-0" />
+          <span><strong>Back to Top button:</strong> Added for improved navigation on long pages.</span>
+        </li>
+        <li className="flex items-start">
+          <CheckCircle2 className="h-4 w-4 mr-2 mt-0.5 text-green-600 flex-shrink-0" />
+          <span><strong>Floating Button Tooltips:</strong> Added for better usability of action buttons.</span>
+        </li>
+        <li className="flex items-start">
+          <CheckCircle2 className="h-4 w-4 mr-2 mt-0.5 text-green-600 flex-shrink-0" />
           <span><strong>Export to PDF:</strong> <span className="font-semibold text-green-700">(Coming Soon)</span></span>
         </li>
       </ul>
@@ -58,6 +66,14 @@ const ReleaseNotesDisplay: React.FC = () => (
         <li className="flex items-start">
           <Gem className="h-3 w-3 mr-2.5 mt-1 text-primary flex-shrink-0" />
           <span>Optimized performance for faster search results.</span>
+        </li>
+         <li className="flex items-start">
+          <Gem className="h-3 w-3 mr-2.5 mt-1 text-primary flex-shrink-0" />
+          <span>Corrected handling of leading zeros in AI Effort Estimator inputs and allowed empty fields.</span>
+        </li>
+        <li className="flex items-start">
+          <Gem className="h-3 w-3 mr-2.5 mt-1 text-primary flex-shrink-0" />
+          <span>Resolved missing export for `comparisonParametersData` from the data module.</span>
         </li>
       </ul>
     </div>
