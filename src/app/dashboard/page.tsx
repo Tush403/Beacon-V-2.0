@@ -10,20 +10,33 @@ import RoiChart from '@/components/RoiChart';
 import EffortEstimator from '@/components/EffortEstimator';
 import RoiComparisonTable from '@/components/RoiComparisonTable';
 import FloatingActionButtons from '@/components/FloatingActionButtons';
-import type { Filters, Tool, EstimatorInputValues, EffortEstimationOutput } from '@/lib/types';
+import type { Filters, Tool, EffortEstimationOutput } from '@/lib/types';
+// EstimatorInputValues will be handled by a local type for UI
 import { mockToolsData, filterOptionsData, trendDataPerTestType, comparisonParametersData } from '@/lib/data';
 import { ALL_FILTER_VALUE } from '@/lib/constants';
 import { estimateEffort as estimateEffortAction, generateTestTypeSummary } from '@/actions/aiActions';
 import type { GenerateTestTypeSummaryOutput, GenerateTestTypeSummaryInput } from '@/ai/flows/generate-test-type-summary';
+import type { EstimateEffortInput } from '@/ai/flows/estimate-effort-flow'; // For AI action call
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Zap } from 'lucide-react'; // Removed TrendingUp as it's not directly used for an icon here
+import { AlertCircle, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import BackToTopButton from '@/components/BackToTopButton';
 import ReleaseNotesDisplay from '@/components/ReleaseNotesDisplay';
 
+// UI-specific type for estimator inputs, allowing strings for numeric fields
+interface EstimatorInputValuesForUI {
+  complexityLow: string;
+  complexityMedium: string;
+  complexityHigh: string;
+  complexityHighlyComplex: string;
+  usesFramework: boolean;
+  usesCiCd: boolean;
+  teamSize: string;
+  automationToolName: string;
+}
 
 const initialFilters: Filters = {
   applicationType: "",
@@ -35,15 +48,15 @@ const initialFilters: Filters = {
   reportingAnalytics: "",
 };
 
-const initialEstimatorInputs: EstimatorInputValues = {
-  complexityLow: 0,
-  complexityMedium: 0,
-  complexityHigh: 0,
-  complexityHighlyComplex: 0,
+const initialEstimatorInputs: EstimatorInputValuesForUI = {
+  complexityLow: "",
+  complexityMedium: "",
+  complexityHigh: "",
+  complexityHighlyComplex: "",
   usesFramework: false,
   usesCiCd: false,
-  teamSize: 1,
-  automationToolName: "", // Added new field
+  teamSize: "1", // Default to "1" as a string, can also be ""
+  automationToolName: "",
 };
 
 interface DashboardPageProps {
@@ -55,7 +68,7 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [currentYear, setCurrentYear] = useState<number | null>(null);
 
-  const [estimatorInputs, setEstimatorInputs] = useState<EstimatorInputValues>(initialEstimatorInputs);
+  const [estimatorInputs, setEstimatorInputs] = useState<EstimatorInputValuesForUI>(initialEstimatorInputs);
   const [effortEstimation, setEffortEstimation] = useState<EffortEstimationOutput | null>(null);
   const [estimatorLoading, setEstimatorLoading] = useState<boolean>(false);
   const [estimatorError, setEstimatorError] = useState<string | null>(null);
@@ -173,27 +186,58 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
   const tool3ForComparison = useMemo(() => mockToolsData.find(t => t.id === toolForCol3Id) || null, [toolForCol3Id]);
 
 
-  const handleEstimatorInputChange = useCallback((field: keyof EstimatorInputValues, value: string | number | boolean) => {
-    setEstimatorInputs(prevInputs => ({
-      ...prevInputs,
-      [field]: typeof value === 'string' && (field === 'complexityLow' || field === 'complexityMedium' || field === 'complexityHigh' || field === 'complexityHighlyComplex' || field === 'teamSize') && field !== 'automationToolName'
-        ? parseInt(value, 10) || 0
-        : value,
-    }));
+  const handleEstimatorInputChange = useCallback((field: keyof EstimatorInputValuesForUI, value: string | boolean) => {
+    setEstimatorInputs(prevInputs => {
+      let processedValue = value;
+      if (typeof value === 'string' && (field === 'complexityLow' || field === 'complexityMedium' || field === 'complexityHigh' || field === 'complexityHighlyComplex' || field === 'teamSize')) {
+        // Allow empty string or positive integers. Remove leading zeros unless the value is "0".
+        if (value === "") {
+          processedValue = "";
+        } else if (/^\d+$/.test(value)) {
+          if (value.length > 1 && value.startsWith('0')) {
+            processedValue = value.replace(/^0+/, '');
+            if (processedValue === '') processedValue = '0'; // Handles case like "00" -> "0"
+          } else {
+            processedValue = value;
+          }
+        } else {
+          processedValue = prevInputs[field]; // Revert to previous value if input is not valid number string
+        }
+      }
+      return {
+        ...prevInputs,
+        [field]: processedValue,
+      };
+    });
   }, []);
 
 
   const handleGetEstimate = useCallback(async () => {
-    if (estimatorInputs.teamSize <= 0) {
-        setEstimatorError("Team size must be greater than 0.");
+    const teamSizeNum = parseInt(estimatorInputs.teamSize, 10);
+
+    if (isNaN(teamSizeNum) || teamSizeNum <= 0) {
+        setEstimatorError("Team size must be a number greater than 0.");
         setEffortEstimation(null);
         return;
     }
+
     setEstimatorLoading(true);
     setEstimatorError(null);
     setEffortEstimation(null);
+
+    const effortInputForAI: EstimateEffortInput = {
+      complexityLow: parseInt(estimatorInputs.complexityLow, 10) || 0,
+      complexityMedium: parseInt(estimatorInputs.complexityMedium, 10) || 0,
+      complexityHigh: parseInt(estimatorInputs.complexityHigh, 10) || 0,
+      complexityHighlyComplex: parseInt(estimatorInputs.complexityHighlyComplex, 10) || 0,
+      usesFramework: estimatorInputs.usesFramework,
+      usesCiCd: estimatorInputs.usesCiCd,
+      teamSize: teamSizeNum, // Already validated
+      automationToolName: estimatorInputs.automationToolName,
+    };
+
     try {
-      const result = await estimateEffortAction(estimatorInputs);
+      const result = await estimateEffortAction(effortInputForAI);
       if ('error'in result) {
         setEstimatorError(result.error);
       } else {
@@ -250,6 +294,12 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
                   !showInitialReleaseNotes &&
                   !showRoiChartDialog &&
                   !showAiTrendSummaryDialog;
+  
+  const isGetEstimateDisabled = useMemo(() => {
+    if (estimatorLoading) return true;
+    const teamSizeNum = parseInt(estimatorInputs.teamSize, 10);
+    return isNaN(teamSizeNum) || teamSizeNum <= 0;
+  }, [estimatorLoading, estimatorInputs.teamSize]);
 
   return (
     <>
@@ -274,7 +324,8 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
                 estimation={effortEstimation}
                 isLoading={estimatorLoading}
                 error={estimatorError}
-                allTools={mockToolsData} // Pass all tools for the dropdown
+                allTools={mockToolsData}
+                isSubmitDisabled={isGetEstimateDisabled}
               />
             </div>
 

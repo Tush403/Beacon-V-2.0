@@ -2,7 +2,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import type { EstimatorInputValues, EffortEstimationOutput, Tool } from '@/lib/types';
+// Removed EstimatorInputValues from here, will use the UI-specific type from props
+import type { EffortEstimationOutput, Tool } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -14,17 +15,30 @@ import { Alert, AlertDescription, AlertTitle as UIAlertTitle } from "@/component
 import { Skeleton } from './ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+// This interface defines the shape of inputValues expected from the parent (DashboardPage)
+interface EstimatorInputValuesForUI {
+  complexityLow: string;
+  complexityMedium: string;
+  complexityHigh: string;
+  complexityHighlyComplex: string;
+  usesFramework: boolean;
+  usesCiCd: boolean;
+  teamSize: string;
+  automationToolName: string;
+}
+
 interface EffortEstimatorProps {
-  inputValues: EstimatorInputValues;
-  onInputChange: (field: keyof EstimatorInputValues, value: string | number | boolean) => void;
+  inputValues: EstimatorInputValuesForUI; // Use the UI-specific type
+  onInputChange: (field: keyof EstimatorInputValuesForUI, value: string | boolean) => void;
   onSubmit: () => void;
   estimation: EffortEstimationOutput | null;
   isLoading: boolean;
   error: string | null;
   allTools: Tool[];
+  isSubmitDisabled?: boolean;
 }
 
-const NO_TOOL_SELECTED_VALUE = "__NONE_SELECTED_TOOL__"; // Unique value for "None selected"
+const NO_TOOL_SELECTED_VALUE = "__NONE_SELECTED_TOOL__";
 
 const EffortEstimator: React.FC<EffortEstimatorProps> = ({
   inputValues,
@@ -34,6 +48,7 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
   isLoading,
   error,
   allTools,
+  isSubmitDisabled,
 }) => {
   const [showResultDialog, setShowResultDialog] = useState(false);
 
@@ -43,25 +58,8 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
     }
   }, [estimation, error, isLoading]);
 
-  const handleNumericInputChange = (field: keyof EstimatorInputValues, stringValue: string) => {
-    // stringValue is e.target.value from the input field
-    if (stringValue === "") {
-      onInputChange(field, 0); // Default to 0 if input is cleared
-      return;
-    }
-
-    const num = parseInt(stringValue, 10);
-
-    if (isNaN(num)) {
-      // If parsing fails (e.g., user types non-numeric characters, though type="number" should limit this)
-      // Set to 0 or keep previous valid state. For simplicity, setting to 0.
-      onInputChange(field, 0);
-    } else {
-      // Pass the parsed number to the parent's handler.
-      // This ensures values like "03" become 3, "032" become 32.
-      onInputChange(field, num < 0 ? 0 : num); // Ensure non-negative
-    }
-  };
+  // Numeric input fields will directly call onInputChange with e.target.value (string)
+  // The parent (DashboardPage) will handle parsing and cleaning (e.g., "032" -> "32")
 
   return (
     <>
@@ -101,10 +99,10 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
             <Label htmlFor="complexityLow" className="text-sm font-medium text-foreground/80">Complexity - Low (Test Cases)</Label>
             <Input
               id="complexityLow"
-              type="number"
-              min="0"
+              type="number" // Still type="number" for browser behavior (arrows, numpad)
+              min="0" // UI hint, not strict validation here
               value={inputValues.complexityLow}
-              onChange={(e) => handleNumericInputChange('complexityLow', e.target.value)}
+              onChange={(e) => onInputChange('complexityLow', e.target.value)}
               placeholder="e.g., 50"
               className="mt-1 bg-input/80"
             />
@@ -116,7 +114,7 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
               type="number"
               min="0"
               value={inputValues.complexityMedium}
-              onChange={(e) => handleNumericInputChange('complexityMedium', e.target.value)}
+              onChange={(e) => onInputChange('complexityMedium', e.target.value)}
               placeholder="e.g., 30"
               className="mt-1 bg-input/80"
             />
@@ -128,7 +126,7 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
               type="number"
               min="0"
               value={inputValues.complexityHigh}
-              onChange={(e) => handleNumericInputChange('complexityHigh', e.target.value)}
+              onChange={(e) => onInputChange('complexityHigh', e.target.value)}
               placeholder="e.g., 15"
               className="mt-1 bg-input/80"
             />
@@ -140,7 +138,7 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
               type="number"
               min="0"
               value={inputValues.complexityHighlyComplex}
-              onChange={(e) => handleNumericInputChange('complexityHighlyComplex', e.target.value)}
+              onChange={(e) => onInputChange('complexityHighlyComplex', e.target.value)}
               placeholder="e.g., 5"
               className="mt-1 bg-input/80"
             />
@@ -169,16 +167,16 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
             <Input
               id="teamSize"
               type="number"
-              min="1" // UI hint, actual validation in flow/parent if needed
+              min="1" // UI hint
               value={inputValues.teamSize}
-              onChange={(e) => handleNumericInputChange('teamSize', e.target.value)}
+              onChange={(e) => onInputChange('teamSize', e.target.value)}
               placeholder="e.g., 3"
               className="mt-1 bg-input/80"
             />
-            {inputValues.teamSize <= 0 && <p className="text-xs text-destructive mt-1">Team size must be greater than 0 for estimation.</p>}
+            {/* Error display for teamSize is handled by parent via isSubmitDisabled and error prop */}
           </div>
 
-          <Button onClick={onSubmit} disabled={isLoading || inputValues.teamSize <= 0} className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Button onClick={onSubmit} disabled={isSubmitDisabled} className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground">
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Get Estimate
           </Button>
@@ -240,5 +238,3 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
 };
 
 export default EffortEstimator;
-
-    

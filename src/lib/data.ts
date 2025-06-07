@@ -70,7 +70,7 @@ export const mockToolsData: Tool[] = [
       "End-to-End Automation Coverage: UI, API, DB, Security, and Performance testing",
       "Modular Framework: Plug-and-play components and reusable templates",
       "CI/CD Ready: Supports Jenkins, GitHub Actions, Azure DevOps",
-      "Detailed Reporting: Allure and custom HTML reporting with traceability"
+      //"Detailed Reporting: Allure and custom HTML reporting with traceability"
     ],
     "weaknesses": [
       "Moderate Learning Curve: Requires Java and Maven familiarity",
@@ -486,8 +486,8 @@ export const mockToolsData: Tool[] = [
         "Autonomous testing powered by AI",
         "Natural language test creation and understanding",
         "Self-healing tests that adapt to UI changes",
-        "Reduces test maintenance significantly",
-        "Comprehensive end-to-end testing capabilities"
+        // "Reduces test maintenance significantly",
+        // "Comprehensive end-to-end testing capabilities"
     ],
     weaknesses: [
         "Subscription cost can be a factor for smaller teams",
