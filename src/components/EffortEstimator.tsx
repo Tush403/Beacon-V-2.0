@@ -43,9 +43,24 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
     }
   }, [estimation, error, isLoading]);
 
-  const handleNumericInputChange = (field: keyof EstimatorInputValues, value: string) => {
-    const numValue = parseInt(value, 10);
-    onInputChange(field, isNaN(numValue) ? 0 : numValue);
+  const handleNumericInputChange = (field: keyof EstimatorInputValues, stringValue: string) => {
+    // stringValue is e.target.value from the input field
+    if (stringValue === "") {
+      onInputChange(field, 0); // Default to 0 if input is cleared
+      return;
+    }
+
+    const num = parseInt(stringValue, 10);
+
+    if (isNaN(num)) {
+      // If parsing fails (e.g., user types non-numeric characters, though type="number" should limit this)
+      // Set to 0 or keep previous valid state. For simplicity, setting to 0.
+      onInputChange(field, 0);
+    } else {
+      // Pass the parsed number to the parent's handler.
+      // This ensures values like "03" become 3, "032" become 32.
+      onInputChange(field, num < 0 ? 0 : num); // Ensure non-negative
+    }
   };
 
   return (
@@ -154,13 +169,13 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
             <Input
               id="teamSize"
               type="number"
-              min="1"
+              min="1" // UI hint, actual validation in flow/parent if needed
               value={inputValues.teamSize}
               onChange={(e) => handleNumericInputChange('teamSize', e.target.value)}
               placeholder="e.g., 3"
               className="mt-1 bg-input/80"
             />
-            {inputValues.teamSize <= 0 && <p className="text-xs text-destructive mt-1">Team size must be greater than 0.</p>}
+            {inputValues.teamSize <= 0 && <p className="text-xs text-destructive mt-1">Team size must be greater than 0 for estimation.</p>}
           </div>
 
           <Button onClick={onSubmit} disabled={isLoading || inputValues.teamSize <= 0} className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground">
@@ -225,3 +240,5 @@ const EffortEstimator: React.FC<EffortEstimatorProps> = ({
 };
 
 export default EffortEstimator;
+
+    
