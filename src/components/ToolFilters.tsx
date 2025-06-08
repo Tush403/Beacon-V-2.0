@@ -6,7 +6,7 @@ import type { Filters, FilterOptions, FilterOption } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Filter, RotateCcw } from 'lucide-react';
+import { Filter, RotateCcw, XCircle } from 'lucide-react'; // Added XCircle
 import { ALL_FILTER_VALUE } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
@@ -17,6 +17,8 @@ interface ToolFiltersProps {
   onResetFilters: () => void;
 }
 
+const CLEAR_THIS_FILTER_VALUE = "__CLEAR_THIS__"; // Value for the explicit clear option
+
 const ToolFilters: React.FC<ToolFiltersProps> = ({ filters, filterOptions, onFilterChange, onResetFilters }) => {
   
   const renderSelect = <K extends keyof Filters>(
@@ -25,6 +27,7 @@ const ToolFilters: React.FC<ToolFiltersProps> = ({ filters, filterOptions, onFil
     options: FilterOption[] 
   ) => {
     const isDisabled = filterKey === 'codingLanguage' && filters.codingRequirement === 'AI/ML';
+    const isFilterActive = filters[filterKey] !== "";
     
     return (
       <div className="space-y-1.5">
@@ -34,10 +37,17 @@ const ToolFilters: React.FC<ToolFiltersProps> = ({ filters, filterOptions, onFil
         <Select
           value={filters[filterKey] === "" ? ALL_FILTER_VALUE : filters[filterKey]}
           onValueChange={(valueFromSelect) => {
-            const actualValue = valueFromSelect === ALL_FILTER_VALUE ? "" : valueFromSelect;
-            onFilterChange(filterKey, actualValue as Filters[K]);
+            let actualValue: Filters[K] | "" = ""; // Default to clearing
+            if (valueFromSelect === CLEAR_THIS_FILTER_VALUE) {
+              actualValue = "";
+            } else if (valueFromSelect === ALL_FILTER_VALUE) {
+              actualValue = "";
+            } else {
+              actualValue = valueFromSelect as Filters[K];
+            }
+            onFilterChange(filterKey, actualValue);
           }}
-          disabled={isDisabled} // Disable the Select component itself
+          disabled={isDisabled}
         >
           <SelectTrigger 
             id={filterKey} 
@@ -45,11 +55,19 @@ const ToolFilters: React.FC<ToolFiltersProps> = ({ filters, filterOptions, onFil
               "w-full bg-input/80 text-foreground placeholder:text-muted-foreground rounded-md border-border/70 focus:ring-accent focus:border-accent",
               isDisabled && "cursor-not-allowed opacity-50"
             )}
-            // No need for disabled prop here if Select parent is disabled, but doesn't hurt
           >
             <SelectValue placeholder={`Any ${label}`} />
           </SelectTrigger>
           <SelectContent className="bg-popover border-border/70 text-popover-foreground rounded-md shadow-xl backdrop-blur-sm">
+            {isFilterActive && (
+              <SelectItem
+                key={CLEAR_THIS_FILTER_VALUE}
+                value={CLEAR_THIS_FILTER_VALUE}
+                className="italic text-destructive hover:bg-destructive/10 hover:text-destructive-foreground focus:bg-destructive/10 focus:text-destructive-foreground data-[state=highlighted]:text-destructive-foreground data-[state=highlighted]:bg-destructive/10"
+              >
+                <XCircle className="mr-2 h-4 w-4" /> Clear filter for {label}
+              </SelectItem>
+            )}
             {options.map((option) => (
               <SelectItem 
                 key={option.value} 
