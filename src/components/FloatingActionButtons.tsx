@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, Zap } from 'lucide-react';
+import { TrendingUp, Zap, Loader2 } from 'lucide-react'; // Added Loader2
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -56,7 +56,11 @@ export default function FloatingActionButtons({
               className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full h-10 w-10 sm:h-12 sm:w-12 shadow-md"
               aria-label="View AI Trend Summary"
             >
-              <Zap className="h-5 w-5 sm:h-6 sm:w-6" />
+              {isAiSummaryDisabled ? (
+                <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin" />
+              ) : (
+                <Zap className="h-5 w-5 sm:h-6 sm:w-6" />
+              )}
             </Button>
           </TooltipTrigger>
           <TooltipContent side="left" className="bg-popover text-popover-foreground border-border shadow-md">
