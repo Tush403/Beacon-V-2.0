@@ -75,7 +75,7 @@ export default function LandingPage() {
           onInteractOutside={(e) => e.preventDefault()}
         >
           <DialogHeader>
-            <DialogTitle className="text-xl text-primary">ToolWise - Release Notes (V.2.0)</DialogTitle>
+            <DialogTitle className="text-xl text-primary">Beacon - Release Notes (V.2.0)</DialogTitle>
             <DialogDescription>
               Welcome! Please review the latest updates before proceeding.
             </DialogDescription>
