@@ -3,9 +3,9 @@
 
 import React from 'react';
 import type { Tool, ComparisonParameter } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Star, Link as LinkIcon } from 'lucide-react';
+import { Star, Link as LinkIcon, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -26,9 +26,18 @@ const getToolDisplayValue = (tool: Tool | null, parameterKey: keyof Tool): strin
   if (!tool) return 'N/A';
   const value = tool[parameterKey];
   if (parameterKey === 'strengths' || parameterKey === 'weaknesses') {
-    return Array.isArray(value) ? value.join('; ') : String(value); // Use semicolon for better readability
+    // Join with a semicolon for lists to avoid CSV confusion if items have commas
+    return Array.isArray(value) ? value.join('; ') : String(value); 
   }
   return Array.isArray(value) ? value.join(', ') : String(value);
+};
+
+// Helper function to escape CSV cell content
+const escapeCsvCell = (cellValue: string): string => {
+  if (cellValue.includes(',') || cellValue.includes('"') || cellValue.includes('\n') || cellValue.includes(';')) {
+    return `"${cellValue.replace(/"/g, '""')}"`;
+  }
+  return cellValue;
 };
 
 const RoiComparisonTable: React.FC<RoiComparisonTableProps> = ({
@@ -40,6 +49,41 @@ const RoiComparisonTable: React.FC<RoiComparisonTableProps> = ({
   onTool3Change,
   comparisonParameters,
 }) => {
+
+  const handleExportCsv = () => {
+    if (!tool1) return;
+
+    const headers = [
+      "Parameter",
+      tool1?.name || "Tool 1 (N/A)",
+      tool2?.name || "Tool 2 (N/A)",
+      tool3?.name || "Tool 3 (N/A)",
+    ];
+
+    const dataRows = comparisonParameters.map(param => {
+      return [
+        escapeCsvCell(param.label),
+        escapeCsvCell(getToolDisplayValue(tool1, param.key)),
+        escapeCsvCell(getToolDisplayValue(tool2, param.key)),
+        escapeCsvCell(getToolDisplayValue(tool3, param.key)),
+      ].join(',');
+    });
+
+    const csvContent = [headers.join(','), ...dataRows].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "tool_comparison.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+
   const renderToolColumnHeader = (
     selectedTool: Tool | null,
     onChange: (toolId: string | null) => void,
@@ -101,14 +145,20 @@ const RoiComparisonTable: React.FC<RoiComparisonTableProps> = ({
 
   return (
     <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm text-card-foreground animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-150 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
-      <CardHeader>
-        <CardTitle className="text-xl text-primary flex items-center">
-          <Star className="mr-2 h-6 w-6 text-accent" />
-          ROI Comparison Table
-        </CardTitle>
-        <CardDescription>
-          Compare tools side-by-side. The first tool is based on your filters. Click tool names to see more details.
-        </CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle className="text-xl text-primary flex items-center">
+            <Star className="mr-2 h-6 w-6 text-accent" />
+            ROI Comparison Table
+          </CardTitle>
+          <CardDescription>
+            Compare tools side-by-side. The first tool is based on your filters. Click tool names to see more details.
+          </CardDescription>
+        </div>
+        <Button onClick={handleExportCsv} variant="outline" size="sm" className="ml-auto">
+          <Download className="mr-2 h-4 w-4" />
+          Export CSV
+        </Button>
       </CardHeader>
       <CardContent className="p-0 overflow-x-auto">
         <div className="grid grid-cols-[minmax(200px,1.2fr)_repeat(3,minmax(150px,1fr))] border-t border-l border-border rounded-b-lg">
@@ -128,8 +178,8 @@ const RoiComparisonTable: React.FC<RoiComparisonTableProps> = ({
                  <div 
                   key={`${param.key}-${currentTool?.id || index}`} 
                   className={cn(
-                    "p-3 border-b text-sm flex items-start min-h-[50px]", // Ensure min height for data cells
-                    index < 2 && "border-r border-border", // Add right border for first two tool columns
+                    "p-3 border-b text-sm flex items-start min-h-[50px]", 
+                    index < 2 && "border-r border-border", 
                     !currentTool && "text-muted-foreground italic"
                   )}
                 >
