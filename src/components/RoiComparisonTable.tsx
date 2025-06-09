@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from 'react';
+import React, { useCallback } from 'react'; // Added useCallback
 import type { Tool, ComparisonParameter } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -50,12 +50,12 @@ const RoiComparisonTable: React.FC<RoiComparisonTableProps> = ({
   comparisonParameters,
 }) => {
 
-  const handleExportCsv = () => {
+  const handleExportCsv = useCallback(() => {
     if (!tool1) return;
 
     const headers = [
       "Parameter",
-      tool1?.name || "Tool 1 (N/A)",
+      tool1.name, // tool1 is guaranteed to be non-null here
       tool2?.name || "Tool 2 (N/A)",
       tool3?.name || "Tool 3 (N/A)",
     ];
@@ -81,7 +81,7 @@ const RoiComparisonTable: React.FC<RoiComparisonTableProps> = ({
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-  };
+  }, [tool1, tool2, tool3, comparisonParameters]);
 
 
   const renderToolColumnHeader = (
