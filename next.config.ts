@@ -1,4 +1,4 @@
-
+// next.config.ts
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -19,9 +19,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    allowedDevOrigins: ['https://6000-firebase-studio-1747806162951.cluster-6dx7corvpngoivimwvvljgokdw.cloudworkstations.dev'],
-  },
+  // Keep experimental if you have other experimental features,
+  // otherwise, you can remove the whole experimental block if it's empty.
+  experimental: {},
 };
 
 export default nextConfig;

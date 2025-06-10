@@ -61,7 +61,7 @@ const Header: React.FC = () => {
       {/* Left Side: TAO DIGITAL Branding and Logo */}
  <div className="flex items-center gap-x-2"> {/* Removed gap-x-1 */}
  <img
- src="/pdfs/logo1.png"
+ src="/Logo/TAO Logo.png"
  alt="TAO Digital Solutions Logo"
  className="h-10 w-auto" // Adjust height and width as needed
  />

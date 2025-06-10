@@ -1,54 +1,26 @@
+// src/app/layout.tsx
+import './globals.css'; // Correct path assuming globals.css is in src/app/
+import type { Metadata } from 'next';
 
-"use client"; 
+// Example: If you want to set up a global font
+// import { Inter } from 'next/font/google';
+// const inter = Inter({ subsets: ['latin'] });
 
-import type {Metadata} from 'next';
-import {Geist, Geist_Mono} from 'next/font/google';
-import './globals.css';
-import { Toaster } from "@/components/ui/toaster";
-import CookieConsentBanner from '@/components/CookieConsentBanner'; 
-import React, { useEffect } from 'react'; 
-// Removed useRouter and usePathname as they are no longer used
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
+export const metadata: Metadata = {
+  title: 'Beacon - Test Automation Tool Picker',
+  description: 'Discover the optimal test automation tools tailored to your project\'s unique needs. Beacon guides you through a comprehensive selection process, empowering you to make informed decisions with confidence.',
+  // You can add more metadata here, like openGraph, icons, etc.
+};
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  // Removed router and pathname declarations
-
-  useEffect(() => {
-    // Apply theme from localStorage on initial client load
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, []);
-
-  // Removed the useEffect block that handled refresh redirection
-
+}) {
   return (
     <html lang="en">
-      <head>
-        <title>Beacon - Automatic Tool Picker</title>
-        <meta name="description" content="Beacon: Find the best test automation tools tailored to your needs." />
-      </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
-        {children}
-        <CookieConsentBanner />
-        <Toaster />
-      </body>
+      {/* Example: <body className={inter.className}>{children}</body> */}
+      <body>{children}</body>
     </html>
   );
 }
