@@ -8,7 +8,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en"> 
+      <head>
+        <title>Beacon - Test Automation Tool Picker</title>
+      </head>
       <body>{children}</body>
     </html>
   );
