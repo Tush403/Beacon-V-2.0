@@ -6,9 +6,9 @@ import type { Tool } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, Star, ExternalLink, Eye } from 'lucide-react'; // Removed Box
+import { CheckCircle2, XCircle, Star, ExternalLink, Eye, SearchX } from 'lucide-react'; // Added SearchX
 import Link from 'next/link';
-import Image from 'next/image'; // Added Image import
+import Image from 'next/image';
 
 interface ToolResultsProps {
   toolsToDisplay: Tool[];
@@ -32,12 +32,16 @@ const ToolResults: React.FC<ToolResultsProps> = ({
       <Card className="shadow-xl rounded-lg border-border/50 bg-card/80 backdrop-blur-sm animate-in fade-in-0 slide-in-from-top-12 duration-700 ease-out delay-100 hover:shadow-2xl hover:scale-[1.01] transition-all duration-300">
         <CardHeader>
           <CardTitle className="text-xl text-primary flex items-center"><Star className="mr-2 h-6 w-6 text-accent" />Top Recommended Tools</CardTitle>
-          <CardDescription>No tools match your current filter criteria. Try adjusting your filters.</CardDescription>
+          <CardDescription>No tools match your current filter criteria.</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground p-4 text-center">
-            Please apply filters to see recommended tools.
-          </p>
+          <div className="flex flex-col items-center justify-center p-8 text-center">
+            <SearchX className="h-16 w-16 text-muted-foreground mb-4" />
+            <p className="text-lg font-medium text-foreground/90 mb-1">No Tools Found</p>
+            <p className="text-sm text-muted-foreground">
+              No tools match your current selection. Try adjusting your filters or resetting them to discover suitable options.
+            </p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -63,12 +67,12 @@ const ToolResults: React.FC<ToolResultsProps> = ({
               <Card className="border-primary/20 shadow-lg">
                 <CardHeader className="flex flex-row items-start gap-4 p-4 sm:p-6 bg-muted/20 rounded-t-lg">
                   <div
-                    className="p-1 rounded-md bg-card border border-border shadow-sm flex-shrink-0" // Adjusted padding and background
+                    className="p-1 rounded-md bg-card border border-border shadow-sm flex-shrink-0"
                   >
                      <Image
                         src={tool.logoUrl || "https://placehold.co/60x60.png"}
                         alt={`${tool.name} logo`}
-                        width={48} // Adjusted size for consistency (sm:h-12 sm:w-12)
+                        width={48}
                         height={48}
                         className="rounded-md object-contain"
                         data-ai-hint={tool.dataAiHint || "tool logo"}
@@ -86,7 +90,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({
                         <CheckCircle2 className="mr-2 h-5 w-5" /> Strengths:
                       </h4>
                       <ul className="list-disc list-inside space-y-1 text-sm text-foreground/90">
-                        {tool.strengths.slice(0, 3).map((strength, index) => ( // Show initial 3
+                        {tool.strengths.slice(0, 3).map((strength, index) => (
                           <li key={index}>{strength}</li>
                         ))}
                         {tool.strengths.length > 3 && <li className="italic text-muted-foreground">...and more (see details)</li>}
@@ -97,7 +101,7 @@ const ToolResults: React.FC<ToolResultsProps> = ({
                         <XCircle className="mr-2 h-5 w-5" /> Weaknesses:
                       </h4>
                       <ul className="list-disc list-inside space-y-1 text-sm text-foreground/90">
-                        {tool.weaknesses.slice(0, 3).map((weakness, index) => ( // Show initial 3
+                        {tool.weaknesses.slice(0, 3).map((weakness, index) => (
                           <li key={index}>{weakness}</li>
                         ))}
                         {tool.weaknesses.length > 3 && <li className="italic text-muted-foreground">...and more (see details)</li>}
