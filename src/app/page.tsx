@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Link from 'next/link'; // Import Link component
 
@@ -27,7 +28,7 @@ const HomePage = () => {
 
         <Link
           href="/dashboard"
-          className="bg-purple-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300"
+          className="bg-purple-600 text-white px-8 py-4 text-lg rounded-full shadow-lg hover:bg-purple-700 active:scale-95 transform transition-all duration-300"
         >
           Get Started
         </Link>
