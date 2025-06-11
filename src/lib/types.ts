@@ -2,13 +2,13 @@
 import type { GenerateTestTypeSummaryInput as AiTrendSummaryInput } from '@/ai/flows/generate-test-type-summary';
 import type { ElementType } from 'react';
 
-export type ApplicationType = "Web" | "Mobile" | "API" | "Desktop" | "Backend";
-export type TestType = "UI Testing" | "API Testing" | "Performance Testing" | "Security Testing" | "Unit Testing" | "DB Testing";
-export type OperatingSystem = "Windows" | "macOS" | "Linux" | "Android" | "iOS" | "Cross-Platform";
-export type CodingRequirement = "No-Code" | "Low-Code" | "Scripting" | "AI/ML";
-export type CodingLanguage = "JavaScript" | "Python" | "Java" | "C#" | "Ruby" | "Go" | "Swift" | "Kotlin" | "PHP" | "VBScript"| "JScript" | "DelphiScript" | "VB.NET"| "C" | "N/A";
-export type PricingModel = "Free" | "Freemium" | "Subscription" | "One-time Purchase" | "Open Source";
-export type ReportingAnalytics = "Basic" | "Advanced" | "Customizable" | "Integration-friendly" | "Real-time";
+export type ApplicationType = "__ALL__"|"Web" | "Mobile" | "API" | "Desktop" | "Backend";
+export type TestType = "__ALL__"|"UI Testing" | "API Testing" | "Performance Testing" | "Security Testing" | "Unit Testing" | "DB Testing";
+export type OperatingSystem = "Windows" | "macOS" | "Linux" | "Android" | "iOS" | "Cross-Platform"| "__ALL__";
+export type CodingRequirement = "__ALL__"|"No-Code" | "Low-Code" | "Scripting" | "AI/ML";
+export type CodingLanguage = "__ALL__"|"JavaScript" | "Python" | "Java" | "C#" | "Ruby" | "Go" | "Swift" | "Kotlin" | "PHP" | "VBScript"| "JScript" | "DelphiScript" | "VB.NET"| "C" | "N/A";
+export type PricingModel = "__ALL__"|"Free" | "Freemium" | "Subscription" | "One-time Purchase" | "Open Source";
+export type ReportingAnalytics = "__ALL__"|"Basic" | "Advanced" | "Customizable" | "Integration-friendly" | "Real-time";
 
 export interface RoiTimePoint {
   month: number;
@@ -48,13 +48,13 @@ export interface Tool {
 }
 
 export interface Filters {
-  applicationType: ApplicationType | "";
-  testType: TestType | "";
-  operatingSystem: OperatingSystem | "";
-  codingRequirement: CodingRequirement | "";
-  codingLanguage: CodingLanguage | "";
-  pricingModel: PricingModel | "";
-  reportingAnalytics: ReportingAnalytics | "";
+  applicationType: ApplicationType |"";
+  testType: TestType |"";
+  operatingSystem: OperatingSystem |"";
+  codingRequirement: CodingRequirement |"";
+  codingLanguage: CodingLanguage |"";
+  pricingModel: PricingModel |"";
+  reportingAnalytics: ReportingAnalytics |"";
 }
 
 export interface FilterOption {

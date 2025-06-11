@@ -59,6 +59,8 @@ const initialEstimatorInputs: EstimatorInputValuesForUI = {
   automationToolName: "",
 };
 
+const RELEASE_NOTES_ACK_KEY_V2 = 'releaseNotesAcknowledged_v2.0';
+
 interface DashboardPageProps {
   params: { [key: string]: string | string[] | undefined };
   searchParams: { [key: string]: string | string[] | undefined };
@@ -88,6 +90,10 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
 
 
   useEffect(() => {
+    const acknowledged = localStorage.getItem(RELEASE_NOTES_ACK_KEY_V2);
+    if (acknowledged !== 'true') {
+      setShowInitialReleaseNotes(true);
+    }
     setCurrentYear(new Date().getFullYear());
   }, []);
 
@@ -128,31 +134,28 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
 
   const filteredToolsForDisplay = useMemo(() => {
     let tools = mockToolsData;
-
+    
     if (filters.applicationType && filters.applicationType !== ALL_FILTER_VALUE) {
-      tools = tools.filter(tool => tool.applicationTypes.includes(filters.applicationType!));
-    }
-    if (filters.testType && filters.testType !== ALL_FILTER_VALUE) {
-      tools = tools.filter(tool => tool.testTypes.includes(filters.testType!));
-    }
-    if (filters.operatingSystem && filters.operatingSystem !== ALL_FILTER_VALUE) {
-      tools = tools.filter(tool => tool.operatingSystems.includes(filters.operatingSystem!));
-    }
-    if (filters.codingRequirement && filters.codingRequirement !== ALL_FILTER_VALUE) {
-      tools = tools.filter(tool => tool.codingRequirements.includes(filters.codingRequirement!));
-    }
-    if (filters.codingLanguage && filters.codingLanguage !== ALL_FILTER_VALUE) {
-      tools = tools.filter(tool =>
-        tool.codingLanguages.includes(filters.codingLanguage!) ||
-        (filters.codingLanguage === "N/A" && tool.codingLanguages.includes("N/A"))
-      );
-    }
-    if (filters.pricingModel && filters.pricingModel !== ALL_FILTER_VALUE) {
-      tools = tools.filter(tool => tool.pricingModels.includes(filters.pricingModel!));
-    }
-    if (filters.reportingAnalytics && filters.reportingAnalytics !== ALL_FILTER_VALUE) {
-      tools = tools.filter(tool => tool.reportingAnalytics.includes(filters.reportingAnalytics!));
-    }
+          tools = tools.filter(tool => tool.applicationTypes.includes(filters.applicationType!));
+        }
+        if (filters.testType && filters.testType !== ALL_FILTER_VALUE) {
+          tools = tools.filter(tool => tool.testTypes.includes(filters.testType!));
+        }
+        if (filters.operatingSystem && filters.operatingSystem !== ALL_FILTER_VALUE && filters.operatingSystem !== "") { // Add check for empty string
+          tools = tools.filter(tool => tool.operatingSystems.includes(filters.operatingSystem!));
+        }
+        if (filters.codingRequirement && filters.codingRequirement !== ALL_FILTER_VALUE) {
+          tools = tools.filter(tool => tool.codingRequirements.includes(filters.codingRequirement!));
+        }
+        if (filters.codingLanguage && filters.codingLanguage !== ALL_FILTER_VALUE) {
+          tools = tools.filter(tool =>
+            tool.codingLanguages.includes(filters.codingLanguage!) ||
+            (filters.codingLanguage === "N/A" && tool.codingLanguages.includes("N/A"))
+          );
+        }
+        if (filters.pricingModel && filters.pricingModel !== ALL_FILTER_VALUE) {
+          tools = tools.filter(tool => tool.pricingModels.includes(filters.pricingModel!));
+        }
 
     return tools.sort((a, b) => b.score - a.score);
   }, [filters]);
@@ -290,6 +293,11 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
     }
   };
 
+  const handleAcknowledgeReleaseNotes = () => {
+    localStorage.setItem(RELEASE_NOTES_ACK_KEY_V2, 'true');
+    setShowInitialReleaseNotes(false);
+  };
+
   const showFab = (tool1ForComparison || tool2ForComparison || tool3ForComparison) &&
                   !showInitialReleaseNotes &&
                   !showRoiChartDialog &&
@@ -374,7 +382,7 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
         />
       )}
 
-      <Dialog open={showInitialReleaseNotes} onOpenChange={(open) => { if (!open) setShowInitialReleaseNotes(false); }}>
+      <Dialog open={showInitialReleaseNotes} onOpenChange={(open) => { if (!open) handleAcknowledgeReleaseNotes(); }}>
         <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col" onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle className="text-xl text-primary">ToolWise - Release Notes (V.2.0)</DialogTitle>
@@ -389,7 +397,7 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
             <Button
               type="button"
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
-              onClick={() => setShowInitialReleaseNotes(false)}
+              onClick={handleAcknowledgeReleaseNotes}
             >
               Acknowledge & Continue
             </Button>
@@ -452,3 +460,4 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
     </>
   );
 }
+
