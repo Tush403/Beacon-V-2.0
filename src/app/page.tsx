@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link'; // Import Link component
 
 const HomePage = () => {
   return (
@@ -24,9 +25,12 @@ const HomePage = () => {
           QA processes, accelerate delivery, and drive innovation at scale.
         </p>
 
-        <button className="bg-purple-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300">
+        <Link
+          href="/dashboard"
+          className="bg-purple-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300"
+        >
           Get Started
-        </button>
+        </Link>
       </main>
     </div>
   );
