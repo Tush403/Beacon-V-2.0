@@ -28,6 +28,7 @@ const HomePage = () => {
 
         <Link
           href="/dashboard"
+          prefetch={false}
           className="bg-purple-600 text-white px-8 py-3 text-lg rounded-full shadow-lg hover:bg-purple-700 active:scale-95 transform transition-all duration-300"
         >
           Get Started

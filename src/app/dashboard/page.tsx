@@ -385,7 +385,7 @@ export default function DashboardPage({ params, searchParams }: DashboardPagePro
       <Dialog open={showInitialReleaseNotes} onOpenChange={(open) => { if (!open) handleAcknowledgeReleaseNotes(); }}>
         <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col" onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()}>
           <DialogHeader>
-            <DialogTitle className="text-xl text-primary">ToolWise - Release Notes (V.2.0)</DialogTitle>
+            <DialogTitle className="text-xl text-primary">Beacon - Release Notes (V.2.0)</DialogTitle>
             <DialogDescription>
               Welcome! Please review the latest updates before proceeding.
             </DialogDescription>
